@@ -108,11 +108,11 @@ const handleLogin = () => {
         </form>
 
         <!-- Divider -->
-        <div class="mt-6 flex items-center justify-between">
+        <!-- <div class="mt-6 flex items-center justify-between">
           <span class="border-b border-dark-800 w-1/5"></span>
           <span class="text-xs text-slate-500 uppercase tracking-wider">Atau</span>
           <span class="border-b border-dark-800 w-1/5"></span>
-        </div>
+        </div> -->
 
         <!-- Register Link -->
         <p class="mt-6 text-center text-sm text-slate-400">

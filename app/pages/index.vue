@@ -19,10 +19,10 @@
                 </div>
 
                 <div class="flex items-center gap-4 relative z-10">
-                    <button class="text-sm font-semibold px-4 py-2 text-slate-300 hover:text-primary-400 transition-colors hidden sm:block">
+                    <button @click="navigateTo('/login')" class="text-sm font-semibold px-4 py-2 text-slate-300 hover:text-primary-400 transition-colors hidden sm:block">
                         Masuk
                     </button>
-                    <button class="text-sm font-semibold bg-primary-500 text-dark-950 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-primary-400 transition-all shadow-lg shadow-primary-500/20 active:scale-95">
+                    <button @click="navigateTo('/register')" class="text-sm font-semibold bg-primary-500 text-dark-950 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-primary-400 transition-all shadow-lg shadow-primary-500/20 active:scale-95">
                         Daftar
                     </button>
                 </div>
