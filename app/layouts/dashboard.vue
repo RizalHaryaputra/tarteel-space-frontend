@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const authStore = useAuthStore()
 
 const menuItems = [
   {
@@ -82,11 +83,11 @@ const pageTitle = computed(() => {
         <!-- User Profile Dropdown (Desktop) -->
         <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
           <div class="text-right">
-            <p class="text-sm font-medium text-white">Fulan bin Fulan</p>
-            <p class="text-xs text-slate-500">Santri Premium</p>
+            <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+            <p class="text-xs text-slate-500 cursor-pointer hover:text-red-400 transition-colors" @click="authStore.logout(); navigateTo('/login')">Keluar</p>
           </div>
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
-            FB
+            {{ authStore.initials || '?' }}
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

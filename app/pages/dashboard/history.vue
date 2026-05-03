@@ -5,16 +5,11 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-// Mock Data
-const historyData = [
-  { date: 'Senin', score: 65, letter: 'بَ', transliteration: 'Ba' },
-  { date: 'Selasa', score: 70, letter: 'تَ', transliteration: 'Ta' },
-  { date: 'Rabu', score: 68, letter: 'ثَ', transliteration: 'Tsa' },
-  { date: 'Kamis', score: 80, letter: 'جَ', transliteration: 'Ja' },
-  { date: 'Jumat', score: 85, letter: 'حَ', transliteration: 'Ha' },
-  { date: 'Sabtu', score: 82, letter: 'خَ', transliteration: 'Kha' },
-  { date: 'Minggu', score: 92, letter: 'نَ', transliteration: 'Nun' }
-]
+const api = useApi()
+
+// Fetch data
+const { data: weeklyData, pending: loadingWeekly } = useAsyncData('weeklyScores', () => api.getWeeklyScores())
+const { data: historyList, pending: loadingHistory } = useAsyncData('historyList', () => api.getHistory(20, 0))
 
 // SVG Line Chart Logic
 const svgWidth = 1000
@@ -23,21 +18,48 @@ const maxScore = 100
 const minScore = 50 // Base for dynamic looking graph
 
 const points = computed(() => {
-  return historyData.map((data, index) => {
-    const x = (index / (historyData.length - 1)) * svgWidth
-    const normalizedScore = Math.max(0, data.score - minScore) / (maxScore - minScore)
+  const dataList = weeklyData.value || []
+  if (dataList.length === 0) return []
+  if (dataList.length === 1) {
+    const data = dataList[0]
+    if (!data) return []
+    const x = svgWidth / 2
+    const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
+    const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
+    return [{ x, y, score: Math.round(data.rata_rata), date: new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }]
+  }
+
+  return dataList.map((data, index) => {
+    const x = (index / (dataList.length - 1)) * svgWidth
+    const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30 // Add padding
-    return { x, y, score: data.score, date: data.date }
+    return { x, y, score: Math.round(data.rata_rata), date: new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
   })
 })
 
 const polylinePoints = computed(() => {
+  if (points.value.length === 0) return ''
+  if (points.value.length === 1) {
+    const p = points.value[0]
+    return p ? `${p.x},${p.y}` : ''
+  }
   return points.value.map(p => `${p.x},${p.y}`).join(' ')
 })
 
 const polygonPoints = computed(() => {
+  if (points.value.length === 0) return ''
+  if (points.value.length === 1) {
+    const p = points.value[0]
+    return p ? `${p.x},${p.y} ${p.x},${svgHeight} ${p.x},${svgHeight}` : ''
+  }
   return `${polylinePoints.value} ${svgWidth},${svgHeight} 0,${svgHeight}`
 })
+
+const formatDate = (isoStr: string) => {
+  return new Date(isoStr).toLocaleDateString('id-ID', {
+    weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  })
+}
 </script>
 
 <template>
@@ -138,26 +160,32 @@ const polygonPoints = computed(() => {
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-800/50">
-            <tr v-for="(item, idx) in historyData.slice().reverse()" :key="idx" class="hover:bg-dark-800/30 transition-colors group">
-              <td class="py-4 px-4 text-slate-300 font-medium">
-                {{ item.date }}
+            <tr v-if="loadingHistory">
+              <td colspan="3" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
+            </tr>
+            <tr v-else-if="!historyList?.length">
+              <td colspan="3" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
+            </tr>
+            <tr v-else v-for="item in historyList" :key="item.id" class="hover:bg-dark-800/30 transition-colors group">
+              <td class="py-4 px-4 text-slate-300 font-medium text-sm">
+                {{ formatDate(item.created_at) }}
               </td>
               <td class="py-4 px-4">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-lg bg-dark-950 border border-dark-700 flex items-center justify-center font-arabic text-xl text-white group-hover:text-primary-400 transition-colors shadow-inner">
-                    {{ item.letter }}
+                    {{ item.arabic_script }}
                   </div>
-                  <span class="font-medium text-slate-300">{{ item.transliteration }}</span>
+                  <span class="font-medium text-slate-300">{{ item.base_letter }} · {{ item.harakat }}</span>
                 </div>
               </td>
               <td class="py-4 px-4 text-right">
                 <span 
                   class="inline-block px-3 py-1 rounded-md text-sm font-bold"
-                  :class="item.score >= 90 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
-                          item.score >= 75 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
+                  :class="item.accuracy_score >= 90 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
+                          item.accuracy_score >= 75 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
                           'bg-red-500/10 text-red-400 border border-red-500/20'"
                 >
-                  {{ item.score }}%
+                  {{ item.accuracy_score.toFixed(1) }}%
                 </span>
               </td>
             </tr>
