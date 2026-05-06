@@ -6,8 +6,8 @@ definePageMeta({
 const api = useApi()
 const authStore = useAuthStore()
 
-// Fetch real data dari API
-const { data: stats, pending: isLoading, error } = useAsyncData('dashboardStats', () => api.getDashboard())
+// Fetch real data dari API (client-side only to use auth token)
+const { data: stats, pending: isLoading, error } = useAsyncData('dashboardStats', () => api.getDashboard(), { server: false })
 
 // Rekomendasi dinamis berdasarkan response API
 const recommendations = computed(() => {
