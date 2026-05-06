@@ -29,12 +29,14 @@ const isActive = (path: string) => {
   return route.path.startsWith(path)
 }
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const pageTitle = computed(() => {
   const currentItem = menuItems.find(item => item.path === route.path || (item.path !== '/dashboard' && route.path.startsWith(item.path)))
   return currentItem ? currentItem.name : 'Dashboard'
 })
+
+const isDropdownOpen = ref(false)
 </script>
 
 <template>
@@ -81,17 +83,39 @@ const pageTitle = computed(() => {
         <h1 class="text-2xl font-bold text-white tracking-tight">{{ pageTitle }}</h1>
         
         <!-- User Profile Dropdown (Desktop) -->
-        <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
-          <div class="text-right">
-            <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
-            <p class="text-xs text-slate-500 cursor-pointer hover:text-red-400 transition-colors" @click="authStore.logout(); navigateTo('/login')">Keluar</p>
+        <div class="relative">
+          <div @click="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
+            <div class="text-right">
+              <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
+              {{ authStore.initials || '?' }}
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
-            {{ authStore.initials || '?' }}
+          
+          <!-- Dropdown Overlay -->
+          <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="fixed inset-0 z-40"></div>
+
+          <!-- Dropdown Menu -->
+          <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
+            <div class="py-2">
+              <button @click="navigateTo('/'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Halaman Utama
+              </button>
+              <button @click="authStore.logout(); navigateTo('/login')" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Keluar
+              </button>
+            </div>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
       </header>
 
