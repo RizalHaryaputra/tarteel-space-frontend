@@ -3,23 +3,23 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-// Mock Data
-const user = {
-  name: 'Fulan bin Fulan',
-  level: 'Pemula',
-  streak: 5
-}
+const api = useApi()
+const authStore = useAuthStore()
 
-const stats = {
-  accuracy: 85,
-  exercisesCompleted: 124,
-  hoursPracticed: 12
-}
+// Fetch real data dari API
+const { data: stats, pending: isLoading, error } = useAsyncData('dashboardStats', () => api.getDashboard())
 
-const recommendations = [
-  { letter: 'خ', transliteration: 'Kha', accuracy: 65, status: 'Perlu Latihan' },
-  { letter: 'غ', transliteration: 'Ghayn', accuracy: 72, status: 'Sedang' }
-]
+// Rekomendasi dinamis berdasarkan response API
+const recommendations = computed(() => {
+  const recs = []
+  if (stats.value?.huruf_terlemah) {
+    recs.push({ letter: stats.value.huruf_terlemah, transliteration: 'Fokus Utama', accuracy: 0, status: 'Perlu Latihan' })
+  }
+  if (stats.value?.huruf_terkuat) {
+    recs.push({ letter: stats.value.huruf_terkuat, transliteration: 'Kemajuan Baik', accuracy: 100, status: 'Terus Pertahankan' })
+  }
+  return recs
+})
 </script>
 
 <template>
@@ -44,10 +44,10 @@ const recommendations = [
               Progres Berlanjut
             </span>
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">
-              Selamat datang kembali, <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-300">{{ user.name.split(' ')[0] }}!</span>
+              Selamat datang kembali, <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-300">{{ authStore.userName?.split(' ')[0] || 'Pengguna' }}!</span>
             </h2>
             <p class="text-slate-400 max-w-md">
-              Anda sedang dalam <span class="text-orange-400 font-semibold">{{ user.streak }} hari beruntun</span>. Lanjutkan latihan untuk menyempurnakan pelafalan huruf hijaiyah Anda.
+              Anda sedang dalam <span class="text-orange-400 font-semibold">{{ stats?.streak_hari || 0 }} hari beruntun</span>. Lanjutkan latihan untuk menyempurnakan pelafalan huruf hijaiyah Anda.
             </p>
           </div>
           
@@ -70,7 +70,10 @@ const recommendations = [
           </svg>
         </div>
         <div class="text-4xl font-bold text-white mb-1 flex items-baseline justify-center gap-1">
-          {{ stats.accuracy }}<span class="text-xl text-primary-400">%</span>
+          <span v-if="isLoading" class="text-2xl text-slate-500 animate-pulse">...</span>
+          <template v-else>
+            {{ stats?.rata_rata_akurasi?.toFixed(1) || '0.0' }}<span class="text-xl text-primary-400">%</span>
+          </template>
         </div>
         <p class="text-sm text-slate-400 font-medium">Akurasi Rata-rata</p>
       </div>
@@ -83,7 +86,10 @@ const recommendations = [
           </svg>
         </div>
         <div class="text-4xl font-bold text-white mb-1">
-          {{ stats.exercisesCompleted }}
+          <span v-if="isLoading" class="text-2xl text-slate-500 animate-pulse">...</span>
+          <template v-else>
+            {{ stats?.total_latihan || 0 }}
+          </template>
         </div>
         <p class="text-sm text-slate-400 font-medium">Latihan Selesai</p>
       </div>
@@ -105,8 +111,8 @@ const recommendations = [
             <div class="flex-1">
               <div class="flex justify-between items-center mb-1">
                 <span class="font-bold text-white">{{ rec.transliteration }}</span>
-                <span class="text-xs font-medium px-2 py-0.5 rounded-md" :class="rec.accuracy < 70 ? 'bg-red-500/10 text-red-400' : 'bg-yellow-500/10 text-yellow-400'">
-                  {{ rec.accuracy }}%
+                <span class="text-xs font-medium px-2 py-0.5 rounded-md" :class="rec.status === 'Perlu Latihan' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'">
+                  {{ rec.status === 'Perlu Latihan' ? 'Target' : 'Excellent' }}
                 </span>
               </div>
               <p class="text-xs text-slate-500">{{ rec.status }}</p>

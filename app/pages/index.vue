@@ -19,12 +19,56 @@
                 </div>
 
                 <div class="flex items-center gap-4 relative z-10">
-                    <button @click="navigateTo('/login')" class="text-sm font-semibold px-4 py-2 text-slate-300 hover:text-primary-400 transition-colors hidden sm:block">
-                        Masuk
-                    </button>
-                    <button @click="navigateTo('/register')" class="text-sm font-semibold bg-primary-500 text-dark-950 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-primary-400 transition-all shadow-lg shadow-primary-500/20 active:scale-95">
-                        Daftar
-                    </button>
+                    <ClientOnly>
+                        <template v-if="authStore.isLoggedIn">
+                            <!-- User Profile Dropdown -->
+                            <div class="relative">
+                                <div @click="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
+                                    <div class="text-right hidden sm:block">
+                                        <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
+                                        {{ authStore.initials || '?' }}
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                
+                                <!-- Dropdown Overlay -->
+                                <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="fixed inset-0 z-40"></div>
+
+                                <!-- Dropdown Menu -->
+                                <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
+                                    <div class="py-2">
+                                        <button @click="navigateTo('/dashboard'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                            </svg>
+                                            Halaman Dashboard
+                                        </button>
+                                        <button @click="authStore.logout(); navigateTo('/login')" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
+                                            Keluar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <button @click="navigateTo('/login')" class="text-sm font-semibold px-4 py-2 text-slate-300 hover:text-primary-400 transition-colors hidden sm:block">
+                                Masuk
+                            </button>
+                            <button @click="navigateTo('/register')" class="text-sm font-semibold bg-primary-500 text-dark-950 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-primary-400 transition-all shadow-lg shadow-primary-500/20 active:scale-95">
+                                Daftar
+                            </button>
+                        </template>
+                        <template #fallback>
+                            <div class="w-24 h-10 bg-dark-800/50 rounded-full animate-pulse"></div>
+                        </template>
+                    </ClientOnly>
                 </div>
             </div>
         </nav>
@@ -321,6 +365,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const authStore = useAuthStore()
+const isDropdownOpen = ref(false)
+
 // Gunakan useHead jika Anda ingin menambahkan SEO meta tags
 useHead({
     title: 'Tarteel Space - Sempurnakan Pelafalan Al-Qur\'an dengan AI',

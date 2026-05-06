@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 
 definePageMeta({
   layout: 'dashboard'
 })
 
-// State
-const targetLetter = {
-  arabic: 'ن',
-  transliteration: 'Nun',
-  instruction: 'Ucapkan: NA'
-}
+const api = useApi()
 
+// State Data
+const { data: letters, pending: loadingLetters } = useAsyncData('letters', () => api.getLetters())
+const currentLetterIndex = ref(0)
+const targetLetter = computed(() => letters.value?.[currentLetterIndex.value] || null)
+
+// State Recording & Session
+const currentSessionId = ref<string | null>(null)
 const isRecording = ref(false)
 const isProcessing = ref(false)
 const showResult = ref(false)
+
+const mediaRecorder = ref<MediaRecorder | null>(null)
+const audioChunks = ref<BlobPart[]>([])
 
 const evaluationResult = ref({
   score: 0,
@@ -22,47 +27,104 @@ const evaluationResult = ref({
   color: ''
 })
 
-const toggleRecording = () => {
+onUnmounted(() => {
+  // End session jika berpindah halaman
+  if (currentSessionId.value) {
+    api.endSession(currentSessionId.value).catch(console.error)
+  }
+})
+
+const toggleRecording = async () => {
   if (isRecording.value) {
     // Stop recording
+    mediaRecorder.value?.stop()
     isRecording.value = false
-    processAudio()
   } else {
     // Start recording
     showResult.value = false
-    isRecording.value = true
+    
+    // Start new session if doesn't exist
+    if (!currentSessionId.value) {
+      try {
+        const session = await api.startSession()
+        currentSessionId.value = session.session_id
+      } catch (e) {
+        console.error("Gagal memulai sesi", e)
+      }
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaRecorder.value = new MediaRecorder(stream)
+      audioChunks.value = []
+
+      mediaRecorder.value.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.value.push(e.data)
+      }
+
+      mediaRecorder.value.onstop = () => {
+        const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
+        processAudio(audioBlob)
+        // Clean up microphone tracks
+        stream.getTracks().forEach(track => track.stop())
+      }
+
+      mediaRecorder.value.start()
+      isRecording.value = true
+    } catch (err) {
+      console.error('Error accessing microphone:', err)
+      alert('Gagal mengakses mikrofon. Pastikan browser Anda memiliki izin untuk menggunakan mikrofon.')
+    }
   }
 }
 
-const processAudio = () => {
+const processAudio = async (audioBlob: Blob) => {
+  if (!targetLetter.value) return
   isProcessing.value = true
   
-  // Mock processing delay
-  setTimeout(() => {
-    isProcessing.value = false
+  try {
+    const result = await api.evaluate(targetLetter.value.id, audioBlob, currentSessionId.value || undefined)
     
-    // Mock result (Randomize for demo purposes)
-    const mockScore = Math.floor(Math.random() * 40) + 60 // 60 to 99
-    evaluationResult.value.score = mockScore
+    evaluationResult.value.score = Math.round(result.accuracy_score)
+    evaluationResult.value.feedback = result.feedback
     
-    if (mockScore >= 90) {
-      evaluationResult.value.feedback = 'Sempurna! Makhraj sangat jelas.'
+    if (result.is_correct) {
       evaluationResult.value.color = 'text-green-400'
-    } else if (mockScore >= 75) {
-      evaluationResult.value.feedback = 'Bagus. Perhatikan panjang pendeknya.'
+    } else if (result.accuracy_score >= 70) {
       evaluationResult.value.color = 'text-yellow-400'
     } else {
-      evaluationResult.value.feedback = 'Perlu perbaikan. Dengar referensi lagi.'
       evaluationResult.value.color = 'text-red-400'
     }
-    
+  } catch (err: any) {
+    console.error(err)
+    evaluationResult.value.score = 0
+    evaluationResult.value.feedback = err.message || 'Terjadi kesalahan saat mengevaluasi audio.'
+    evaluationResult.value.color = 'text-red-400'
+  } finally {
+    isProcessing.value = false
     showResult.value = true
-  }, 2000)
+  }
 }
 
 const playReferenceAudio = () => {
-  // TODO: Integrate actual audio playback
-  console.log('Playing reference audio for', targetLetter.transliteration)
+  if (targetLetter.value) {
+    // Karena API audio referensi belum ada di dokumentasi, ini bisa berupa placeholder alert
+    alert(`Memutar contoh pelafalan: ${targetLetter.value.pronunciation}`)
+  }
+}
+
+const nextLetter = () => {
+  if (letters.value && currentLetterIndex.value < letters.value.length - 1) {
+    currentLetterIndex.value++
+    showResult.value = false
+  }
+}
+
+const prevLetter = () => {
+  if (currentLetterIndex.value > 0) {
+    currentLetterIndex.value--
+    showResult.value = false
+  }
 }
 </script>
 
@@ -83,26 +145,48 @@ const playReferenceAudio = () => {
         <!-- Decoration -->
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary-500/5 rounded-full blur-2xl pointer-events-none"></div>
         
-        <div class="text-slate-400 text-xs font-medium mb-2 uppercase tracking-widest">{{ targetLetter.instruction }}</div>
-        
-        <div class="leading-none font-arabic text-white mb-2 drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]" style="font-size: 130px;">
-          {{ targetLetter.arabic }}
+        <div v-if="loadingLetters" class="flex flex-col items-center justify-center animate-pulse gap-4 h-full w-full">
+            <div class="w-20 h-20 bg-dark-800 rounded-full"></div>
+            <div class="h-4 w-32 bg-dark-800 rounded"></div>
         </div>
-        
-        <div class="text-xl font-bold text-primary-400 mb-6">{{ targetLetter.transliteration }}</div>
-        
-        <!-- Audio Reference Button -->
-        <button 
-          @click="playReferenceAudio"
-          class="flex items-center gap-2 px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-full transition-colors border border-dark-700 hover:border-primary-500/50 group"
-        >
-          <div class="w-7 h-7 rounded-full bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-colors text-primary-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-            </svg>
+
+        <template v-else-if="targetLetter">
+          <div class="text-slate-400 text-xs font-medium mb-2 uppercase tracking-widest">Ucapkan: {{ targetLetter.pronunciation }}</div>
+          
+          <div class="leading-none font-arabic text-white mb-2 drop-shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all" style="font-size: 130px;">
+            {{ targetLetter.arabic_script }}
           </div>
-          <span class="text-sm font-medium">Dengarkan Contoh</span>
-        </button>
+          
+          <div class="text-xl font-bold text-primary-400 mb-6">{{ targetLetter.base_letter }} <span class="text-slate-500">·</span> {{ targetLetter.harakat }}</div>
+          
+          <!-- Audio Reference Button -->
+          <button 
+            @click="playReferenceAudio"
+            class="flex items-center gap-2 px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-full transition-colors border border-dark-700 hover:border-primary-500/50 group"
+          >
+            <div class="w-7 h-7 rounded-full bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-colors text-primary-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <span class="text-sm font-medium">Dengarkan Contoh</span>
+          </button>
+
+          <!-- Navigation -->
+          <div class="flex items-center gap-4 mt-auto pt-4 w-full justify-between">
+            <button @click="prevLetter" :disabled="currentLetterIndex === 0" class="w-10 h-10 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:border-dark-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <span class="text-xs text-slate-500 font-medium">{{ currentLetterIndex + 1 }} / {{ letters?.length || 0 }}</span>
+            <button @click="nextLetter" :disabled="!letters || currentLetterIndex === letters.length - 1" class="w-10 h-10 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:border-dark-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </template>
       </div>
 
       <!-- Right Column: Action Area -->
@@ -134,7 +218,7 @@ const playReferenceAudio = () => {
             <button @click="showResult = false" class="flex-1 py-2.5 px-3 bg-dark-800 hover:bg-dark-700 text-white text-sm font-medium rounded-xl transition-colors border border-dark-700">
               Coba Lagi
             </button>
-            <button class="flex-1 py-2.5 px-3 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-xl transition-colors shadow-lg shadow-primary-500/25">
+            <button @click="nextLetter" class="flex-1 py-2.5 px-3 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-xl transition-colors shadow-lg shadow-primary-500/25">
               Lanjut
             </button>
           </div>
