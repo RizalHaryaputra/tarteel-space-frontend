@@ -103,7 +103,24 @@ const recommendations = computed(() => {
           </NuxtLink>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex items-center justify-center py-8">
+          <div class="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="recommendations.length === 0" class="flex flex-col items-center justify-center py-8 px-4 text-center bg-dark-950/30 rounded-2xl border border-dark-800/50 border-dashed">
+          <div class="w-12 h-12 rounded-full bg-dark-800/50 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <p class="text-slate-300 font-medium mb-1">Belum Ada Rekomendasi</p>
+          <p class="text-slate-500 text-sm">Selesaikan beberapa sesi latihan agar kami dapat menganalisis perkembangan Anda.</p>
+        </div>
+
+        <!-- Data List -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div v-for="rec in recommendations" :key="rec.letter" class="flex items-center gap-4 p-4 rounded-2xl bg-dark-950/50 border border-dark-800/50 hover:bg-dark-800/50 transition-colors cursor-pointer group">
             <div class="w-14 h-14 rounded-xl bg-dark-800 flex items-center justify-center border border-dark-700 shadow-inner">
               <span class="text-3xl text-white font-arabic group-hover:text-primary-400 transition-colors">{{ rec.letter }}</span>
