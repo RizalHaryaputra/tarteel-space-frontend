@@ -7,9 +7,9 @@ definePageMeta({
 
 const api = useApi()
 
-// Fetch data
-const { data: weeklyData, pending: loadingWeekly } = useAsyncData('weeklyScores', () => api.getWeeklyScores())
-const { data: historyList, pending: loadingHistory } = useAsyncData('historyList', () => api.getHistory(20, 0))
+// Fetch data (client-side only to ensure token is available)
+const { data: weeklyData, pending: loadingWeekly, error: weeklyError } = useAsyncData('weeklyScores', () => api.getWeeklyScores(), { server: false })
+const { data: historyList, pending: loadingHistory, error: historyError } = useAsyncData('historyList', () => api.getHistory(20, 0), { server: false })
 
 // SVG Line Chart Logic
 const svgWidth = 1000
@@ -18,19 +18,29 @@ const maxScore = 100
 const minScore = 50 // Base for dynamic looking graph
 
 const points = computed(() => {
-  const dataList = weeklyData.value || []
-  if (dataList.length === 0) return []
+  const dataList = weeklyData.value
+  if (!Array.isArray(dataList) || dataList.length === 0) return []
+  
   if (dataList.length === 1) {
     const data = dataList[0]
     if (!data) return []
-    const x = svgWidth / 2
     const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
-    return [{ x, y, score: Math.round(data.rata_rata), date: new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }]
+    const dateStr = new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
+    
+    // Jika hanya 1 data, buat garis lurus mendatar agar grafik tetap terlihat
+    return [
+      { x: 0, y, score: Math.round(data.rata_rata), date: dateStr, isFake: true },
+      { x: svgWidth / 2, y, score: Math.round(data.rata_rata), date: dateStr },
+      { x: svgWidth, y, score: Math.round(data.rata_rata), date: dateStr, isFake: true }
+    ]
   }
 
+  const paddingX = 60
+  const availableWidth = svgWidth - (paddingX * 2)
+
   return dataList.map((data, index) => {
-    const x = (index / (dataList.length - 1)) * svgWidth
+    const x = paddingX + (index / (dataList.length - 1)) * availableWidth
     const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30 // Add padding
     return { x, y, score: Math.round(data.rata_rata), date: new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
@@ -52,7 +62,12 @@ const polygonPoints = computed(() => {
     const p = points.value[0]
     return p ? `${p.x},${p.y} ${p.x},${svgHeight} ${p.x},${svgHeight}` : ''
   }
-  return `${polylinePoints.value} ${svgWidth},${svgHeight} 0,${svgHeight}`
+  
+  const firstP = points.value[0]
+  const lastP = points.value[points.value.length - 1]
+  if (!firstP || !lastP) return ''
+  
+  return `${polylinePoints.value} ${lastP.x},${svgHeight} ${firstP.x},${svgHeight}`
 })
 
 const formatDate = (isoStr: string) => {
@@ -85,7 +100,35 @@ const formatDate = (isoStr: string) => {
 
       <!-- Custom SVG Chart -->
       <div class="w-full relative z-10 overflow-x-auto pb-4 custom-scrollbar">
-        <div class="min-w-[600px]">
+        <!-- Error State -->
+        <div v-if="weeklyError" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4 mx-auto border border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p class="text-red-400 font-semibold text-lg mb-2">Gagal Memuat Data</p>
+          <p class="text-slate-500 text-sm max-w-sm mx-auto">{{ weeklyError.message || 'Terjadi kesalahan saat menghubungi server.' }}</p>
+        </div>
+
+        <!-- Loading State -->
+        <div v-else-if="loadingWeekly" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mb-4 mx-auto"></div>
+          <p class="text-slate-400 font-medium">Memuat grafik skor...</p>
+        </div>
+        
+        <!-- Empty State -->
+        <div v-else-if="!points.length" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 rounded-full bg-dark-800/50 flex items-center justify-center mb-4 mx-auto border border-dark-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+          </div>
+          <p class="text-slate-300 font-semibold text-lg mb-2">Belum Ada Data Skor</p>
+          <p class="text-slate-500 text-sm max-w-sm mx-auto">Selesaikan sesi latihan hari ini untuk mulai melihat perkembangan skor akurasi Anda di grafik ini.</p>
+        </div>
+
+        <div v-else class="min-w-[600px]">
           <svg :viewBox="`0 0 ${svgWidth} ${svgHeight + 40}`" class="w-full h-auto overflow-visible">
             <defs>
               <linearGradient id="gradient-area" x1="0" y1="0" x2="0" y2="1">
@@ -120,26 +163,28 @@ const formatDate = (isoStr: string) => {
 
             <!-- Data Points -->
             <g v-for="(point, i) in points" :key="i" class="animate-fade-in" :style="`animation-delay: ${i * 0.1 + 0.5}s; opacity: 0; animation-fill-mode: forwards;`">
-              <!-- Point circle -->
-              <circle 
-                :cx="point.x" 
-                :cy="point.y" 
-                r="6" 
-                fill="#0f172a" 
-                stroke="#60a5fa" 
-                stroke-width="3" 
-                class="hover:r-8 transition-all cursor-pointer shadow-lg drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]"
-              />
-              
-              <!-- Value Text -->
-              <text :x="point.x" :y="point.y - 15" fill="white" font-size="14" font-weight="bold" text-anchor="middle" class="select-none">
-                {{ point.score }}%
-              </text>
-              
-              <!-- X Axis Labels -->
-              <text :x="point.x" :y="svgHeight + 25" fill="#94a3b8" font-size="14" font-weight="500" text-anchor="middle" class="select-none">
-                {{ point.date }}
-              </text>
+              <template v-if="!point.isFake">
+                <!-- Point circle -->
+                <circle 
+                  :cx="point.x" 
+                  :cy="point.y" 
+                  r="6" 
+                  fill="#0f172a" 
+                  stroke="#60a5fa" 
+                  stroke-width="3" 
+                  class="hover:r-8 transition-all cursor-pointer shadow-lg drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]"
+                />
+                
+                <!-- Value Text -->
+                <text :x="point.x" :y="point.y - 15" fill="white" font-size="14" font-weight="bold" text-anchor="middle" class="select-none">
+                  {{ point.score }}%
+                </text>
+                
+                <!-- X Axis Labels -->
+                <text :x="point.x" :y="svgHeight + 25" fill="#94a3b8" font-size="14" font-weight="500" text-anchor="middle" class="select-none">
+                  {{ point.date }}
+                </text>
+              </template>
             </g>
           </svg>
         </div>
@@ -222,6 +267,8 @@ const formatDate = (isoStr: string) => {
 }
 
 .animate-fade-in {
+  animation-name: fade-in;
+  animation-duration: 0.5s;
   animation-fill-mode: forwards;
 }
 
