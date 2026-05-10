@@ -47,7 +47,8 @@ const handleLogin = async () => {
     <main class="w-full max-w-md px-6 py-12 relative z-10">
       <!-- Brand -->
       <div class="text-center mb-8">
-        <NuxtLink to="/" class="inline-block">
+        <NuxtLink to="/" class="inline-flex flex-col items-center gap-3">
+          <img src="/logo.png" alt="Tarteel Space Logo" class="w-12 rounded-lg h-12 object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
           <h1 class="text-3xl font-bold text-white tracking-tight">
             Tarteel <span class="text-primary-400">Space</span>
           </h1>

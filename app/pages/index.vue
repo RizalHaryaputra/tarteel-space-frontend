@@ -6,9 +6,7 @@
         <nav class="fixed top-0 w-full z-50 bg-dark-950/80 backdrop-blur-md border-b border-dark-800">
             <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 <div class="flex items-center gap-3 relative z-10 cursor-pointer" @click="scrollTo('beranda')">
-                    <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
-                        <span class="text-dark-950 font-bold text-xl">T</span>
-                    </div>
+                    <img src="/logo.png" alt="Tarteel Space Logo" class="w-10 h-10 rounded-lg object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
                     <span class="font-bold text-xl tracking-tight text-white hidden sm:block">Tarteel <span class="text-primary-400">Space</span></span>
                 </div>
 
@@ -345,8 +343,7 @@
         <footer class="py-12 border-t border-dark-800 bg-dark-950 text-center px-6 relative z-10">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-2 cursor-pointer" @click="scrollTo('beranda')">
-                    <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-dark-950 font-bold">T
-                    </div>
+                    <img src="/logo.png" alt="Tarteel Space Logo" class="w-8 h-8 rounded-lg object-contain" />
                     <span class="font-bold text-white tracking-tight">Tarteel <span class="text-primary-400">Space</span></span>
                 </div>
                 <p class="text-sm text-slate-500">&copy; 2026 Tarteel Space Project. Proyek Skripsi Teknologi Informasi.

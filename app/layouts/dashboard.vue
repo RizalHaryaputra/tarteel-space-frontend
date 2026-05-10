@@ -48,11 +48,7 @@ const isDropdownOpen = ref(false)
     <aside class="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-dark-900/60 backdrop-blur-xl border-r border-dark-800 z-20">
       <!-- Logo -->
       <div class="p-6 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        </div>
+        <img src="/logo.png" alt="Tarteel Space Logo" class="w-8 rounded-lg h-8 object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
         <span class="text-xl font-bold tracking-tight">Tarteel<span class="text-primary-400">Space</span></span>
       </div>
 
@@ -123,11 +119,7 @@ const isDropdownOpen = ref(false)
         <!-- Dashboard Header (Mobile Only) -->
         <header class="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-dark-800">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="Tarteel Space Logo" class="w-8 h-8 rounded-lg object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
             <span class="text-lg font-bold tracking-tight">Tarteel<span class="text-primary-400">Space</span></span>
           </div>
           
