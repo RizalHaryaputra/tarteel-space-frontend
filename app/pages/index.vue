@@ -21,14 +21,14 @@
                         <template v-if="authStore.isLoggedIn">
                             <!-- User Profile Dropdown -->
                             <div class="relative">
-                                <div @click="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
+                                <div @click="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-2 sm:gap-3 p-1.5 sm:px-4 sm:py-2 rounded-full sm:rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
                                     <div class="text-right hidden sm:block">
                                         <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
+                                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20">
                                         {{ authStore.initials || '?' }}
                                     </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200 hidden sm:block" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
@@ -37,8 +37,11 @@
                                 <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="fixed inset-0 z-40"></div>
 
                                 <!-- Dropdown Menu -->
-                                <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
+                                <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-56 sm:w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
                                     <div class="py-2">
+                                        <div class="px-4 py-3 border-b border-dark-800 mb-1 sm:hidden">
+                                            <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+                                        </div>
                                         <button @click="navigateTo('/dashboard'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -91,7 +94,7 @@
                     secara real-time, memberikan koreksi instan tanpa batas ruang dan waktu.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button class="w-full sm:w-auto px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95 flex items-center justify-center gap-2">
+                    <button @click="navigateTo('/dashboard/practice')" class="w-full sm:w-auto px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95 flex items-center justify-center gap-2">
                         Mulai Latihan Sekarang
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -330,10 +333,10 @@
                     Bergabunglah sekarang dan rasakan pengalaman belajar Al-Qur'an interaktif yang didukung oleh kecerdasan buatan. Tanpa biaya, langsung dari browser Anda.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-                    <button class="px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95">
+                    <button @click="navigateTo('/dashboard/practice')" class="px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95">
                         Mulai Latihan Sekarang
                     </button>
-                    <button class="px-8 py-4 bg-dark-950 border border-dark-700 text-white rounded-2xl font-bold text-lg hover:bg-dark-800 hover:border-dark-600 transition-all active:scale-95">
+                    <button @click="scrollTo('tentang')" class="px-8 py-4 bg-dark-950 border border-dark-700 text-white rounded-2xl font-bold text-lg hover:bg-dark-800 hover:border-dark-600 transition-all active:scale-95">
                         Pelajari Lebih Lanjut
                     </button>
                 </div>
