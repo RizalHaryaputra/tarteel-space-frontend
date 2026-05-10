@@ -22,7 +22,7 @@ export const useApi = () => {
     ): Promise<T> => {
         const headers: Record<string, string> = {
             ...(options.body instanceof FormData
-                ? {}                                          // jangan set Content-Type untuk FormData
+                ? {}                                         
                 : { 'Content-Type': 'application/json' }),
             ...(options.headers as Record<string, string> || {}),
         }
