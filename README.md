@@ -1,75 +1,75 @@
-# Nuxt Minimal Starter
+# Tarteel Space - Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Tarteel Space adalah aplikasi web inovatif yang dirancang untuk membantu pengguna menyempurnakan pelafalan huruf hijaiyah dan kaidah tajwid Al-Qur'an. Aplikasi ini menggunakan teknologi kecerdasan buatan (Deep Learning / CNN) melalui backend-nya untuk memberikan evaluasi *real-time* atas rekaman suara pengguna. 
 
-## Setup
+Repositori ini berisi kode *frontend* dari aplikasi Tarteel Space yang dibangun menggunakan kerangka kerja [Nuxt 3](https://nuxt.com/) dan antarmuka yang dirancang dengan [Tailwind CSS](https://tailwindcss.com/).
 
-Make sure to install dependencies:
+## ✨ Fitur Utama
+
+- **Autentikasi Pengguna**: Sistem pendaftaran dan masuk yang aman. Seluruh rute dilindungi dengan *middleware* Nuxt.
+- **Ruang Latihan Interaktif**: Kemampuan merekam suara secara langsung dari *browser* dan mengirimkannya ke *backend* untuk dievaluasi oleh model AI.
+- **Laporan Evaluasi *Real-time***: Menampilkan skor akurasi (0-100%) dan umpan balik atas pelafalan secara seketika.
+- **Dasbor Statistik**: Melacak dan memvisualisasikan kemajuan harian pengguna (hari beruntun/ *streak*), huruf terkuat, dan huruf yang perlu perbaikan.
+- **Riwayat Belajar**: Dilengkapi grafik skor akurasi 7 hari terakhir (menggunakan grafik SVG responsif tanpa pustaka eksternal) dan tabel riwayat latihan.
+- **Responsif & Estetik**: Tampilan bernuansa gelap (Dark Mode) modern dengan aksen *glow*, komponen *glassmorphism*, animasi yang halus, dan dioptimalkan untuk berbagai layar genggam (*mobile*) maupun *desktop*.
+
+## 🛠️ Teknologi yang Digunakan
+
+- **Framework**: [Nuxt 3](https://nuxt.com/) (Vue 3, Composition API)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: [Pinia](https://pinia.vuejs.org/)
+- **Data Fetching**: `useAsyncData`, `$fetch`
+- **Audio API**: Web Audio API / `MediaRecorder`
+
+## 🚀 Panduan Setup
+
+Pastikan Anda telah menginstal [Node.js](https://nodejs.org/) (disarankan versi 18 atau yang lebih baru).
+
+### 1. Kloning Repositori & Instalasi Dependensi
 
 ```bash
-# npm
+# Salin repositori (sesuaikan URL dengan milik Anda)
+git clone https://github.com/RizalHaryaputra/tarteel-space-frontend.git
+cd tarteel-space-frontend
+
+# Instal dependensi (Gunakan npm, pnpm, atau yarn)
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+### 2. Variabel Lingkungan (*Environment Variables*)
 
-Start the development server on `http://localhost:3000`:
+Aplikasi ini membutuhkan konfigurasi URL API agar dapat berkomunikasi dengan *backend* (Tarteel Space API). 
+Buat file `.env` di *root directory* dan tambahkan baris berikut:
+
+```env
+NUXT_PUBLIC_API_BASE=http://localhost:8000
+```
+*(Ganti URL di atas sesuai dengan alamat backend Anda beroperasi)*
+
+### 3. Menjalankan Development Server
+
+Jalankan server pengembangan di mode *hot-reload*:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Aplikasi akan berjalan pada `http://localhost:3000`.
 
-Build the application for production:
+### 4. Build untuk Production
+
+Untuk melakukan kompilasi aplikasi untuk lingkungan produksi (*production*):
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+Anda dapat melihat pratinjau hasil kompilasi dengan:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## 📝 Catatan Tambahan
+
+Proyek ini merupakan bagian dari Proyek Skripsi Teknologi Informasi. Kami mendesain antarmuka agar terasa premium, mudah digunakan, dan memotivasi pengguna untuk terus berlatih.
