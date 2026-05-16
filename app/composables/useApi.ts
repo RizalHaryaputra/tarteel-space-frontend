@@ -22,12 +22,11 @@ export const useApi = () => {
     ): Promise<T> => {
         const headers: Record<string, string> = {
             ...(options.body instanceof FormData
-                ? {}                                         
+                ? {}
                 : { 'Content-Type': 'application/json' }),
             ...(options.headers as Record<string, string> || {}),
         }
 
-        // Sisipkan token JWT jika ada
         const token = authStore.token
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
@@ -38,14 +37,12 @@ export const useApi = () => {
             headers,
         })
 
-        // Token kadaluarsa → paksa logout & redirect ke login
         if (response.status === 401) {
             authStore.logout()
             router.push('/login')
             throw new Error('Sesi habis. Silakan login kembali.')
         }
 
-        // Error lainnya
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}))
             throw new Error(errorData.detail || `Error ${response.status}`)
