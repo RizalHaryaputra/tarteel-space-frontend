@@ -89,7 +89,7 @@ const handleLogin = async () => {
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <label class="block text-sm font-medium text-slate-300">Password</label>
-              <a href="#" class="text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">Lupa password?</a>
+              <NuxtLink to="/forgot-password" class="text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">Lupa password?</NuxtLink>
             </div>
             <div class="relative group">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-primary-400 transition-colors">

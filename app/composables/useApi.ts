@@ -87,6 +87,12 @@ export const useApi = () => {
             name, email, password,
         })
 
+    const forgotPassword = (email: string) =>
+        post<{ message: string }>('/auth/forgot-password', { email })
+
+    const resetPassword = (token: string, new_password: string) =>
+        post<{ message: string }>('/auth/reset-password', { token, new_password })
+
     // ── Letters endpoints ──────────────────────────────────────
 
     const getLetters = () =>
@@ -155,7 +161,7 @@ export const useApi = () => {
         // raw
         request, get, post,
         // auth
-        login, register,
+        login, register, forgotPassword, resetPassword,
         // letters
         getLetters, getLetter,
         // session
