@@ -17,6 +17,7 @@ const targetLetter = computed(() => letters.value?.[currentLetterIndex.value] ||
 const currentSessionId = ref<string | null>(null)
 const isRecording = ref(false)
 const isProcessing = ref(false)
+const isPlayingAudio = ref(false)
 const showResult = ref(false)
 
 const mediaRecorder = ref<MediaRecorder | null>(null)
@@ -107,11 +108,18 @@ const processAudio = async (audioBlob: Blob) => {
   }
 }
 
-const playReferenceAudio = () => {
-  if (targetLetter.value) {
-    // Karena API audio referensi belum ada di dokumentasi, ini bisa berupa placeholder alert
-    alert(`Memutar contoh pelafalan: ${targetLetter.value.pronunciation}`)
-  }
+const playReferenceAudio = async () => {
+  if (!targetLetter.value || isPlayingAudio.value) return
+
+  const audioUrl = `${useRuntimeConfig().public.apiBase}/letters/${targetLetter.value.id}/audio`
+  const audio = new Audio(audioUrl)
+
+  isPlayingAudio.value = true
+  audio.play().catch(() => {
+    alert('File audio untuk huruf ini belum tersedia.')
+  })
+  audio.onended = () => { isPlayingAudio.value = false }
+  audio.onerror = () => { isPlayingAudio.value = false }
 }
 
 const nextLetter = () => {
@@ -163,14 +171,21 @@ const prevLetter = () => {
           <!-- Audio Reference Button -->
           <button 
             @click="playReferenceAudio"
-            class="flex items-center gap-2 px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-full transition-colors border border-dark-700 hover:border-primary-500/50 group"
+            :disabled="isPlayingAudio"
+            class="flex items-center gap-2 px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-full transition-colors border border-dark-700 hover:border-primary-500/50 group disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <div class="w-7 h-7 rounded-full bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-colors text-primary-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
+              <!-- Spinner saat audio diputar -->
+              <svg v-if="isPlayingAudio" class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <!-- Ikon Play saat idle -->
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
               </svg>
             </div>
-            <span class="text-sm font-medium">Dengarkan Contoh</span>
+            <span class="text-sm font-medium">{{ isPlayingAudio ? 'Memutar...' : 'Dengarkan Contoh' }}</span>
           </button>
 
           <!-- Navigation -->

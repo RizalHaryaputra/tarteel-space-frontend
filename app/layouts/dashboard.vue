@@ -188,7 +188,7 @@ const isMobileDropdownOpen = ref(false)
         </header>
 
         <!-- Nuxt Page Content Gets Injected Here -->
-        <NuxtPage />
+        <NuxtPage :transition="{ name: 'dash-page', mode: 'out-in' }" />
       </div>
     </main>
 
@@ -209,5 +209,25 @@ const isMobileDropdownOpen = ref(false)
 /* Safe area for iOS bottom bar */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+}
+
+/* ============================================================
+   DASHBOARD INNER PAGE TRANSITION
+   Perpindahan antar sub-halaman di dalam dashboard
+   Efek: Fade + slide ke atas yang ringan
+   ============================================================ */
+.dash-page-enter-active,
+.dash-page-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.dash-page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>
