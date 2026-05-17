@@ -65,7 +65,12 @@ const handleSubmit = async () => {
         <!-- Form State -->
         <template v-else>
           <h2 class="text-lg font-bold text-white mb-1">Lupa Password?</h2>
-          <p class="text-sm text-slate-400 mb-6">Masukkan email Anda dan kami akan mengirimkan link untuk mereset password.</p>
+          <p class="text-sm text-slate-400 mb-6">
+            Masukkan email Anda dan kami akan mengirimkan link untuk mereset password.
+            <span class="block mt-2 text-xs text-slate-500">
+              *Catatan: Fitur ini ditujukan bagi pengguna yang mendaftar secara manual, bukan melalui Google atau GitHub.
+            </span>
+          </p>
 
           <!-- Error Alert -->
           <div v-if="errorMsg"
