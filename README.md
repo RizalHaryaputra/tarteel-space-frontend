@@ -6,12 +6,14 @@ Repositori ini berisi kode *frontend* dari aplikasi Tarteel Space yang dibangun 
 
 ## ✨ Fitur Utama
 
-- **Autentikasi Pengguna**: Sistem pendaftaran dan masuk yang aman. Seluruh rute dilindungi dengan *middleware* Nuxt.
+- **Autentikasi & Keamanan**: Sistem pendaftaran, masuk, dan manajemen sesi yang aman menggunakan *middleware* Nuxt.
+- **Single Sign-On (SSO)**: Integrasi login praktis menggunakan akun Google (OAuth).
+- **Pemulihan Akun**: Fitur lupa dan reset password melalui verifikasi email.
 - **Ruang Latihan Interaktif**: Kemampuan merekam suara secara langsung dari *browser* dan mengirimkannya ke *backend* untuk dievaluasi oleh model AI.
 - **Laporan Evaluasi *Real-time***: Menampilkan skor akurasi (0-100%) dan umpan balik atas pelafalan secara seketika.
 - **Dasbor Statistik**: Melacak dan memvisualisasikan kemajuan harian pengguna (hari beruntun/ *streak*), huruf terkuat, dan huruf yang perlu perbaikan.
 - **Riwayat Belajar**: Dilengkapi grafik skor akurasi 7 hari terakhir (menggunakan grafik SVG responsif tanpa pustaka eksternal) dan tabel riwayat latihan.
-- **Responsif & Estetik**: Tampilan bernuansa gelap (Dark Mode) modern dengan aksen *glow*, komponen *glassmorphism*, animasi yang halus, dan dioptimalkan untuk berbagai layar genggam (*mobile*) maupun *desktop*.
+- **Responsif & Estetik**: Tampilan bernuansa gelap (Dark Mode) modern dengan aksen *glow*, komponen *glassmorphism*, animasi halaman (*page transitions*), dan dioptimalkan untuk berbagai layar genggam (*mobile*) maupun *desktop*.
 
 ## 🛠️ Teknologi yang Digunakan
 
