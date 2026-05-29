@@ -75,3 +75,7 @@ npm run preview
 ## 📝 Catatan Tambahan
 
 Proyek ini merupakan bagian dari Proyek Skripsi Teknologi Informasi. Kami mendesain antarmuka agar terasa premium, mudah digunakan, dan memotivasi pengguna untuk terus berlatih.
+
+## 👥 Kredit
+
+Proyek ini dikembangkan oleh [Rizal Haryaputra](https://github.com/RizalHaryaputra).
