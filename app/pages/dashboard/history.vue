@@ -23,29 +23,30 @@ const points = computed(() => {
   if (!Array.isArray(dataList) || dataList.length === 0) return []
   
   if (dataList.length === 1) {
-    const data = dataList[0]
-    if (!data) return []
-    const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
+    const firstWeekly = dataList[0]
+    if (!firstWeekly) return []
+    const normalizedScore = Math.max(0, firstWeekly.rata_rata - minScore) / (maxScore - minScore)
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
-    const dateStr = new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
+    const dateStr = new Date(firstWeekly.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
     
     // Jika hanya 1 data, buat garis lurus mendatar agar grafik tetap terlihat
     return [
-      { x: 0, y, score: Math.round(data.rata_rata), date: dateStr, isFake: true },
-      { x: svgWidth / 2, y, score: Math.round(data.rata_rata), date: dateStr },
-      { x: svgWidth, y, score: Math.round(data.rata_rata), date: dateStr, isFake: true }
+      { x: 0, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true },
+      { x: svgWidth / 2, y, score: Math.round(firstWeekly.rata_rata), date: dateStr },
+      { x: svgWidth, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true }
     ]
   }
 
   const paddingX = 60
   const availableWidth = svgWidth - (paddingX * 2)
 
-  return dataList.map((data, index) => {
+  return dataList.map((item, index) => {
+    if (!item) return null
     const x = paddingX + (index / (dataList.length - 1)) * availableWidth
-    const normalizedScore = Math.max(0, data.rata_rata - minScore) / (maxScore - minScore)
+    const normalizedScore = Math.max(0, item.rata_rata - minScore) / (maxScore - minScore)
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30 // Add padding
-    return { x, y, score: Math.round(data.rata_rata), date: new Date(data.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
-  })
+    return { x, y, score: Math.round(item.rata_rata), date: new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
+  }).filter((p): p is { x: number; y: number; score: number; date: string; isFake?: boolean } => p !== null)
 })
 
 const polylinePoints = computed(() => {
@@ -54,7 +55,7 @@ const polylinePoints = computed(() => {
     const p = points.value[0]
     return p ? `${p.x},${p.y}` : ''
   }
-  return points.value.map(p => `${p.x},${p.y}`).join(' ')
+  return points.value.map(p => p ? `${p.x},${p.y}` : '').join(' ')
 })
 
 const polygonPoints = computed(() => {
@@ -221,7 +222,10 @@ const formatDate = (isoStr: string) => {
                   <div class="w-10 h-10 rounded-lg bg-dark-950 border border-dark-700 flex items-center justify-center font-arabic text-xl text-white group-hover:text-primary-400 transition-colors shadow-inner">
                     {{ item.arabic_script }}
                   </div>
-                  <span class="font-medium text-slate-300">{{ item.base_letter }} · {{ item.harakat }}</span>
+                  <div>
+                    <div class="font-medium text-slate-300">{{ item.base_letter }} · {{ item.harakat }}</div>
+                    <div v-if="item.tajweed_grade" class="text-xs text-slate-500 font-semibold mt-0.5">{{ item.tajweed_grade }}</div>
+                  </div>
                 </div>
               </td>
               <td class="py-4 px-4 text-right">
