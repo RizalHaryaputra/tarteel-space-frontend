@@ -29,6 +29,36 @@ const evaluationResult = ref({
   color: ''
 })
 
+const evalId = ref<string | null>(null)
+const tajweedGrade = ref<string>('')
+const top3Predictions = ref<Array<{ label: string; score: number }>>([])
+const explanationText = ref<string>('')
+const isFetchingExplanation = ref(false)
+const showExplanation = ref(false)
+
+const formatLabel = (label: string) => {
+  if (!label) return ''
+  return label
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+const fetchExplanation = async () => {
+  if (!evalId.value) return
+  isFetchingExplanation.value = true
+  try {
+    const res = await api.getExplanation(evalId.value)
+    explanationText.value = res.explanation
+    showExplanation.value = true
+  } catch (err: any) {
+    console.error(err)
+    alert(err.message || 'Gagal mendapatkan penjelasan tajwid.')
+  } finally {
+    isFetchingExplanation.value = false
+  }
+}
+
 onUnmounted(() => {
   // End session jika berpindah halaman
   if (currentSessionId.value) {
@@ -87,6 +117,12 @@ const processAudio = async (audioBlob: Blob) => {
   try {
     const result = await api.evaluate(targetLetter.value.id, audioBlob, currentSessionId.value || undefined)
     
+    evalId.value = result.id
+    tajweedGrade.value = result.tajweed_grade
+    top3Predictions.value = result.top3_predictions || []
+    explanationText.value = ''
+    showExplanation.value = false
+    
     evaluationResult.value.score = Math.round(result.accuracy_score)
     evaluationResult.value.feedback = result.feedback
     
@@ -102,6 +138,9 @@ const processAudio = async (audioBlob: Blob) => {
     evaluationResult.value.score = 0
     evaluationResult.value.feedback = err.message || 'Terjadi kesalahan saat mengevaluasi audio.'
     evaluationResult.value.color = 'text-red-400'
+    evalId.value = null
+    tajweedGrade.value = ''
+    top3Predictions.value = []
   } finally {
     isProcessing.value = false
     showResult.value = true
@@ -204,9 +243,8 @@ const prevLetter = () => {
           </div>
         </template>
       </div>
-
       <!-- Right Column: Action Area -->
-      <div class="h-full max-h-[400px] w-full flex flex-col items-center justify-center relative">
+      <div class="h-full md:max-h-[450px] w-full flex flex-col items-center justify-center relative">
         
         <!-- Processing State -->
         <div v-if="isProcessing" class="flex flex-col items-center justify-center animate-fade-in w-full">
@@ -219,18 +257,68 @@ const prevLetter = () => {
           </div>
           <p class="text-white font-medium">Menganalisis pelafalan...</p>
         </div>
-
+ 
         <!-- Evaluation Result -->
-        <div v-else-if="showResult" class="w-full bg-dark-900/60 backdrop-blur-xl border border-dark-800 rounded-3xl p-6 flex flex-col items-center text-center animate-slide-up shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+        <div v-else-if="showResult" class="w-full max-h-full overflow-y-auto custom-scrollbar bg-dark-900/60 backdrop-blur-xl border border-dark-800 rounded-3xl p-6 flex flex-col items-center text-center animate-slide-up shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
           <p class="text-xs text-slate-400 mb-1 uppercase tracking-widest font-medium">Skor Akurasi</p>
-          <div class="text-5xl font-bold mb-3 flex items-baseline gap-1" :class="evaluationResult.color">
+          <div class="text-5xl font-bold mb-1 flex items-baseline gap-1" :class="evaluationResult.color">
             {{ evaluationResult.score }}<span class="text-xl">%</span>
           </div>
-          <div class="bg-dark-950 px-4 py-3 rounded-xl border border-dark-800 mb-6 w-full min-h-[60px] flex items-center justify-center">
+          
+          <div v-if="tajweedGrade" class="mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary-500/10 text-primary-400 border border-primary-500/20">
+              {{ tajweedGrade }}
+            </span>
+          </div>
+
+          <div class="bg-dark-950 px-4 py-3 rounded-xl border border-dark-800 mb-4 w-full min-h-[60px] flex items-center justify-center">
             <p class="text-white font-medium text-sm">{{ evaluationResult.feedback }}</p>
           </div>
+
+          <!-- Similarity Analysis -->
+          <div v-if="top3Predictions && top3Predictions.length > 0" class="w-full text-left mb-6">
+            <p class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-semibold">Analisis Kemiripan AI</p>
+            <div class="space-y-2">
+              <div v-for="pred in top3Predictions" :key="pred.label" class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs font-medium text-slate-300">
+                  <span>{{ formatLabel(pred.label) }}</span>
+                  <span>{{ pred.score.toFixed(1) }}%</span>
+                </div>
+                <div class="w-full bg-dark-950 rounded-full h-1.5 overflow-hidden border border-dark-800">
+                  <div class="bg-primary-500 h-1.5 rounded-full transition-all duration-500" :style="{ width: `${pred.score}%` }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gemini Explanation Button / Box -->
+          <button 
+            v-if="!showExplanation && evalId"
+            @click="fetchExplanation"
+            :disabled="isFetchingExplanation"
+            class="w-full mb-6 py-2.5 px-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/50 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <svg v-if="isFetchingExplanation" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            {{ isFetchingExplanation ? 'Membuat Penjelasan...' : 'Lihat Penjelasan Tajwid (AI)' }}
+          </button>
+
+          <div v-if="showExplanation" class="w-full text-left bg-gradient-to-br from-emerald-950/40 to-teal-950/40 border border-emerald-500/20 rounded-xl p-4 mb-6 shadow-inner animate-fade-in">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Penjelasan Ustadz AI
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed whitespace-pre-line">{{ explanationText }}</p>
+          </div>
           
-          <div class="flex gap-3 w-full">
+          <div class="flex gap-3 w-full mt-auto">
             <button @click="showResult = false" class="flex-1 py-2.5 px-3 bg-dark-800 hover:bg-dark-700 text-white text-sm font-medium rounded-xl transition-colors border border-dark-700">
               Coba Lagi
             </button>
@@ -281,7 +369,7 @@ const prevLetter = () => {
 .font-arabic {
   font-family: 'Amiri', serif;
 }
-
+ 
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -289,12 +377,27 @@ const prevLetter = () => {
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
-
+ 
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-slide-up {
   animation: slide-up 0.4s ease-out forwards;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.4);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
 }
 </style>

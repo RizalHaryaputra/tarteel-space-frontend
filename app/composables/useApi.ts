@@ -124,6 +124,7 @@ export const useApi = () => {
             ? `/evaluate/${letterId}?session_id=${sessionId}`
             : `/evaluate/${letterId}`
         return post<{
+            id: string
             letter_id: number
             base_letter: string
             harakat: string
@@ -133,7 +134,13 @@ export const useApi = () => {
             is_correct: boolean
             status_label: string
             feedback: string
+            tajweed_grade: string
+            top3_predictions: Array<{ label: string; score: number }>
         }>(url, form)
+    }
+
+    const getExplanation = (evalId: string) => {
+        return get<{ explanation: string }>(`/evaluate/${evalId}/explain`)
     }
 
     // ── History endpoints ──────────────────────────────────────
@@ -167,7 +174,7 @@ export const useApi = () => {
         // session
         startSession, endSession,
         // evaluate
-        evaluate,
+        evaluate, getExplanation,
         // history
         getHistory, getWeeklyScores, getDashboard,
     }
