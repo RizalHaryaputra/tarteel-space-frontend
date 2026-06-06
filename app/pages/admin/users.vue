@@ -245,9 +245,11 @@ const formatDate = (dateStr: string) => {
     </div>
 
     <!-- Confirm Delete Modal -->
-    <div v-if="isDeleting" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-48 h-48 bg-red-500/5 rounded-full blur-2xl"></div>
+    <Teleport to="body">
+      <div v-if="isDeleting" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="isDeleting = null"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-48 h-48 bg-red-500/5 rounded-full blur-2xl"></div>
         
         <div class="flex items-center gap-4 text-red-400 mb-4">
           <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
@@ -262,16 +264,17 @@ const formatDate = (dateStr: string) => {
           Tindakan ini <strong>tidak dapat dibatalkan</strong>. Semua riwayat latihan pelafalan, sesi belajar, dan feedback yang diajukan oleh pengguna ini akan dihapus secara permanen dari database.
         </p>
         
-        <div class="flex gap-3 justify-end">
-          <button @click="isDeleting = null" class="px-5 py-2.5 bg-dark-950 border border-dark-800 hover:bg-dark-800 text-slate-400 hover:text-white rounded-xl text-sm font-semibold transition-colors">
+        <div class="flex gap-3 justify-end mt-2">
+          <button @click="isDeleting = null" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
             Batal
           </button>
-          <button @click="handleDeleteUser" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-red-500/20">
+          <button @click="handleDeleteUser" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-red-500/20">
             Ya, Hapus Permanen
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>

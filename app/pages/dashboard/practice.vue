@@ -400,8 +400,10 @@ const sendFeedback = async () => {
     </div>
 
     <!-- Feedback Modal -->
-    <div v-if="showFeedbackModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+    <Teleport to="body">
+      <div v-if="showFeedbackModal" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="showFeedbackModal = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-fade-in overflow-hidden">
         <button @click="showFeedbackModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -430,11 +432,11 @@ const sendFeedback = async () => {
             class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors mb-4 placeholder-slate-600"
           ></textarea>
           
-          <div class="flex gap-3">
-            <button type="button" @click="showFeedbackModal = false" class="flex-1 py-2 px-3 bg-dark-800 hover:bg-dark-700 text-white text-sm font-medium rounded-xl transition-colors border border-dark-700">
+          <div class="flex gap-3 mt-4">
+            <button type="button" @click="showFeedbackModal = false" class="flex-1 py-2.5 px-6 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 text-sm font-bold rounded-xl transition-colors">
               Batal
             </button>
-            <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim()" class="flex-1 py-2 px-3 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-2">
+            <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim()" class="flex-1 py-2.5 px-6 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2">
               <svg v-if="isSubmittingFeedback" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -444,7 +446,8 @@ const sendFeedback = async () => {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 

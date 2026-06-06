@@ -377,9 +377,11 @@ const handleDeleteLetter = async () => {
     </div>
 
     <!-- Letter Add/Edit Form Modal -->
-    <div v-if="isFormModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-fade-in relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-48 h-48 bg-primary-500/5 rounded-full blur-2xl"></div>
+    <Teleport to="body">
+      <div v-if="isFormModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="isFormModalOpen = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-fade-in overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-48 h-48 bg-primary-500/5 rounded-full blur-2xl"></div>
         
         <h4 class="text-xl font-bold text-white mb-6">
           {{ formLetterId ? 'Edit Huruf Hijaiyah' : 'Tambah Huruf Hijaiyah Baru' }}
@@ -434,22 +436,25 @@ const handleDeleteLetter = async () => {
           </div>
 
           <div class="flex gap-3 justify-end pt-4">
-            <button type="button" @click="isFormModalOpen = false" class="px-5 py-2.5 bg-dark-950 border border-dark-800 hover:bg-dark-800 text-slate-400 hover:text-white rounded-xl text-sm font-semibold transition-colors">
+            <button type="button" @click="isFormModalOpen = false" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
               Batal
             </button>
-            <button type="submit" :disabled="formIsSubmitting" class="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2">
+            <button type="submit" :disabled="formIsSubmitting" class="px-6 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-primary-500/20 flex items-center gap-2">
               <span v-if="formIsSubmitting" class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
               <span>Simpan</span>
             </button>
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </Teleport>
 
     <!-- Audio Upload Modal -->
-    <div v-if="isAudioModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-48 h-48 bg-purple-500/5 rounded-full blur-2xl"></div>
+    <Teleport to="body">
+      <div v-if="isAudioModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="isAudioModalOpen = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-48 h-48 bg-purple-500/5 rounded-full blur-2xl"></div>
         
         <div class="flex items-center gap-3 text-purple-400 mb-4">
           <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
@@ -480,25 +485,28 @@ const handleDeleteLetter = async () => {
         </div>
 
         <div class="flex gap-3 justify-end mt-6">
-          <button @click="isAudioModalOpen = false" class="px-5 py-2.5 bg-dark-950 border border-dark-800 hover:bg-dark-800 text-slate-400 hover:text-white rounded-xl text-sm font-semibold transition-colors">
+          <button @click="isAudioModalOpen = false" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
             Batal
           </button>
           <button 
             @click="handleAudioUpload" 
             :disabled="!selectedAudioFile || isUploadingAudio"
-            class="px-5 py-2.5 bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 shadow-lg shadow-purple-500/20"
+            class="px-6 py-2.5 bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-purple-500/20 flex items-center gap-2"
           >
             <span v-if="isUploadingAudio" class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
             <span>Unggah ke Cloudinary</span>
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Teleport>
 
     <!-- Confirm Delete Letter Modal -->
-    <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-48 h-48 bg-red-500/5 rounded-full blur-2xl"></div>
+    <Teleport to="body">
+      <div v-if="isDeleteModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="isDeleteModalOpen = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fade-in overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-48 h-48 bg-red-500/5 rounded-full blur-2xl"></div>
         
         <div class="flex items-center gap-4 text-red-400 mb-4">
           <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
@@ -513,16 +521,17 @@ const handleDeleteLetter = async () => {
           Apakah Anda yakin ingin menghapus huruf <strong class="text-white">{{ deleteLetterDisplay }}</strong> dari daftar latihan? Riwayat pengujian pelafalan user pada huruf ini akan ikut terpengaruh.
         </p>
         
-        <div class="flex gap-3 justify-end">
-          <button @click="isDeleteModalOpen = false" class="px-5 py-2.5 bg-dark-950 border border-dark-800 hover:bg-dark-800 text-slate-400 hover:text-white rounded-xl text-sm font-semibold transition-colors">
+        <div class="flex gap-3 justify-end mt-2">
+          <button @click="isDeleteModalOpen = false" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
             Batal
           </button>
-          <button @click="handleDeleteLetter" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-red-500/20">
+          <button @click="handleDeleteLetter" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-red-500/20">
             Hapus
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>

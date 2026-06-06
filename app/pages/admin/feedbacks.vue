@@ -283,9 +283,11 @@ const formatDate = (dateStr: string) => {
     </div>
 
     <!-- Active Learning Verification Modal -->
-    <div v-if="isVerifyModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-dark-900 border border-dark-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-fade-in relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-48 h-48 bg-primary-500/5 rounded-full blur-2xl"></div>
+    <Teleport to="body">
+      <div v-if="isVerifyModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="isVerifyModalOpen = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-fade-in overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-48 h-48 bg-primary-500/5 rounded-full blur-2xl"></div>
         
         <div class="flex items-center gap-3 text-primary-400 mb-4">
           <div class="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
@@ -349,10 +351,10 @@ const formatDate = (dateStr: string) => {
           </div>
 
           <div class="flex gap-3 justify-end pt-4">
-            <button type="button" @click="isVerifyModalOpen = false" class="px-5 py-2.5 bg-dark-950 border border-dark-800 hover:bg-dark-800 text-slate-400 hover:text-white rounded-xl text-sm font-semibold transition-colors">
+            <button type="button" @click="isVerifyModalOpen = false" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
               Batal
             </button>
-            <button type="submit" :disabled="isSubmittingVerification" class="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2">
+            <button type="submit" :disabled="isSubmittingVerification" class="px-6 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-primary-500/20 flex items-center gap-2">
               <span v-if="isSubmittingVerification" class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
               <span>Masukkan Pool Dataset</span>
             </button>
@@ -360,7 +362,8 @@ const formatDate = (dateStr: string) => {
 
         </form>
       </div>
-    </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>

@@ -121,13 +121,14 @@ const isMobileDropdownOpen = ref(false)
           <div v-if="isDropdownOpen"
             class="absolute right-0 mt-2 w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
             <div class="py-2">
-              <button @click="navigateTo('/dashboard'); isDropdownOpen = false"
+              <button @click="navigateTo('/'); isDropdownOpen = false"
                 class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                Kembali ke User Dashboard
+                Halaman Utama
               </button>
               <button @click="authStore.logout(); navigateTo('/login')"
                 class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
