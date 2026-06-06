@@ -12,7 +12,7 @@ const menuItems = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`
   },
   {
-    name: 'Manajemen Pengguna',
+    name: 'Manajemen User',
     path: '/admin/users',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`
   },
@@ -34,8 +34,9 @@ const menuItems = [
 ]
 
 const isActive = (path: string) => {
-  if (path === '/dashboard') return false
-  if (path === '/admin') return route.path === '/admin'
+  if (path === '/admin') {
+    return route.path === '/admin' // Exact match for Ringkasan to prevent other routes from activating it
+  }
   return route.path.startsWith(path)
 }
 
@@ -78,8 +79,8 @@ const isMobileDropdownOpen = ref(false)
         </NuxtLink>
       </nav>
 
-      <!-- Bottom switch menu (Admin <-> User) -->
-      <div class="p-4 border-t border-dark-800">
+      <!-- Bottom switch menu (Admin -> User) -->
+      <div class="p-4 border-t border-dark-800 mt-auto">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:bg-dark-800/50 hover:text-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
           <span class="font-medium text-sm">Beralih ke User</span>
@@ -142,7 +143,7 @@ const isMobileDropdownOpen = ref(false)
         </div>
       </header>
 
-      <div class="w-full max-w-6xl mx-auto py-8 px-4 md:py-10 md:px-8 lg:px-10 flex-1">
+      <div class="w-full max-w-6xl mx-auto py-8 px-4 md:py-8 md:px-8 lg:px-10 flex-1">
         <!-- Dashboard Header (Mobile Only) -->
         <header class="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-dark-800">
           <div class="flex items-center gap-2">

@@ -140,7 +140,7 @@ const isMobileDropdownOpen = ref(false)
         </div>
       </header>
 
-      <div class="w-full max-w-6xl mx-auto py-8 px-4 md:py-10 md:px-8 lg:px-10 flex-1">
+      <div class="w-full max-w-6xl mx-auto py-8 px-4 md:py-8 md:px-8 lg:px-10 flex-1">
         <!-- Dashboard Header (Mobile Only) -->
         <header class="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-dark-800">
           <div class="flex items-center gap-2">

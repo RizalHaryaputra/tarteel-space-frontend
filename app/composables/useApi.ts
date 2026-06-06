@@ -176,6 +176,7 @@ export const useApi = () => {
             average_accuracy: number
             total_feedbacks: number
             total_dataset_pool: number
+            daily_trend: Array<{ date: string; day: string; count: number }>
         }>('/admin/stats')
 
     const getAdminUsers = (limit = 50, offset = 0) =>
