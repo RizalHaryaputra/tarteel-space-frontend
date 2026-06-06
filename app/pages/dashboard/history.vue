@@ -10,7 +10,18 @@ const api = useApi()
 
 // Fetch data (client-side only to ensure token is available)
 const { data: weeklyData, pending: loadingWeekly, error: weeklyError } = useAsyncData('weeklyScores', () => api.getWeeklyScores(), { server: false })
-const { data: historyList, pending: loadingHistory, error: historyError } = useAsyncData('historyList', () => api.getHistory(20, 0), { server: false })
+const { data: historyList, pending: loadingHistory, error: historyError } = useAsyncData('historyList', () => api.getHistory(100, 0), { server: false })
+
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const paginatedHistory = computed(() => {
+  if (!historyList.value) return []
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return historyList.value.slice(start, end)
+})
 
 // State for AI Explanations
 const isModalOpen = ref(false)
@@ -27,7 +38,7 @@ const openExplanationModal = async (evalId: string) => {
       const res = await api.getExplanation(evalId)
       explanations.value[evalId] = { loading: false, text: res.explanation }
       
-      const item = historyList.value?.find(i => i.id === evalId)
+      const item = historyList.value?.find((i: any) => i.id === evalId)
       if (item) item.ai_explanation = res.explanation
     } catch (err) {
       explanations.value[evalId] = { loading: false, text: 'Gagal memuat penjelasan dari AI. Silakan coba lagi.' }
@@ -244,7 +255,7 @@ const formatDate = (isoStr: string) => {
             <tr v-else-if="!historyList?.length">
               <td colspan="4" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
             </tr>
-            <template v-else v-for="item in historyList" :key="item.id">
+            <template v-else v-for="item in paginatedHistory" :key="item.id">
               <tr class="hover:bg-dark-800/30 transition-colors group">
               <td class="py-4 px-4 text-slate-300 font-medium text-sm">
                 {{ formatDate(item.created_at) }}
@@ -288,6 +299,15 @@ const formatDate = (isoStr: string) => {
             </template>
           </tbody>
         </table>
+      </div>
+
+      <div class="px-6 pb-6 mt-6 border-t border-dark-800/50 pt-6">
+        <AppPagination 
+          v-if="historyList && historyList.length > 0"
+          :totalItems="historyList.length" 
+          :itemsPerPage="itemsPerPage" 
+          v-model="currentPage" 
+        />
       </div>
     </div>
     

@@ -21,6 +21,16 @@ const isLoading = ref(false)
 const currentPlayingUrl = ref<string | null>(null)
 let audioObj: HTMLAudioElement | null = null
 
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const paginatedDataset = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return dataset.value.slice(start, end)
+})
+
 // Fetch data
 const fetchDataset = async () => {
   isLoading.value = true
@@ -283,7 +293,7 @@ const formatDate = (dateStr: string) => {
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-800/50">
-            <tr v-for="item in dataset" :key="item.id" class="hover:bg-dark-950/20 transition-colors group">
+            <tr v-for="item in paginatedDataset" :key="item.id" class="hover:bg-dark-950/20 transition-colors group">
               <!-- ID -->
               <td class="p-5 text-sm font-semibold text-slate-400 font-mono">
                 #{{ item.id }}
@@ -337,6 +347,15 @@ const formatDate = (dateStr: string) => {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="px-6 pb-6">
+        <AppPagination 
+          v-if="dataset.length > 0"
+          :totalItems="dataset.length" 
+          :itemsPerPage="itemsPerPage" 
+          v-model="currentPage" 
+        />
       </div>
     </div>
 

@@ -150,12 +150,18 @@ const processAudio = async (audioBlob: Blob) => {
 const playReferenceAudio = async () => {
   if (!targetLetter.value || isPlayingAudio.value) return
 
-  const audioUrl = `${useRuntimeConfig().public.apiBase}/letters/${targetLetter.value.id}/audio`
+  const audioUrl = targetLetter.value.audio_url
+  if (!audioUrl) {
+    alert('File audio untuk huruf ini belum tersedia.')
+    return
+  }
+
   const audio = new Audio(audioUrl)
 
   isPlayingAudio.value = true
   audio.play().catch(() => {
-    alert('File audio untuk huruf ini belum tersedia.')
+    alert('File audio untuk huruf ini gagal diputar.')
+    isPlayingAudio.value = false
   })
   audio.onended = () => { isPlayingAudio.value = false }
   audio.onerror = () => { isPlayingAudio.value = false }
@@ -424,13 +430,16 @@ const sendFeedback = async () => {
         </div>
         
         <form v-else @submit.prevent="sendFeedback">
-          <textarea 
-            v-model="feedbackComment"
-            rows="4"
-            required
-            placeholder="Tuliskan catatan keluhan Anda (misal: pelafalan saya sudah fasih fathah namun terdeteksi kasrah)..."
-            class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors mb-4 placeholder-slate-600"
-          ></textarea>
+          <div class="space-y-2 mb-4">
+            <label class="block text-sm font-medium text-slate-300">Catatan Keluhan</label>
+            <textarea 
+              v-model="feedbackComment"
+              rows="4"
+              required
+              placeholder="Tuliskan catatan keluhan Anda (misal: pelafalan saya sudah fasih fathah namun terdeteksi kasrah)..."
+              class="w-full bg-dark-950 border border-dark-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all placeholder:text-slate-600"
+            ></textarea>
+          </div>
           
           <div class="flex gap-3 mt-4">
             <button type="button" @click="showFeedbackModal = false" class="flex-1 py-2.5 px-6 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 text-sm font-bold rounded-xl transition-colors">
