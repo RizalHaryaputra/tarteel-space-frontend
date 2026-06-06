@@ -172,7 +172,7 @@ const formatDate = (dateStr: string) => {
   <div class="h-full space-y-8 relative pb-20">
     
     <!-- Toast Notifications -->
-    <div class="fixed top-4 right-4 z-50 space-y-3 pointer-events-none">
+    <div class="fixed bottom-8 right-8 z-50 space-y-3 pointer-events-none">
       <div v-if="successToast" class="bg-green-500/10 border border-green-500/30 text-green-400 px-6 py-3 rounded-2xl shadow-xl backdrop-blur-xl flex items-center gap-3 animate-fade-in pointer-events-auto max-w-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <span class="text-sm font-medium">{{ successToast }}</span>
@@ -226,9 +226,9 @@ const formatDate = (dateStr: string) => {
         <button 
           @click="exportCSV" 
           :disabled="dataset.length === 0"
-          class="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all shadow-lg shadow-green-600/20 whitespace-nowrap"
+          class="flex items-center gap-2 px-6 py-2.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-green-500/20 whitespace-nowrap"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Unduh CSV
@@ -238,9 +238,9 @@ const formatDate = (dateStr: string) => {
         <button 
           @click="exportJSON" 
           :disabled="dataset.length === 0"
-          class="flex items-center gap-1.5 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all shadow-lg shadow-cyan-600/20 whitespace-nowrap"
+          class="flex items-center gap-2 px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-cyan-500/20 whitespace-nowrap"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0L8 8m4-4v12" />
           </svg>
           Unduh JSON
@@ -310,13 +310,13 @@ const formatDate = (dateStr: string) => {
                 <button 
                   v-if="item.audio_url"
                   @click="playAudio(item.audio_url)"
-                  class="p-2 rounded-xl border border-dark-800 hover:border-primary-500/50 bg-dark-950/60 hover:bg-primary-500/10 text-slate-400 hover:text-primary-400 transition-all"
+                  class="p-2 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-all shadow-md"
                   :title="currentPlayingUrl === item.audio_url ? 'Pause' : 'Putar Audio'"
                 >
-                  <svg v-if="currentPlayingUrl === item.audio_url" xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-primary-400 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                  <svg v-if="currentPlayingUrl === item.audio_url" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                     <path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clip-rule="evenodd" />
                   </svg>
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
                   </svg>
                 </button>

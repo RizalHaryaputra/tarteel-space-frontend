@@ -139,7 +139,7 @@ const formatDate = (dateStr: string) => {
   <div class="h-full space-y-8 relative pb-20">
     
     <!-- Toast Notifications -->
-    <div class="fixed top-4 right-4 z-50 space-y-3 pointer-events-none">
+    <div class="fixed bottom-8 right-8 z-50 space-y-3 pointer-events-none">
       <div v-if="successToast" class="bg-green-500/10 border border-green-500/30 text-green-400 px-6 py-3 rounded-2xl shadow-xl backdrop-blur-xl flex items-center gap-3 animate-fade-in pointer-events-auto max-w-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <span class="text-sm font-medium">{{ successToast }}</span>
@@ -258,7 +258,7 @@ const formatDate = (dateStr: string) => {
                 >
                   <span class="font-bold font-mono">#{{ Number(i) + 1 }}</span>
                   <span class="font-semibold">{{ pred.label }}</span>
-                  <span class="text-slate-500">({{ (pred.score * 100).toFixed(0) }}%)</span>
+                  <span class="text-slate-500">({{ Number(pred.score).toFixed(2) }}%)</span>
                 </div>
               </div>
             </div>
@@ -266,16 +266,27 @@ const formatDate = (dateStr: string) => {
 
           <!-- Active Learning Action -->
           <div class="w-full lg:w-auto shrink-0 flex flex-col justify-center items-end self-stretch lg:border-l border-dark-800 lg:pl-6 pt-4 lg:pt-0">
-            <button 
-              @click="openVerifyModal(fb)"
-              class="w-full lg:w-auto px-5 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary-500/20 hover:scale-[1.02] text-sm flex items-center justify-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Validasi & Masukkan Pool
-            </button>
-            <p class="text-[10px] text-slate-500 text-center lg:text-right mt-2 w-full">Masukkan rekaman ke dataset pool latih.</p>
+            <template v-if="fb.is_verified">
+              <div class="w-full lg:w-auto px-6 py-2.5 bg-green-500/10 border border-green-500/20 text-green-400 font-bold rounded-xl text-sm flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Telah Divalidasi
+              </div>
+              <p class="text-[10px] text-slate-500 text-center lg:text-right mt-2 w-full">Dataset ini telah dimasukkan ke pool latih.</p>
+            </template>
+            <template v-else>
+              <button 
+                @click="openVerifyModal(fb)"
+                class="w-full lg:w-auto px-6 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Validasi & Masukkan Pool
+              </button>
+              <p class="text-[10px] text-slate-500 text-center lg:text-right mt-2 w-full">Masukkan rekaman ke dataset pool latih.</p>
+            </template>
           </div>
 
         </div>
