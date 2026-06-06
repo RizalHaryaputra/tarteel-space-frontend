@@ -1,4 +1,8 @@
-# Tarteel Space - Frontend
+# 🌙 Tarteel Space - Frontend
+
+![Nuxt](https://img.shields.io/badge/Nuxt_3-00DC82?style=for-the-badge&logo=nuxt.js&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 Tarteel Space adalah aplikasi web inovatif yang dirancang untuk membantu pengguna menyempurnakan pelafalan huruf hijaiyah dan kaidah tajwid Al-Qur'an. Aplikasi ini menggunakan teknologi kecerdasan buatan (Deep Learning / CNN) melalui backend-nya untuk memberikan evaluasi *real-time* atas rekaman suara pengguna. 
 
@@ -6,14 +10,28 @@ Repositori ini berisi kode *frontend* dari aplikasi Tarteel Space yang dibangun 
 
 ## ✨ Fitur Utama
 
+### 👤 Pengalaman Pengguna (User Space)
 - **Autentikasi & Keamanan**: Sistem pendaftaran, masuk, dan manajemen sesi yang aman menggunakan *middleware* Nuxt.
-- **Single Sign-On (SSO)**: Integrasi login praktis menggunakan akun Google (OAuth).
+- **Single Sign-On (SSO)**: Integrasi login praktis menggunakan akun Google dan GitHub.
 - **Pemulihan Akun**: Fitur lupa dan reset password melalui verifikasi email.
-- **Ruang Latihan Interaktif**: Kemampuan merekam suara secara langsung dari *browser* dan mengirimkannya ke *backend* untuk dievaluasi oleh model AI.
-- **Laporan Evaluasi *Real-time***: Menampilkan skor akurasi (0-100%) dan umpan balik atas pelafalan secara seketika.
-- **Dasbor Statistik**: Melacak dan memvisualisasikan kemajuan harian pengguna (hari beruntun/ *streak*), huruf terkuat, dan huruf yang perlu perbaikan.
-- **Riwayat Belajar**: Dilengkapi grafik skor akurasi 7 hari terakhir (menggunakan grafik SVG responsif tanpa pustaka eksternal) dan tabel riwayat latihan.
-- **Responsif & Estetik**: Tampilan bernuansa gelap (Dark Mode) modern dengan aksen *glow*, komponen *glassmorphism*, animasi halaman (*page transitions*), dan dioptimalkan untuk berbagai layar genggam (*mobile*) maupun *desktop*.
+- **Ruang Latihan Interaktif**: Kemampuan merekam suara secara langsung dari *browser* menggunakan Web Audio API, serta pemutaran audio contoh pelafalan hijaiyah yang benar.
+- **Evaluasi AI Detil (Tajweed & Gemini)**:
+  - **Skor Akurasi & Tajweed Grade**: Menampilkan skor persentase serta predikat tajwid (*Mumtaz*, *Jayyid Jiddan*, *Jayyid*, *Maqbul*).
+  - **Analisis Kemiripan AI**: Visualisasi bar persentase untuk 3 prediksi teratas model CNN.
+  - **Penjelasan Ustadz AI (Gemini)**: Penjelasan berbasis AI yang memberikan koreksi tajwid secara detail, menjelaskan makhraj huruf, dan memberikan saran latihan yang dipersonalisasi.
+- **Dasbor Statistik & Kemajuan**: Melacak dan memvisualisasikan kemajuan harian pengguna (*streak*/hari beruntun), huruf terkuat/terlemah, serta grafik perkembangan skor 7 hari terakhir (menggunakan grafik SVG responsif buatan sendiri tanpa pustaka eksternal) dan tabel riwayat latihan lengkap.
+- **Responsif & Premium UI**: Tampilan bernuansa gelap (*Dark Mode*) modern dengan aksen *glow*, komponen *glassmorphism*, animasi halaman (*page transitions*), serta dioptimalkan untuk perangkat mobile maupun desktop.
+
+### 🛡️ Ruang Admin & Active Learning Loop (Admin Space)
+- **Role-based Route Guard**: Keamanan rute `/admin` dengan pelindung (*middleware*) khusus admin untuk mencegah akses tidak sah.
+- **Ringkasan Statistik Admin**: Dasbor untuk memantau data agregat seperti total pengguna, total huruf hijaiyah, total feedback, dan jumlah dataset audio.
+- **Manajemen Huruf Hijaiyah**: Kemampuan untuk menambah, menyunting, menghapus data huruf target, harakat, makhraj, serta mengunggah file contoh audio pelafalan.
+- **Manajemen Pengguna**: Fitur melihat daftar pengguna terdaftar, mengelola hak akses (*role*), dan menghapus pengguna.
+- **Active Learning Loop (Dataset Manager)**: Fitur penting untuk meningkatkan kecerdasan model AI secara berkelanjutan:
+  - Peninjauan audio rekaman pengguna yang disimpan di server.
+  - Fitur pelabelan ulang (*re-labeling*) jika terdapat salah klasifikasi oleh model AI.
+  - Fitur ekspor kumpulan data audio baru (file ZIP audio beserta metadata CSV) untuk digunakan langsung pada proses pelatihan ulang (*retraining*) model Deep Learning.
+- **Laporan & Umpan Balik Pengguna**: Panel terintegrasi untuk membaca keluhan, saran, dan laporan dari pengguna.
 
 ## 🛠️ Teknologi yang Digunakan
 

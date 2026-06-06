@@ -24,10 +24,13 @@ const handleLogin = async () => {
 
   try {
     const data = await api.login(email.value, password.value)
-    authStore.setAuth(data.access_token, data.user_id, data.user_name)
+    authStore.setAuth(data.access_token, data.user_id, data.user_name, data.role)
 
-    // Redirect ke halaman yang dituju sebelumnya, atau dashboard
-    const redirect = route.query.redirect as string || '/dashboard'
+    // Redirect ke halaman yang dituju sebelumnya, atau admin/dashboard
+    let redirect = route.query.redirect as string || '/dashboard'
+    if (!route.query.redirect && data.role === 'admin') {
+      redirect = '/admin'
+    }
     router.push(redirect)
   } catch (err: any) {
     errorMsg.value = err.message || 'Login gagal. Periksa email dan password Anda.'

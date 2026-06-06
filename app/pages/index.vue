@@ -42,11 +42,11 @@
                                         <div class="px-4 py-3 border-b border-dark-800 mb-1 sm:hidden">
                                             <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
                                         </div>
-                                        <button @click="navigateTo('/dashboard'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
+                                        <button @click="navigateTo(authStore.isAdmin ? '/admin' : '/dashboard'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                             </svg>
-                                            Halaman Dashboard
+                                            {{ authStore.isAdmin ? 'Halaman Admin' : 'Halaman Dashboard' }}
                                         </button>
                                         <button @click="authStore.logout(); navigateTo('/login')" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">

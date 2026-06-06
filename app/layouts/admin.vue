@@ -1,43 +1,48 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
 
-const baseMenuItems = [
+const menuItems = [
   {
-    name: 'Dashboard',
-    path: '/dashboard',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>`
-  },
-  {
-    name: 'Ruang Latihan',
-    path: '/dashboard/practice',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>`
-  },
-  {
-    name: 'Riwayat',
-    path: '/dashboard/history',
+    name: 'Ringkasan',
+    path: '/admin',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`
+  },
+  {
+    name: 'Manajemen User',
+    path: '/admin/users',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`
+  },
+  {
+    name: 'Manajemen Huruf',
+    path: '/admin/letters',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>`
+  },
+  {
+    name: 'Keluhan & Feedback',
+    path: '/admin/feedbacks',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>`
+  },
+  {
+    name: 'Dataset Pool',
+    path: '/admin/dataset',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>`
   }
 ]
 
-const menuItems = computed(() => {
-  return [...baseMenuItems]
-})
-
 const isActive = (path: string) => {
-  if (path === '/dashboard') {
-    return route.path === '/dashboard'
+  if (path === '/admin') {
+    return route.path === '/admin' // Exact match for Ringkasan to prevent other routes from activating it
   }
   return route.path.startsWith(path)
 }
 
-import { computed, ref } from 'vue'
-
 const pageTitle = computed(() => {
-  const currentItem = menuItems.value.find(item => item.path === route.path || (item.path !== '/dashboard' && route.path.startsWith(item.path)))
-  return currentItem ? currentItem.name : 'Dashboard'
+  const currentItem = menuItems.find(item => item.path !== '/dashboard' && route.path.startsWith(item.path))
+  return currentItem ? currentItem.name : 'Panel Admin'
 })
 
 const isDropdownOpen = ref(false)
@@ -74,19 +79,17 @@ const isMobileDropdownOpen = ref(false)
         </NuxtLink>
       </nav>
 
-      <!-- Bottom switch menu (Admin <-> User) -->
-      <div v-if="authStore.isAdmin" class="p-4 border-t border-dark-800">
-        <NuxtLink to="/admin" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:bg-dark-800/50 hover:text-slate-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <span class="font-medium text-sm">Beralih ke Admin</span>
+      <!-- Bottom switch menu (Admin -> User) -->
+      <div class="p-4 border-t border-dark-800 mt-auto">
+        <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:bg-dark-800/50 hover:text-slate-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+          <span class="font-medium text-sm">Beralih ke User</span>
         </NuxtLink>
       </div>
-
     </aside>
 
     <!-- Main Content Area -->
     <main class="flex-1 relative z-10 w-full overflow-y-auto h-screen pb-20 md:pb-0 flex flex-col">
-
       <!-- Desktop Header -->
       <header
         class="hidden md:flex items-center justify-between px-8 py-5 sticky top-0 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 z-30">
@@ -97,11 +100,12 @@ const isMobileDropdownOpen = ref(false)
           <div @click="isDropdownOpen = !isDropdownOpen"
             class="flex items-center gap-3 px-4 py-2 rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
             <div class="text-right">
-              <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+              <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
+              <p class="text-xs text-primary-400 font-medium">Administrator</p>
             </div>
             <div
               class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
-              {{ authStore.initials || '?' }}
+              {{ authStore.initials || 'A' }}
             </div>
             <svg xmlns="http://www.w3.org/2000/svg"
               class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200"
@@ -153,16 +157,17 @@ const isMobileDropdownOpen = ref(false)
             <div @click="isMobileDropdownOpen = !isMobileDropdownOpen"
               class="flex items-center gap-2 sm:gap-3 p-1.5 sm:px-4 sm:py-2 rounded-full sm:rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
               <div class="text-right hidden sm:block">
-                <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+                <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
+                <p class="text-xs text-primary-400 font-medium">Administrator</p>
               </div>
               <div
                 class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20">
-                {{ authStore.initials || '?' }}
+                {{ authStore.initials || 'A' }}
               </div>
               <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200 hidden sm:block"
-                :class="{ 'rotate-180': isDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                :class="{ 'rotate-180': isMobileDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7-7-7-7" />
               </svg>
             </div>
 
@@ -174,16 +179,16 @@ const isMobileDropdownOpen = ref(false)
               class="absolute right-0 mt-2 w-56 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
               <div class="py-2">
                 <div class="px-4 py-3 border-b border-dark-800 mb-1">
-                  <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
+                  <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
+                  <p class="text-xs text-primary-400 font-medium">Administrator</p>
                 </div>
-                <button @click="navigateTo('/'); isMobileDropdownOpen = false"
+                <button @click="navigateTo('/dashboard'); isMobileDropdownOpen = false"
                   class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
-                  Halaman Utama
+                  Kembali ke User Dashboard
                 </button>
                 <button @click="authStore.logout(); navigateTo('/login')"
                   class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">

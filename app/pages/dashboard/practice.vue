@@ -174,6 +174,31 @@ const prevLetter = () => {
     showResult.value = false
   }
 }
+
+// User Feedback State & Methods
+const showFeedbackModal = ref(false)
+const feedbackComment = ref('')
+const isSubmittingFeedback = ref(false)
+const feedbackSubmitted = ref(false)
+
+const sendFeedback = async () => {
+  if (!evalId.value || !feedbackComment.value.trim()) return
+  isSubmittingFeedback.value = true
+  try {
+    await api.submitFeedback(evalId.value, feedbackComment.value)
+    feedbackSubmitted.value = true
+    setTimeout(() => {
+      showFeedbackModal.value = false
+      feedbackComment.value = ''
+      feedbackSubmitted.value = false
+    }, 2000)
+  } catch (err: any) {
+    console.error(err)
+    alert(err.message || 'Gagal mengirimkan masukan.')
+  } finally {
+    isSubmittingFeedback.value = false
+  }
+}
 </script>
 
 <template>
@@ -275,6 +300,18 @@ const prevLetter = () => {
             <p class="text-white font-medium text-sm">{{ evaluationResult.feedback }}</p>
           </div>
 
+          <!-- Report Accuracy Button -->
+          <button 
+            v-if="evalId"
+            @click="showFeedbackModal = true"
+            class="w-full mb-4 text-xs font-semibold text-slate-400 hover:text-white transition-colors underline underline-offset-2 flex items-center justify-center gap-1.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Laporkan Kesalahan Akurasi
+          </button>
+
           <!-- Similarity Analysis -->
           <div v-if="top3Predictions && top3Predictions.length > 0" class="w-full text-left mb-6">
             <p class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-semibold">Analisis Kemiripan AI</p>
@@ -361,6 +398,56 @@ const prevLetter = () => {
 
       </div>
     </div>
+
+    <!-- Feedback Modal -->
+    <Teleport to="body">
+      <div v-if="showFeedbackModal" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="showFeedbackModal = false"></div>
+        <div class="relative bg-dark-900 border border-dark-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-fade-in overflow-hidden">
+        <button @click="showFeedbackModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        
+        <h3 class="text-lg font-bold text-white mb-2">Laporkan Kesalahan Akurasi</h3>
+        <p class="text-xs text-slate-400 mb-4">Jika Anda merasa skor akurasi yang diberikan tidak sesuai dengan pelafalan asli Anda, berikan masukan di bawah ini untuk membantu kami menyempurnakan model.</p>
+        
+        <div v-if="feedbackSubmitted" class="py-6 flex flex-col items-center justify-center text-center">
+          <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p class="text-white text-sm font-semibold">Laporan Terkirim!</p>
+          <p class="text-xs text-slate-500">Terima kasih atas kontribusi Anda.</p>
+        </div>
+        
+        <form v-else @submit.prevent="sendFeedback">
+          <textarea 
+            v-model="feedbackComment"
+            rows="4"
+            required
+            placeholder="Tuliskan catatan keluhan Anda (misal: pelafalan saya sudah fasih fathah namun terdeteksi kasrah)..."
+            class="w-full bg-dark-950 border border-dark-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors mb-4 placeholder-slate-600"
+          ></textarea>
+          
+          <div class="flex gap-3 mt-4">
+            <button type="button" @click="showFeedbackModal = false" class="flex-1 py-2.5 px-6 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 text-sm font-bold rounded-xl transition-colors">
+              Batal
+            </button>
+            <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim()" class="flex-1 py-2.5 px-6 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2">
+              <svg v-if="isSubmittingFeedback" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Kirim
+            </button>
+          </div>
+        </form>
+      </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 

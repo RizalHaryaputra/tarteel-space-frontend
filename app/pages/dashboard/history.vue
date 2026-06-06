@@ -12,6 +12,36 @@ const api = useApi()
 const { data: weeklyData, pending: loadingWeekly, error: weeklyError } = useAsyncData('weeklyScores', () => api.getWeeklyScores(), { server: false })
 const { data: historyList, pending: loadingHistory, error: historyError } = useAsyncData('historyList', () => api.getHistory(20, 0), { server: false })
 
+// State for AI Explanations
+const isModalOpen = ref(false)
+const selectedEvalId = ref<string | null>(null)
+const explanations = ref<Record<string, { loading: boolean, text: string }>>({})
+
+const openExplanationModal = async (evalId: string) => {
+  selectedEvalId.value = evalId
+  isModalOpen.value = true
+  
+  if (!explanations.value[evalId] || !explanations.value[evalId].text) {
+    explanations.value[evalId] = { loading: true, text: '' }
+    try {
+      const res = await api.getExplanation(evalId)
+      explanations.value[evalId] = { loading: false, text: res.explanation }
+      
+      const item = historyList.value?.find(i => i.id === evalId)
+      if (item) item.ai_explanation = res.explanation
+    } catch (err) {
+      explanations.value[evalId] = { loading: false, text: 'Gagal memuat penjelasan dari AI. Silakan coba lagi.' }
+    }
+  }
+}
+
+const closeExplanationModal = () => {
+  isModalOpen.value = false
+  setTimeout(() => {
+    selectedEvalId.value = null
+  }, 300)
+}
+
 // SVG Line Chart Logic
 const svgWidth = 1000
 const svgHeight = 300
@@ -204,16 +234,18 @@ const formatDate = (isoStr: string) => {
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider w-1/4">Hari/Tanggal</th>
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider w-1/3">Huruf Target</th>
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-right">Skor Akurasi</th>
+              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-center w-36">Penjelasan AI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-800/50">
             <tr v-if="loadingHistory">
-              <td colspan="3" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
+              <td colspan="4" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
             </tr>
             <tr v-else-if="!historyList?.length">
-              <td colspan="3" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
+              <td colspan="4" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
             </tr>
-            <tr v-else v-for="item in historyList" :key="item.id" class="hover:bg-dark-800/30 transition-colors group">
+            <template v-else v-for="item in historyList" :key="item.id">
+              <tr class="hover:bg-dark-800/30 transition-colors group">
               <td class="py-4 px-4 text-slate-300 font-medium text-sm">
                 {{ formatDate(item.created_at) }}
               </td>
@@ -238,12 +270,68 @@ const formatDate = (isoStr: string) => {
                   {{ item.accuracy_score.toFixed(1) }}%
                 </span>
               </td>
+              <td class="py-4 px-4 text-center">
+                <button 
+                  @click="openExplanationModal(item.id)"
+                  class="p-2 rounded-xl transition-colors tooltip-trigger flex items-center justify-center mx-auto gap-1.5 px-3"
+                  :class="item.ai_explanation || explanations[item.id]?.text ? 'text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/20' : 'text-slate-400 bg-dark-800 hover:text-primary-400 hover:bg-primary-500/10 border border-dark-700'"
+                  :title="item.ai_explanation || explanations[item.id]?.text ? 'Lihat Penjelasan AI (Tersedia)' : 'Minta Penjelasan AI'"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  <span class="text-xs font-bold" v-if="item.ai_explanation || explanations[item.id]?.text">Lihat</span>
+                  <span class="text-xs font-bold" v-else>Minta</span>
+                </button>
+              </td>
             </tr>
+            </template>
           </tbody>
         </table>
       </div>
     </div>
     
+    <!-- AI Explanation Modal -->
+    <Teleport to="body">
+      <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="closeExplanationModal"></div>
+        <div class="relative w-full max-w-lg bg-dark-900 border border-dark-800 rounded-3xl shadow-2xl overflow-hidden animate-fade-in" style="animation-duration: 0.3s;">
+          <!-- Header -->
+          <div class="px-6 py-4 border-b border-dark-800 flex items-center justify-between bg-dark-800/50">
+            <h4 class="text-lg font-bold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              Analisis AI Tarteel
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary-500 text-white uppercase tracking-wider ml-1">Gemini</span>
+            </h4>
+            <button @click="closeExplanationModal" class="text-slate-400 hover:text-white transition-colors bg-dark-800 hover:bg-dark-700 p-1.5 rounded-xl border border-dark-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-6 min-h-[150px] max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div v-if="selectedEvalId && explanations[selectedEvalId]?.loading" class="flex flex-col items-center justify-center py-8">
+              <div class="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mb-4"></div>
+              <p class="text-slate-400 text-sm font-medium">AI sedang menganalisis pelafalan Anda...</p>
+            </div>
+            <div v-else-if="selectedEvalId" class="text-slate-300 text-[15px] leading-relaxed whitespace-pre-wrap">
+              {{ explanations[selectedEvalId]?.text }}
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="px-6 py-4 border-t border-dark-800 bg-dark-950/50 flex justify-end">
+            <button @click="closeExplanationModal" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 

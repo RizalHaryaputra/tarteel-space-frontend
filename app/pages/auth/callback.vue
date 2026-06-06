@@ -13,6 +13,7 @@ onMounted(() => {
   const token = route.query.token as string
   const userId = route.query.user_id as string
   const userName = route.query.user_name as string
+  const role = route.query.role as string || 'user'
   const error = route.query.error as string
 
   if (error) {
@@ -25,8 +26,12 @@ onMounted(() => {
   }
 
   if (token && userId && userName) {
-    authStore.setAuth(token, userId, userName)
-    router.push('/dashboard')
+    authStore.setAuth(token, userId, userName, role)
+    if (role === 'admin') {
+      router.push('/admin')
+    } else {
+      router.push('/dashboard')
+    }
   } else {
     errorMsg.value = 'Data autentikasi tidak lengkap.'
     setTimeout(() => {

@@ -75,6 +75,7 @@ export const useApi = () => {
             access_token: string
             user_name: string
             user_id: string
+            role: string
         }>('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -102,6 +103,8 @@ export const useApi = () => {
             harakat: string
             pronunciation: string
             arabic_script: string
+            model_label?: string
+            audio_url?: string
         }>>('/letters/')
 
     const getLetter = (id: number) =>
@@ -164,6 +167,102 @@ export const useApi = () => {
             huruf_terkuat: string | null
         }>('/history/dashboard')
 
+    // ── Admin endpoints ─────────────────────────────────────────
+
+    const getAdminStats = () =>
+        get<{
+            total_users: number
+            total_evaluations: number
+            average_accuracy: number
+            total_feedbacks: number
+            total_dataset_pool: number
+            daily_trend: Array<{ date: string; day: string; count: number }>
+        }>('/admin/stats')
+
+    const getAdminUsers = (limit = 50, offset = 0) =>
+        get<Array<{
+            id: string
+            name: string
+            email: string
+            role: string
+            created_at: string
+            total_evaluations: number
+            average_accuracy: number
+        }>>(`/admin/users?limit=${limit}&offset=${offset}`)
+
+    const updateUserRole = (userId: string, role: string) =>
+        request(`/admin/users/${userId}/role`, {
+            method: 'PATCH',
+            body: JSON.stringify({ role })
+        })
+
+    const deleteUser = (userId: string) =>
+        request(`/admin/users/${userId}`, { method: 'DELETE' })
+
+    const createLetter = (letter: { base_letter: string; harakat: string; pronunciation: string; arabic_script: string; model_label: string }) =>
+        post<{ message: string; letter_id: number }>('/admin/letters', letter)
+
+    const updateLetter = (letterId: number, letter: object) =>
+        request(`/admin/letters/${letterId}`, {
+            method: 'PUT',
+            body: JSON.stringify(letter)
+        })
+
+    const deleteLetter = (letterId: number) =>
+        request(`/admin/letters/${letterId}`, { method: 'DELETE' })
+
+    const uploadLetterAudio = (letterId: number, audioBlob: Blob) => {
+        const form = new FormData()
+        form.append('audio', audioBlob, 'reference.wav')
+        return post<{ message: string; audio_url: string }>(`/admin/letters/${letterId}/audio`, form)
+    }
+
+    const getAdminFeedbacks = (limit = 50, offset = 0) =>
+        get<Array<{
+            feedback_id: string
+            comment: string
+            created_at: string
+            user_name: string
+            user_email: string
+            evaluation_id: string
+            accuracy_score: number
+            top_prediction: string
+            top5_predictions: Array<{ label: string; score: number }>
+            is_correct: boolean
+            audio_url: string
+            base_letter: string
+            harakat: string
+            arabic_script: string
+            pronunciation: string
+        }>>(`/admin/feedbacks?limit=${limit}&offset=${offset}`)
+
+    const verifyDatasetPool = (data: { evaluation_id: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
+        post<{ message: string }>('/admin/dataset-pool', data)
+
+    const getDatasetPoolExport = () =>
+        get<Array<{
+            id: number
+            evaluation_id: string
+            verified_label: string
+            is_verified_correct: boolean
+            admin_notes: string | null
+            verified_at: string
+            audio_url: string
+            accuracy_score: number
+            top_prediction: string
+            base_letter: string
+            harakat: string
+            original_target_label: string
+        }>>('/admin/dataset-pool/export')
+
+    // ── User Feedback endpoints ──────────────────────────────────────
+
+    const submitFeedback = (evaluationId: string, comment: string) =>
+        post<{ message: string; feedback_id: string }>('/feedback/', {
+            evaluation_id: evaluationId,
+            comment
+        })
+
     return {
         // raw
         request, get, post,
@@ -177,5 +276,11 @@ export const useApi = () => {
         evaluate, getExplanation,
         // history
         getHistory, getWeeklyScores, getDashboard,
+        // admin
+        getAdminStats, getAdminUsers, updateUserRole, deleteUser,
+        createLetter, updateLetter, deleteLetter, uploadLetterAudio,
+        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport,
+        // feedback
+        submitFeedback,
     }
 }
