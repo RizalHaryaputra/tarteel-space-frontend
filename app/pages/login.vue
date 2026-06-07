@@ -12,9 +12,13 @@ const authStore = useAuthStore()
 const router    = useRouter()
 const route     = useRoute()
 
-// Jika sudah login, langsung ke dashboard
+// Jika sudah login, langsung ke dashboard atau halaman tujuan
 if (authStore.isLoggedIn) {
-  navigateTo('/dashboard')
+  let redirect = route.query.redirect as string || '/dashboard'
+  if (!route.query.redirect && authStore.isAdmin) {
+    redirect = '/admin'
+  }
+  navigateTo(redirect)
 }
 
 const handleLogin = async () => {
