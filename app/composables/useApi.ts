@@ -94,6 +94,36 @@ export const useApi = () => {
     const resetPassword = (token: string, new_password: string) =>
         post<{ message: string }>('/auth/reset-password', { token, new_password })
 
+    // ── Profile endpoints ──────────────────────────────────────
+    const getProfile = () =>
+        get<any>('/profile/me')
+
+    const updateProfile = (name: string, email: string, bio?: string) =>
+        request<{ message: string }>('/profile/me', {
+            method: 'PUT',
+            body: JSON.stringify({ name, email, bio })
+        })
+
+    const updateAvatar = (file: File) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        return request<{ message: string; avatar_url: string }>('/profile/me/avatar', {
+            method: 'PUT',
+            body: formData
+        })
+    }
+
+    const deleteAvatar = () =>
+        request<{ message: string }>('/profile/me/avatar', {
+            method: 'DELETE'
+        })
+
+    const updatePassword = (old_password: string, new_password: string) =>
+        request<{ message: string }>('/profile/me/password', {
+            method: 'PUT',
+            body: JSON.stringify({ old_password, new_password })
+        })
+
     // ── Letters endpoints ──────────────────────────────────────
 
     const getLetters = () =>
@@ -268,6 +298,8 @@ export const useApi = () => {
         request, get, post,
         // auth
         login, register, forgotPassword, resetPassword,
+        // profile
+        getProfile, updateProfile, updateAvatar, deleteAvatar, updatePassword,
         // letters
         getLetters, getLetter,
         // session

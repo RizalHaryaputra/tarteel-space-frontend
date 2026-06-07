@@ -190,7 +190,10 @@ const formatDate = (dateStr: string) => {
               <!-- Name & Email -->
               <td class="p-5">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold border border-dark-700">
+                  <div v-if="user.avatar_url" class="w-10 h-10 rounded-full overflow-hidden border border-dark-700">
+                    <img :src="user.avatar_url" class="w-full h-full object-cover" alt="Avatar">
+                  </div>
+                  <div v-else class="w-10 h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold border border-dark-700">
                     {{ user.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() }}
                   </div>
                   <div>

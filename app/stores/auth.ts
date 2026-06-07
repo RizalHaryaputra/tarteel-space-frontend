@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', {
         userId: null as string | null,
         userName: null as string | null,
         role: null as string | null,
+        avatarUrl: null as string | null,
     }),
 
     getters: {
@@ -36,11 +37,12 @@ export const useAuthStore = defineStore('auth', {
          * Dipanggil setelah login berhasil.
          * Simpan token + info user ke state dan localStorage.
          */
-        setAuth(token: string, userId: string, userName: string, role: string = 'user') {
+        setAuth(token: string, userId: string, userName: string, role: string = 'user', avatarUrl: string | null = null) {
             this.token = token
             this.userId = userId
             this.userName = userName
             this.role = role
+            this.avatarUrl = avatarUrl
 
             // Persisten di localStorage
             if (import.meta.client) {
@@ -48,6 +50,8 @@ export const useAuthStore = defineStore('auth', {
                 localStorage.setItem('tarteel_user_id', userId)
                 localStorage.setItem('tarteel_username', userName)
                 localStorage.setItem('tarteel_role', role)
+                if (avatarUrl) localStorage.setItem('tarteel_avatar_url', avatarUrl)
+                else localStorage.removeItem('tarteel_avatar_url')
             }
         },
 
@@ -60,11 +64,13 @@ export const useAuthStore = defineStore('auth', {
             const userId = localStorage.getItem('tarteel_user_id')
             const userName = localStorage.getItem('tarteel_username')
             const role = localStorage.getItem('tarteel_role') || 'user'
+            const avatarUrl = localStorage.getItem('tarteel_avatar_url')
             if (token && userId && userName) {
                 this.token = token
                 this.userId = userId
                 this.userName = userName
                 this.role = role
+                this.avatarUrl = avatarUrl
             }
         },
 
@@ -76,11 +82,13 @@ export const useAuthStore = defineStore('auth', {
             this.userId = null
             this.userName = null
             this.role = null
+            this.avatarUrl = null
             if (import.meta.client) {
                 localStorage.removeItem('tarteel_token')
                 localStorage.removeItem('tarteel_user_id')
                 localStorage.removeItem('tarteel_username')
                 localStorage.removeItem('tarteel_role')
+                localStorage.removeItem('tarteel_avatar_url')
             }
         },
     },
