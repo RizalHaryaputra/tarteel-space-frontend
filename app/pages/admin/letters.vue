@@ -267,7 +267,7 @@ const handleDeleteLetter = async () => {
 
       <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <!-- Search Input -->
-        <div class="relative group max-w-xs w-full">
+        <div class="relative group w-full sm:max-w-xs">
           <div
             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-primary-400 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"

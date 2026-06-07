@@ -404,6 +404,22 @@ const chartData = computed(() => {
                 </div>
               </NuxtLink>
 
+              <NuxtLink to="/admin/profile"
+                class="flex items-center gap-4 p-3 bg-dark-950/50 border border-dark-800 hover:border-purple-500/40 hover:bg-purple-500/5 rounded-2xl transition-all group">
+                <div
+                  class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="block text-sm font-bold text-white group-hover:text-purple-400 transition-colors">Kelola Profil</span>
+                  <span class="text-xs text-slate-500">Sesuaikan informasi profil</span>
+                </div>
+              </NuxtLink>
+
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onUnmounted } from 'vue'
 
 definePageMeta({
   layout: 'dashboard',
@@ -53,11 +53,53 @@ const closeExplanationModal = () => {
   }, 300)
 }
 
+// State for Audio Playback
+const currentlyPlaying = ref<{ url: string, type: 'user' | 'ustadz', id: string } | null>(null)
+let currentAudioElement: HTMLAudioElement | null = null
+
+const toggleAudio = (url: string | undefined | null, type: 'user' | 'ustadz', id: string) => {
+  if (!url) return
+
+  // Stop currently playing
+  if (currentAudioElement) {
+    currentAudioElement.pause()
+    currentAudioElement.currentTime = 0
+  }
+
+  // If clicking the same one, just stop it
+  if (currentlyPlaying.value?.id === id && currentlyPlaying.value?.type === type) {
+    currentlyPlaying.value = null
+    currentAudioElement = null
+    return
+  }
+
+  // Play new one
+  currentAudioElement = new Audio(url)
+  currentlyPlaying.value = { url, type, id }
+  
+  currentAudioElement.onended = () => {
+    if (currentlyPlaying.value?.id === id) {
+      currentlyPlaying.value = null
+    }
+  }
+
+  currentAudioElement.play().catch(e => {
+    console.error("Gagal memutar audio:", e)
+    currentlyPlaying.value = null
+  })
+}
+
+onUnmounted(() => {
+  if (currentAudioElement) {
+    currentAudioElement.pause()
+  }
+})
+
 // SVG Line Chart Logic
 const svgWidth = 1000
 const svgHeight = 300
 const maxScore = 100
-const minScore = 50 // Base for dynamic looking graph
+const minScore = 0 // Fixed: using 0 so actual scores under 50% are shown correctly
 
 const points = computed(() => {
   const dataList = weeklyData.value
@@ -123,9 +165,11 @@ const formatDate = (isoStr: string) => {
 <template>
   <div class="max-w-5xl mx-auto px-4 py-8">
     
-    <div class="mb-8">
-      <h2 class="text-3xl font-bold text-white mb-2">Riwayat & Kemajuan</h2>
-      <p class="text-slate-400">Pantau perkembangan pelafalan Anda dari waktu ke waktu.</p>
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 shrink-0 gap-4 border-b border-dark-800 pb-5">
+      <div>
+        <h2 class="text-3xl font-extrabold text-white tracking-tight">Riwayat & Kemajuan</h2>
+        <p class="text-slate-400 mt-1 text-sm">Pantau perkembangan pelafalan Anda dari waktu ke waktu.</p>
+      </div>
     </div>
 
     <!-- Chart Section -->
@@ -243,17 +287,18 @@ const formatDate = (isoStr: string) => {
           <thead>
             <tr class="border-b border-dark-800/80">
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider w-1/4">Hari/Tanggal</th>
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider w-1/3">Huruf Target</th>
+              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Huruf Target</th>
+              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-center">Putar Audio</th>
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-right">Skor Akurasi</th>
               <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-center w-36">Penjelasan AI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-800/50">
             <tr v-if="loadingHistory">
-              <td colspan="4" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
+              <td colspan="5" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
             </tr>
             <tr v-else-if="!historyList?.length">
-              <td colspan="4" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
+              <td colspan="5" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
             </tr>
             <template v-else v-for="item in paginatedHistory" :key="item.id">
               <tr class="hover:bg-dark-800/30 transition-colors group">
@@ -271,6 +316,58 @@ const formatDate = (isoStr: string) => {
                   </div>
                 </div>
               </td>
+              
+              <!-- Audio Playback Column -->
+              <td class="py-4 px-4 text-center">
+                <div class="flex items-center justify-center gap-4">
+                  <!-- User Audio Button -->
+                  <div class="flex flex-col items-center gap-1.5">
+                    <button v-if="item.user_audio" @click.stop="toggleAudio(item.user_audio, 'user', item.id)"
+                      class="p-2 rounded-lg transition-all shadow-md"
+                      :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user' ? 'bg-primary-600 text-white' : 'bg-primary-500 hover:bg-primary-600 text-white'"
+                      title="Putar Rekaman Anda">
+                      <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user'" xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                          d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                          d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <span v-else class="text-[10px] text-slate-600 italic leading-none py-2">Kosong</span>
+                    <span v-if="item.user_audio" class="text-[10px] text-slate-400 font-medium">Anda</span>
+                  </div>
+
+                  <!-- Ustadz Audio Button -->
+                  <div class="flex flex-col items-center gap-1.5">
+                    <button v-if="item.ustadz_audio" @click.stop="toggleAudio(item.ustadz_audio, 'ustadz', item.id)"
+                      class="p-2 rounded-lg transition-all shadow-md"
+                      :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz' ? 'bg-purple-600 text-white' : 'bg-purple-500 hover:bg-purple-600 text-white'"
+                      title="Putar Audio Ustadz">
+                      <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz'" xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                          d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                          d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <span v-else class="text-[10px] text-slate-600 italic leading-none py-2">Kosong</span>
+                    <span v-if="item.ustadz_audio" class="text-[10px] text-slate-400 font-medium">Ustadz</span>
+                  </div>
+                </div>
+              </td>
+
               <td class="py-4 px-4 text-right">
                 <span 
                   class="inline-block px-3 py-1 rounded-md text-sm font-bold"

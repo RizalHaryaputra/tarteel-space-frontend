@@ -86,8 +86,12 @@ const isMobileDropdownOpen = ref(false)
 
       <!-- Bottom switch menu (Admin -> User) -->
       <div class="p-4 border-t border-dark-800 mt-auto">
-        <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:bg-dark-800/50 hover:text-slate-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        <NuxtLink to="/dashboard"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 hover:bg-dark-800/50 hover:text-slate-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
           <span class="font-medium text-sm">Beralih ke User</span>
         </NuxtLink>
       </div>
@@ -108,7 +112,8 @@ const isMobileDropdownOpen = ref(false)
               <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
               <p class="text-xs text-primary-400 font-medium">Administrator</p>
             </div>
-            <div v-if="authStore.avatarUrl" class="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+            <div v-if="authStore.avatarUrl"
+              class="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
               <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
             </div>
             <div v-else
@@ -168,7 +173,8 @@ const isMobileDropdownOpen = ref(false)
                 <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
                 <p class="text-xs text-primary-400 font-medium">Administrator</p>
               </div>
-              <div v-if="authStore.avatarUrl" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+              <div v-if="authStore.avatarUrl"
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
                 <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
               </div>
               <div v-else
@@ -193,13 +199,23 @@ const isMobileDropdownOpen = ref(false)
                   <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
                   <p class="text-xs text-primary-400 font-medium">Administrator</p>
                 </div>
+                <button @click="navigateTo('/'); isMobileDropdownOpen = false"
+                  class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Halaman Utama
+                </button>
                 <button @click="navigateTo('/dashboard'); isMobileDropdownOpen = false"
                   class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Kembali ke User Dashboard
+                  Beralih ke User
                 </button>
                 <button @click="authStore.logout(); navigateTo('/login')"
                   class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
@@ -222,12 +238,11 @@ const isMobileDropdownOpen = ref(false)
 
     <!-- Mobile Bottom Navigation (Hidden on Desktop) -->
     <nav
-      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/80 backdrop-blur-xl border-t border-dark-800 z-50 px-6 py-2 pb-safe flex justify-between items-center">
+      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/80 backdrop-blur-xl border-t border-dark-800 z-50 px-6 pt-3 pb-5 sm:pb-safe flex justify-around items-center">
       <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path"
-        class="flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200"
-        :class="isActive(item.path) ? 'text-primary-400' : 'text-slate-500'">
+        class="flex flex-col items-center p-3 rounded-xl transition-all duration-200"
+        :class="isActive(item.path) ? 'text-primary-400 bg-primary-500/10' : 'text-slate-500 hover:text-slate-400 hover:bg-dark-800'">
         <div v-html="item.icon" class="w-6 h-6" />
-        <span class="text-[10px] font-medium">{{ item.name }}</span>
       </NuxtLink>
     </nav>
   </div>
