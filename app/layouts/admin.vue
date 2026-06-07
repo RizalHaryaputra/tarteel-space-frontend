@@ -30,6 +30,11 @@ const menuItems = [
     name: 'Dataset Pool',
     path: '/admin/dataset',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>`
+  },
+  {
+    name: 'Kelola Profil',
+    path: '/admin/profile',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>`
   }
 ]
 
@@ -103,8 +108,11 @@ const isMobileDropdownOpen = ref(false)
               <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
               <p class="text-xs text-primary-400 font-medium">Administrator</p>
             </div>
-            <div
-              class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
+            <div v-if="authStore.avatarUrl" class="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+              <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
+            </div>
+            <div v-else
+              class="w-10 h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
               {{ authStore.initials || 'A' }}
             </div>
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -160,8 +168,11 @@ const isMobileDropdownOpen = ref(false)
                 <p class="text-sm font-medium text-white">{{ authStore.userName || 'Admin' }}</p>
                 <p class="text-xs text-primary-400 font-medium">Administrator</p>
               </div>
-              <div
-                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20">
+              <div v-if="authStore.avatarUrl" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+                <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
+              </div>
+              <div v-else
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-xs sm:text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
                 {{ authStore.initials || 'A' }}
               </div>
               <svg xmlns="http://www.w3.org/2000/svg"

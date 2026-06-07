@@ -25,7 +25,10 @@
                                     <div class="text-right hidden sm:block">
                                         <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
                                     </div>
-                                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20">
+                                    <div v-if="authStore.avatarUrl" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+                                        <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
+                                    </div>
+                                    <div v-else class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-xs sm:text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
                                         {{ authStore.initials || '?' }}
                                     </div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200 hidden sm:block" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">

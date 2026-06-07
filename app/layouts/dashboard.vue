@@ -19,6 +19,11 @@ const baseMenuItems = [
     name: 'Riwayat',
     path: '/dashboard/history',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`
+  },
+  {
+    name: 'Kelola Profil',
+    path: '/dashboard/profile',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>`
   }
 ]
 
@@ -99,10 +104,16 @@ const isMobileDropdownOpen = ref(false)
             <div class="text-right">
               <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
             </div>
-            <div
-              class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
+            
+            <!-- Avatar Desktop -->
+            <div v-if="authStore.avatarUrl" class="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+              <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
+            </div>
+            <div v-else
+              class="w-10 h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
               {{ authStore.initials || '?' }}
             </div>
+
             <svg xmlns="http://www.w3.org/2000/svg"
               class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200"
               :class="{ 'rotate-180': isDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,6 +137,7 @@ const isMobileDropdownOpen = ref(false)
                 </svg>
                 Halaman Utama
               </button>
+
               <button @click="authStore.logout(); navigateTo('/login')"
                 class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none" viewBox="0 0 24 24"
@@ -155,10 +167,16 @@ const isMobileDropdownOpen = ref(false)
               <div class="text-right hidden sm:block">
                 <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
               </div>
-              <div
-                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-primary-500/20">
+
+              <!-- Avatar Mobile -->
+              <div v-if="authStore.avatarUrl" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
+                <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
+              </div>
+              <div v-else
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-xs sm:text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
                 {{ authStore.initials || '?' }}
               </div>
+
               <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200 hidden sm:block"
                 :class="{ 'rotate-180': isDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,6 +203,7 @@ const isMobileDropdownOpen = ref(false)
                   </svg>
                   Halaman Utama
                 </button>
+
                 <button @click="authStore.logout(); navigateTo('/login')"
                   class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none"
