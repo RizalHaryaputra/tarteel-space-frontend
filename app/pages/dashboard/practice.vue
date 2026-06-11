@@ -59,7 +59,13 @@ const fetchExplanation = async () => {
   }
 }
 
+let recordingTimer: ReturnType<typeof setTimeout> | null = null
+const MAX_RECORDING_TIME_MS = 5000 // 5 detik
+
 onUnmounted(() => {
+  if (recordingTimer) {
+    clearTimeout(recordingTimer)
+  }
   // End session jika berpindah halaman
   if (currentSessionId.value) {
     api.endSession(currentSessionId.value).catch(console.error)
@@ -69,6 +75,10 @@ onUnmounted(() => {
 const toggleRecording = async () => {
   if (isRecording.value) {
     // Stop recording
+    if (recordingTimer) {
+      clearTimeout(recordingTimer)
+      recordingTimer = null
+    }
     mediaRecorder.value?.stop()
     isRecording.value = false
   } else {
@@ -103,6 +113,15 @@ const toggleRecording = async () => {
 
       mediaRecorder.value.start()
       isRecording.value = true
+
+      // Batasi durasi rekaman otomatis
+      recordingTimer = setTimeout(() => {
+        if (isRecording.value) {
+          mediaRecorder.value?.stop()
+          isRecording.value = false
+          alert('Durasi maksimal rekaman (5 detik) telah tercapai. Suara Anda sedang diproses.')
+        }
+      }, MAX_RECORDING_TIME_MS)
     } catch (err) {
       console.error('Error accessing microphone:', err)
       alert('Gagal mengakses mikrofon. Pastikan browser Anda memiliki izin untuk menggunakan mikrofon.')
@@ -113,6 +132,7 @@ const toggleRecording = async () => {
 const processAudio = async (audioBlob: Blob) => {
   if (!targetLetter.value) return
   isProcessing.value = true
+  const startTime = performance.now() // Mulai hitung waktu end-to-end
 
   try {
     const result = await api.evaluate(targetLetter.value.id, audioBlob, currentSessionId.value || undefined)
@@ -133,6 +153,12 @@ const processAudio = async (audioBlob: Blob) => {
     } else {
       evaluationResult.value.color = 'text-red-400'
     }
+    
+    // Tampilkan log end-to-end untuk laporan
+    const endTime = performance.now()
+    const e2eTime = (endTime - startTime) / 1000
+    console.log(`⏱️ [METRIK] Waktu Respons End-to-End: ${e2eTime.toFixed(3)} detik`)
+
   } catch (err: any) {
     console.error(err)
     evaluationResult.value.score = 0
