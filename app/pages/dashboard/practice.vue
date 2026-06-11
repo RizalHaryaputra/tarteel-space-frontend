@@ -44,6 +44,17 @@ const formatLabel = (label: string) => {
     .join(' ')
 }
 
+// Custom Alert State
+const showAlertModal = ref(false)
+const alertTitle = ref('Informasi')
+const alertMessage = ref('')
+
+const showCustomAlert = (message: string, title = 'Informasi') => {
+  alertMessage.value = message
+  alertTitle.value = title
+  showAlertModal.value = true
+}
+
 const fetchExplanation = async () => {
   if (!evalId.value) return
   isFetchingExplanation.value = true
@@ -53,11 +64,14 @@ const fetchExplanation = async () => {
     showExplanation.value = true
   } catch (err: any) {
     console.error(err)
-    alert(err.message || 'Gagal mendapatkan penjelasan tajwid.')
+    showCustomAlert(err.message || 'Gagal mendapatkan penjelasan tajwid.', 'Terjadi Kesalahan')
   } finally {
     isFetchingExplanation.value = false
   }
 }
+
+let recordingStartTime = 0
+const MAX_RECORDING_TIME_MS = 5000 // 5 detik
 
 onUnmounted(() => {
   // End session jika berpindah halaman
@@ -95,17 +109,30 @@ const toggleRecording = async () => {
       }
 
       mediaRecorder.value.onstop = () => {
-        const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
-        processAudio(audioBlob)
         // Clean up microphone tracks
         stream.getTracks().forEach(track => track.stop())
+
+        const duration = Date.now() - recordingStartTime
+        if (duration > MAX_RECORDING_TIME_MS) {
+          showCustomAlert(`Durasi rekaman terlalu lama (${(duration / 1000).toFixed(1)} detik). Maksimal 5 detik. Silakan coba lagi.`, 'Rekaman Terlalu Lama')
+          return
+        }
+
+        if (duration < 1000) {
+          showCustomAlert('Durasi rekaman terlalu singkat. Tahan tombol untuk merekam suara.', 'Rekaman Terlalu Singkat')
+          return
+        }
+
+        const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
+        processAudio(audioBlob)
       }
 
+      recordingStartTime = Date.now()
       mediaRecorder.value.start()
       isRecording.value = true
     } catch (err) {
       console.error('Error accessing microphone:', err)
-      alert('Gagal mengakses mikrofon. Pastikan browser Anda memiliki izin untuk menggunakan mikrofon.')
+      showCustomAlert('Gagal mengakses mikrofon. Pastikan browser Anda memiliki izin untuk menggunakan mikrofon.', 'Akses Ditolak')
     }
   }
 }
@@ -113,6 +140,7 @@ const toggleRecording = async () => {
 const processAudio = async (audioBlob: Blob) => {
   if (!targetLetter.value) return
   isProcessing.value = true
+  const startTime = performance.now() // Mulai hitung waktu end-to-end
 
   try {
     const result = await api.evaluate(targetLetter.value.id, audioBlob, currentSessionId.value || undefined)
@@ -133,6 +161,12 @@ const processAudio = async (audioBlob: Blob) => {
     } else {
       evaluationResult.value.color = 'text-red-400'
     }
+
+    // Tampilkan log end-to-end untuk laporan
+    const endTime = performance.now()
+    const e2eTime = (endTime - startTime) / 1000
+    console.log(`⏱️ [METRIK] Waktu Respons End-to-End: ${e2eTime.toFixed(3)} detik`)
+
   } catch (err: any) {
     console.error(err)
     evaluationResult.value.score = 0
@@ -208,7 +242,7 @@ const sendFeedback = async () => {
     }, 2000)
   } catch (err: any) {
     console.error(err)
-    alert(err.message || 'Gagal mengirimkan masukan.')
+    showCustomAlert(err.message || 'Gagal mengirimkan masukan.', 'Gagal Mengirim')
   } finally {
     isSubmittingFeedback.value = false
   }
@@ -219,7 +253,8 @@ const sendFeedback = async () => {
   <div class="h-full flex flex-col max-w-6xl mx-auto px-2 pb-4">
 
     <!-- Header Area -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 shrink-0 gap-4 border-b border-dark-800 pb-5">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between mb-8 shrink-0 gap-4 border-b border-dark-800 pb-5">
       <div>
         <h1 class="text-3xl font-extrabold text-white tracking-tight">Ruang Latihan</h1>
         <p class="text-slate-400 mt-1 text-sm">Pilih huruf dan rekam suara Anda untuk evaluasi tajwid AI.</p>
@@ -227,7 +262,7 @@ const sendFeedback = async () => {
       <button @click="showLetterPicker = true"
         class="px-5 py-2.5 bg-dark-900/60 backdrop-blur-sm border border-dark-800 hover:border-primary-500/50 hover:bg-dark-800 rounded-2xl flex items-center gap-3 text-white transition-all group shadow-sm">
         <span class="font-arabic text-2xl text-primary-400 leading-none pt-1">{{ targetLetter?.arabic_script || '?'
-          }}</span>
+        }}</span>
         <span class="font-semibold text-sm">Pilih Huruf</span>
       </button>
     </div>
@@ -296,7 +331,7 @@ const sendFeedback = async () => {
               </svg>
             </button>
             <span class="text-xs text-slate-500 font-medium">{{ currentLetterIndex + 1 }} / {{ letters?.length || 0
-              }}</span>
+            }}</span>
             <button @click="nextLetter" :disabled="!letters || currentLetterIndex === letters.length - 1"
               class="w-10 h-10 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:border-dark-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -565,6 +600,32 @@ const sendFeedback = async () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Custom Alert Modal -->
+    <Teleport to="body">
+      <div v-if="showAlertModal" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity"
+          @click="showAlertModal = false">
+        </div>
+        <div
+          class="relative bg-dark-900 border border-dark-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-fade-in flex flex-col items-center text-center">
+          <div
+            class="w-16 h-16 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-4 border border-yellow-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">{{ alertTitle }}</h3>
+          <p class="text-sm text-slate-400 mb-6">{{ alertMessage }}</p>
+          <button @click="showAlertModal = false"
+            class="w-full py-3 px-6 bg-dark-800 hover:bg-dark-700 border border-dark-700 text-white font-semibold rounded-xl transition-colors">
+            Mengerti
+          </button>
         </div>
       </div>
     </Teleport>
