@@ -218,6 +218,7 @@ export const useApi = () => {
             created_at: string
             total_evaluations: number
             average_accuracy: number
+            avatar_url?: string | null
         }>>(`/admin/users?limit=${limit}&offset=${offset}`)
 
     const updateUserRole = (userId: string, role: string) =>
