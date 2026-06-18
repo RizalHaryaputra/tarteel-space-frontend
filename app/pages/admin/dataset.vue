@@ -17,6 +17,10 @@ const errorToast = ref('')
 const dataset = ref<any[]>([])
 const isLoading = ref(false)
 
+// Filter & Selection State
+const filterStatus = ref('all')
+const selectedIds = ref<number[]>([])
+
 // Audio Player State
 const currentPlayingUrl = ref<string | null>(null)
 let audioObj: HTMLAudioElement | null = null
@@ -34,8 +38,9 @@ const paginatedDataset = computed(() => {
 // Fetch data
 const fetchDataset = async () => {
   isLoading.value = true
+  selectedIds.value = [] // Reset selection on fetch
   try {
-    const data = await api.getDatasetPoolExport()
+    const data = await api.getDatasetPoolExport(filterStatus.value)
     dataset.value = data
   } catch (err: any) {
     showToast(err.message || 'Gagal memuat dataset pool', true)
@@ -43,6 +48,11 @@ const fetchDataset = async () => {
     isLoading.value = false
   }
 }
+
+watch(filterStatus, () => {
+  currentPage.value = 1
+  fetchDataset()
+})
 
 onMounted(() => {
   fetchDataset()
@@ -55,6 +65,41 @@ const showToast = (message: string, isError = false) => {
   } else {
     successToast.value = message
     setTimeout(() => { successToast.value = '' }, 4000)
+  }
+}
+
+// Bulk Actions
+const toggleSelectAll = (e: Event) => {
+  const isChecked = (e.target as HTMLInputElement).checked
+  if (isChecked) {
+    selectedIds.value = paginatedDataset.value.map(item => item.id)
+  } else {
+    selectedIds.value = []
+  }
+}
+
+const toggleSelection = (id: number) => {
+  const index = selectedIds.value.indexOf(id)
+  if (index > -1) {
+    selectedIds.value.splice(index, 1)
+  } else {
+    selectedIds.value.push(id)
+  }
+}
+
+const isAllSelected = computed(() => {
+  return paginatedDataset.value.length > 0 && selectedIds.value.length === paginatedDataset.value.length
+})
+
+const handleMarkTrained = async (isTrained: boolean) => {
+  if (selectedIds.value.length === 0) return
+  
+  try {
+    const res = await api.markDatasetPoolTrained(selectedIds.value, isTrained)
+    showToast(res.message)
+    fetchDataset()
+  } catch (err: any) {
+    showToast(err.message || 'Gagal menandai data', true)
   }
 }
 
@@ -202,58 +247,75 @@ const formatDate = (dateStr: string) => {
     </div>
 
     <!-- Stats summary & Action Buttons -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
       <!-- Pool quick mini stat cards -->
-      <div class="flex flex-wrap gap-4">
-        <div class="px-5 py-3 rounded-2xl bg-dark-900/50 border border-dark-800 flex items-center gap-3">
-          <div class="w-2.5 h-2.5 rounded-full bg-primary-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-          <div>
-            <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold block">Total Validasi</span>
-            <span class="text-lg font-bold text-white leading-tight">{{ totalCount }}</span>
+      <div class="grid grid-cols-2 md:flex md:flex-wrap gap-3 w-full xl:w-auto">
+        <div class="px-5 py-4 rounded-2xl bg-gradient-to-br from-dark-900/90 to-dark-950/90 backdrop-blur-md border border-dark-800/60 flex flex-col justify-center gap-1 shadow-xl flex-1 md:flex-none md:min-w-[150px] relative overflow-hidden group">
+          <div class="absolute inset-0 bg-primary-500/5 group-hover:bg-primary-500/10 transition-colors"></div>
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary-500/10 rounded-full blur-xl group-hover:bg-primary-500/20 transition-all"></div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-primary-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold relative z-10">Total Validasi</span>
           </div>
+          <span class="text-3xl font-black text-white leading-tight drop-shadow-md relative z-10">{{ totalCount }}</span>
         </div>
 
-        <div class="px-5 py-3 rounded-2xl bg-dark-900/50 border border-dark-800 flex items-center gap-3">
-          <div class="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
-          <div>
-            <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold block">Lafal Benar</span>
-            <span class="text-lg font-bold text-white leading-tight">{{ correctCount }}</span>
+        <div class="px-5 py-4 rounded-2xl bg-gradient-to-br from-dark-900/90 to-dark-950/90 backdrop-blur-md border border-dark-800/60 flex flex-col justify-center gap-1 shadow-xl flex-1 md:flex-none md:min-w-[150px] relative overflow-hidden group">
+          <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold relative z-10">Lafal Benar</span>
           </div>
+          <span class="text-3xl font-black text-white leading-tight drop-shadow-md relative z-10">{{ correctCount }}</span>
         </div>
 
-        <div class="px-5 py-3 rounded-2xl bg-dark-900/50 border border-dark-800 flex items-center gap-3">
-          <div class="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.8)]"></div>
-          <div>
-            <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold block">Lafal Salah</span>
-            <span class="text-lg font-bold text-white leading-tight">{{ incorrectCount }}</span>
+        <div class="col-span-2 md:col-span-1 px-5 py-4 rounded-2xl bg-gradient-to-br from-dark-900/90 to-dark-950/90 backdrop-blur-md border border-dark-800/60 flex flex-col justify-center gap-1 shadow-xl flex-1 md:flex-none md:min-w-[150px] relative overflow-hidden group">
+          <div class="absolute inset-0 bg-red-500/5 group-hover:bg-red-500/10 transition-colors"></div>
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-red-500/10 rounded-full blur-xl group-hover:bg-red-500/20 transition-all"></div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.8)]"></div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold relative z-10">Lafal Salah</span>
           </div>
+          <span class="text-3xl font-black text-white leading-tight drop-shadow-md relative z-10">{{ incorrectCount }}</span>
         </div>
       </div>
 
-      <!-- Export Actions -->
-      <div class="flex items-center gap-3 self-end md:self-center">
+      <!-- Actions & Filters -->
+      <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+        <!-- Filter Status Training -->
+        <select 
+          v-model="filterStatus"
+          class="flex-1 md:flex-none bg-dark-900 border border-dark-700 text-white text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none appearance-none pr-8 cursor-pointer shadow-lg transition-colors"
+          style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7rem top 50%; background-size: 0.65rem auto;"
+        >
+          <option value="all">Semua Data</option>
+          <option value="unused">Belum Ditraining</option>
+          <option value="used">Sudah Ditraining</option>
+        </select>
+
         <!-- Export CSV Button -->
         <button 
           @click="exportCSV" 
           :disabled="dataset.length === 0"
-          class="flex items-center gap-2 px-6 py-2.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-green-500/20 whitespace-nowrap"
+          class="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-green-500/20 whitespace-nowrap"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Unduh CSV
+          CSV
         </button>
 
         <!-- Export JSON Button -->
         <button 
           @click="exportJSON" 
           :disabled="dataset.length === 0"
-          class="flex items-center gap-2 px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-cyan-500/20 whitespace-nowrap"
+          class="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-cyan-500/20 whitespace-nowrap"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0L8 8m4-4v12" />
           </svg>
-          Unduh JSON
+          JSON
         </button>
       </div>
     </div>
@@ -282,10 +344,19 @@ const formatDate = (dateStr: string) => {
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b border-dark-800 bg-dark-950/40">
+              <th class="p-5 w-14 text-center">
+                <div class="relative flex items-center justify-center w-5 h-5 mx-auto">
+                  <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" class="peer appearance-none w-5 h-5 border-2 border-dark-600 rounded bg-dark-800/80 checked:bg-primary-500 checked:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-1 focus:ring-offset-dark-900 cursor-pointer transition-all">
+                  <svg class="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Target Awal</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Ground Truth</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Penilaian Lafal</th>
+              <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status Training</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Audio Rekaman</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Akurasi Asli</th>
               <th class="p-5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Catatan Admin</th>
@@ -293,7 +364,16 @@ const formatDate = (dateStr: string) => {
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-800/50">
-            <tr v-for="item in paginatedDataset" :key="item.id" class="hover:bg-dark-950/20 transition-colors group">
+            <tr v-for="item in paginatedDataset" :key="item.id" class="hover:bg-dark-950/20 transition-colors group" :class="{ 'bg-primary-500/5': selectedIds.includes(item.id) }">
+              <!-- Checkbox -->
+              <td class="p-5 w-14 text-center">
+                <div class="relative flex items-center justify-center w-5 h-5 mx-auto">
+                  <input type="checkbox" :value="item.id" :checked="selectedIds.includes(item.id)" @change="toggleSelection(item.id)" class="peer appearance-none w-5 h-5 border-2 border-dark-600 rounded bg-dark-800/80 checked:bg-primary-500 checked:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-1 focus:ring-offset-dark-900 cursor-pointer transition-all">
+                  <svg class="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </td>
               <!-- ID -->
               <td class="p-5 text-sm font-semibold text-slate-400 font-mono">
                 #{{ item.id }}
@@ -313,6 +393,12 @@ const formatDate = (dateStr: string) => {
               <td class="p-5">
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-md inline-block uppercase" :class="item.is_verified_correct ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'">
                   {{ item.is_verified_correct ? 'Benar' : 'Salah' }}
+                </span>
+              </td>
+              <!-- Training Status -->
+              <td class="p-5">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md inline-block uppercase" :class="item.is_used_for_training ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'">
+                  {{ item.is_used_for_training ? 'Ditraining' : 'Belum' }}
                 </span>
               </td>
               <!-- Audio Player -->
@@ -349,16 +435,60 @@ const formatDate = (dateStr: string) => {
         </table>
       </div>
 
-      <div class="px-6 pb-6">
-        <AppPagination 
-          v-if="dataset.length > 0"
-          :totalItems="dataset.length" 
-          :itemsPerPage="itemsPerPage" 
-          v-model="currentPage" 
+      <!-- Pagination -->
+      <div class="px-6 py-4 bg-dark-900/60 border-t border-dark-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <p v-if="!isNaN(currentPage)" class="text-sm text-slate-400">
+          Menampilkan <span class="font-bold text-white">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> hingga 
+          <span class="font-bold text-white">{{ Math.min(currentPage * itemsPerPage, dataset.length) }}</span> dari 
+          <span class="font-bold text-white">{{ dataset.length }}</span> entri
+        </p>
+        
+        <AppPagination
+          :totalItems="dataset.length"
+          :itemsPerPage="itemsPerPage"
+          v-model="currentPage"
         />
       </div>
     </div>
 
+    <!-- Bulk Action Floating Bar -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="transform translate-y-10 opacity-0"
+        enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="transform translate-y-0 opacity-100"
+        leave-to-class="transform translate-y-10 opacity-0"
+      >
+        <div v-if="selectedIds.length > 0" class="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 sm:gap-3 p-2 sm:px-4 sm:py-3 bg-dark-900/90 backdrop-blur-xl border border-primary-500/30 rounded-full shadow-[0_10px_40px_-10px_rgba(59,130,246,0.4)] whitespace-nowrap overflow-x-auto max-w-[95vw] custom-scrollbar">
+          <div class="flex items-center gap-2 pr-2 sm:pr-4 border-r border-dark-700">
+            <div class="w-7 h-7 rounded-full bg-primary-500/20 text-primary-400 flex items-center justify-center font-bold text-sm">{{ selectedIds.length }}</div>
+            <span class="text-sm font-semibold text-white hidden sm:inline">Terpilih</span>
+          </div>
+          
+          <button 
+            @click="handleMarkTrained(true)"
+            class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm font-bold transition-colors shadow-lg flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            <span class="hidden sm:inline">Tandai</span> Ditraining
+          </button>
+          
+          <button 
+            @click="handleMarkTrained(false)"
+            class="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-slate-300 border border-dark-600 rounded-full text-sm font-bold transition-colors flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Unmark
+          </button>
+          
+          <button @click="selectedIds = []" class="ml-1 sm:ml-2 p-1.5 text-slate-400 hover:text-white rounded-full hover:bg-red-500/20 transition-colors" title="Batal Pilih Semua">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
