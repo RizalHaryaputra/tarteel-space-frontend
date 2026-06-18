@@ -38,6 +38,10 @@ export const useApi = () => {
         })
 
         if (response.status === 401) {
+            if (endpoint.includes('/login')) {
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.detail || 'Email atau password salah.')
+            }
             authStore.logout()
             router.push('/login')
             throw new Error('Sesi habis. Silakan login kembali.')
