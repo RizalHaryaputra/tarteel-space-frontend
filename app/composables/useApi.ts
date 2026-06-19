@@ -297,6 +297,21 @@ export const useApi = () => {
             body: JSON.stringify({ dataset_ids, is_trained })
         })
 
+    const uploadModelFiles = (formData: FormData) => {
+        // We use request directly to handle FormData without setting Content-Type (fetch handles boundary)
+        const headers: Record<string, string> = {}
+        const token = localStorage.getItem('token')
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`
+        }
+        
+        return $fetch<{ message: string }>(`${config.public.apiBase}/admin/model/upload`, {
+            method: 'POST',
+            body: formData,
+            headers,
+        })
+    }
+
     // ── User Feedback endpoints ──────────────────────────────────────
 
     const submitFeedback = (evaluationId: string, comment: string) =>
@@ -323,7 +338,7 @@ export const useApi = () => {
         // admin
         getAdminStats, getAdminUsers, updateUserRole, deleteUser,
         createLetter, updateLetter, deleteLetter, uploadLetterAudio,
-        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained,
+        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
         // feedback
         submitFeedback,
     }
