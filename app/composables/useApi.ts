@@ -274,7 +274,7 @@ export const useApi = () => {
     const verifyDatasetPool = (data: { evaluation_id: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
         post<{ message: string }>('/admin/dataset-pool', data)
 
-    const getDatasetPoolExport = () =>
+    const getDatasetPoolExport = (training_status: string = 'all') =>
         get<Array<{
             id: number
             evaluation_id: string
@@ -288,7 +288,29 @@ export const useApi = () => {
             base_letter: string
             harakat: string
             original_target_label: string
-        }>>('/admin/dataset-pool/export')
+            is_used_for_training: boolean
+        }>>(`/admin/dataset-pool/export?training_status=${training_status}`)
+        
+    const markDatasetPoolTrained = (dataset_ids: number[], is_trained: boolean) =>
+        request<{ message: string }>('/admin/dataset-pool/mark-trained', {
+            method: 'PUT',
+            body: JSON.stringify({ dataset_ids, is_trained })
+        })
+
+    const uploadModelFiles = (formData: FormData) => {
+        // We use request directly to handle FormData without setting Content-Type (fetch handles boundary)
+        const headers: Record<string, string> = {}
+        const token = localStorage.getItem('token')
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`
+        }
+        
+        return $fetch<{ message: string }>(`${config.public.apiBase}/admin/model/upload`, {
+            method: 'POST',
+            body: formData,
+            headers,
+        })
+    }
 
     // ── User Feedback endpoints ──────────────────────────────────────
 
@@ -316,7 +338,7 @@ export const useApi = () => {
         // admin
         getAdminStats, getAdminUsers, updateUserRole, deleteUser,
         createLetter, updateLetter, deleteLetter, uploadLetterAudio,
-        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport,
+        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
         // feedback
         submitFeedback,
     }
