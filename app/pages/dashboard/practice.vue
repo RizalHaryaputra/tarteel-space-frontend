@@ -80,11 +80,81 @@ onUnmounted(() => {
   }
 })
 
+// Visualizer State
+const visualizerCanvas = ref<HTMLCanvasElement | null>(null)
+let audioContext: AudioContext | null = null
+let analyser: AnalyserNode | null = null
+let animationFrameId: number | null = null
+
+const drawVisualizer = () => {
+  if (!visualizerCanvas.value || !analyser) return
+
+  const canvas = visualizerCanvas.value
+  const canvasCtx = canvas.getContext('2d')
+  if (!canvasCtx) return
+
+  // Using Time Domain for waveform
+  analyser.fftSize = 2048
+  const bufferLength = analyser.frequencyBinCount
+  const dataArray = new Uint8Array(bufferLength)
+
+  // Ensure canvas dimensions are sharp
+  canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1)
+  canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1)
+  canvasCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
+
+  const draw = () => {
+    if (!isRecording.value) return
+
+    animationFrameId = requestAnimationFrame(draw)
+    analyser!.getByteTimeDomainData(dataArray)
+
+    canvasCtx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
+
+    canvasCtx.lineWidth = 3
+    canvasCtx.strokeStyle = '#60a5fa' // primary-400
+    canvasCtx.lineCap = 'round'
+    canvasCtx.lineJoin = 'round'
+
+    canvasCtx.beginPath()
+
+    const sliceWidth = canvas.clientWidth * 1.0 / bufferLength
+    let x = 0
+
+    for (let i = 0; i < bufferLength; i++) {
+      const v = (dataArray[i] || 128) / 128.0
+      const y = v * canvas.clientHeight / 2
+
+      if (i === 0) {
+        canvasCtx.moveTo(x, y)
+      } else {
+        canvasCtx.lineTo(x, y)
+      }
+
+      x += sliceWidth
+    }
+
+    canvasCtx.lineTo(canvas.clientWidth, canvas.clientHeight / 2)
+    canvasCtx.stroke()
+  }
+
+  draw()
+}
+
 const toggleRecording = async () => {
   if (isRecording.value) {
     // Stop recording
     mediaRecorder.value?.stop()
     isRecording.value = false
+    
+    // Stop visualizer
+    if (audioContext) {
+      audioContext.close()
+      audioContext = null
+    }
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId)
+    }
   } else {
     // Start recording
     showResult.value = false
@@ -103,6 +173,16 @@ const toggleRecording = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       mediaRecorder.value = new MediaRecorder(stream)
       audioChunks.value = []
+
+      // Setup Visualizer
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+      audioContext = new AudioContextClass()
+      analyser = audioContext.createAnalyser()
+      const source = audioContext.createMediaStreamSource(stream)
+      source.connect(analyser)
+      
+      // Delay drawing slightly to let DOM update if canvas just showed up
+      setTimeout(() => drawVisualizer(), 50)
 
       mediaRecorder.value.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunks.value.push(e.data)
@@ -484,6 +564,11 @@ const sendFeedback = async () => {
           <p class="mt-6 text-base font-medium text-white min-h-[24px] text-center">
             {{ isRecording ? 'Mendengarkan... (Tekan untuk stop)' : 'Tekan untuk Merekam' }}
           </p>
+
+          <!-- Audio Visualizer Canvas -->
+          <div class="w-full max-w-sm mt-6 h-20 bg-dark-950/30 rounded-2xl border border-dark-800/50 shadow-inner flex items-center justify-center overflow-hidden transition-all duration-300" :class="isRecording ? 'opacity-100' : 'opacity-0 scale-95 pointer-events-none'">
+            <canvas ref="visualizerCanvas" class="w-full h-full"></canvas>
+          </div>
         </div>
 
       </div>
