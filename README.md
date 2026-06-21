@@ -27,10 +27,12 @@ Repositori ini berisi kode *frontend* dari aplikasi Tarteel Space yang dibangun 
 - **Ringkasan Statistik Admin**: Dasbor untuk memantau data agregat seperti total pengguna, total huruf hijaiyah, total feedback, dan jumlah dataset audio.
 - **Manajemen Huruf Hijaiyah**: Kemampuan untuk menambah, menyunting, menghapus data huruf target, harakat, makhraj, serta mengunggah file contoh audio pelafalan.
 - **Manajemen Pengguna**: Fitur melihat daftar pengguna terdaftar, mengelola hak akses (*role*), dan menghapus pengguna.
-- **Active Learning Loop (Dataset Manager)**: Fitur penting untuk meningkatkan kecerdasan model AI secara berkelanjutan:
+- **Active Learning Loop (Dataset Manager & Model MLOps)**: Fitur penting untuk MLOps dan peningkatan kecerdasan model AI secara berkelanjutan:
   - Peninjauan audio rekaman pengguna yang disimpan di server.
   - Fitur pelabelan ulang (*re-labeling*) jika terdapat salah klasifikasi oleh model AI.
-  - Fitur ekspor kumpulan data audio baru (file ZIP audio beserta metadata CSV) untuk digunakan langsung pada proses pelatihan ulang (*retraining*) model Deep Learning.
+  - Penandaan status data (*Trained* / *Untrained*) menggunakan antarmuka *floating action bar* yang modern.
+  - Ekspor kumpulan data baru berupa CSV dan JSON (*raw metadata* dan ZIP audio) untuk proses pelatihan ulang (*retraining*).
+  - **Penggantian Model Langsung (Hot-Swap)**: Mengunggah file model `.tflite` terbaru beserta param normalisasi (*mean/std*) tanpa *downtime* server.
 - **Laporan & Umpan Balik Pengguna**: Panel terintegrasi untuk membaca keluhan, saran, dan laporan dari pengguna.
 
 ## 🛠️ Teknologi yang Digunakan
