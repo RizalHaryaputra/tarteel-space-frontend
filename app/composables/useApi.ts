@@ -197,8 +197,8 @@ export const useApi = () => {
             total_latihan: number
             rata_rata_akurasi: number
             streak_hari: number
-            huruf_terlemah: string | null
-            huruf_terkuat: string | null
+            huruf_terlemah: Array<{ base_letter: string; arabic_script: string; avg_score: number; total_trials: number }>
+            huruf_terkuat: Array<{ base_letter: string; arabic_script: string; avg_score: number; total_trials: number }>
         }>('/history/dashboard')
 
     // ── Admin endpoints ─────────────────────────────────────────

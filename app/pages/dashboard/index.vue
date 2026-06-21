@@ -14,12 +14,31 @@ const { data: recentHistory, pending: loadingHistory } = useAsyncData('dashboard
 
 // Rekomendasi dinamis berdasarkan response API
 const recommendations = computed(() => {
-  const recs = []
+  const recs: Array<{ letter: string; transliteration: string; accuracy: number; status: string }> = []
+  
   if (stats.value?.huruf_terlemah) {
-    recs.push({ letter: stats.value.huruf_terlemah, transliteration: 'Fokus Utama', accuracy: 0, status: 'Perlu Latihan' })
+    stats.value.huruf_terlemah.forEach(item => {
+      recs.push({ 
+        letter: item.arabic_script, 
+        transliteration: item.base_letter, 
+        accuracy: item.avg_score, 
+        status: 'Perlu Latihan' 
+      })
+    })
   }
-  if (stats.value?.huruf_terkuat && stats.value.huruf_terkuat !== stats.value.huruf_terlemah) {
-    recs.push({ letter: stats.value.huruf_terkuat, transliteration: 'Kemajuan Baik', accuracy: 100, status: 'Terus Pertahankan' })
+  
+  if (stats.value?.huruf_terkuat) {
+    stats.value.huruf_terkuat.forEach(item => {
+      // Avoid duplicate if same letter appears in both lists
+      if (!recs.find(r => r.letter === item.arabic_script)) {
+         recs.push({ 
+           letter: item.arabic_script, 
+           transliteration: item.base_letter, 
+           accuracy: item.avg_score, 
+           status: 'Kemajuan Baik' 
+         })
+      }
+    })
   }
   return recs
 })
@@ -281,7 +300,7 @@ const formatDate = (isoStr: string) => {
               <div class="flex justify-between items-center mb-1">
                 <span class="font-bold text-white">{{ rec.transliteration }}</span>
                 <span class="text-xs font-medium px-2 py-0.5 rounded-md" :class="rec.status === 'Perlu Latihan' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'">
-                  {{ rec.status === 'Perlu Latihan' ? 'Target' : 'Excellent' }}
+                  {{ rec.accuracy.toFixed(1) }}%
                 </span>
               </div>
               <p class="text-xs text-slate-500">{{ rec.status }}</p>
