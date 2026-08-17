@@ -380,10 +380,10 @@
             oleh kecerdasan buatan. Gratis sepenuhnya, langsung dari browser Anda.
           </p>
           <div class="ts-cta-panel__actions">
-            <button class="ts-btn ts-btn--light" @click="navigateTo('/register')">
+            <button class="ts-btn ts-btn--primary" @click="navigateTo('/register')">
               Daftar Gratis <span aria-hidden="true">→</span>
             </button>
-            <button class="ts-btn ts-btn--ghost-light" @click="navigateTo('/login')">
+            <button class="ts-btn ts-btn--ghost" @click="navigateTo('/login')">
               Sudah punya akun
             </button>
           </div>
@@ -1736,13 +1736,17 @@ onBeforeUnmount(() => {
 
 .ts-cta-panel {
   position: relative;
-  background: var(--color-ink-0);
-  color: var(--color-paper-0);
+  background: var(--color-paper-1);
+  color: var(--color-ink-0);
+  border: var(--rule-soft);
   border-radius: var(--radius-xl);
   padding: var(--space-4xl) var(--space-2xl);
   text-align: center;
   overflow: hidden;
   isolation: isolate;
+  box-shadow:
+    0 1px 0 color-mix(in oklch, var(--color-ink-0) 6%, transparent) inset,
+    0 30px 80px -30px rgba(0, 10, 60, 0.8);
 }
 
 .ts-cta-panel::before {
@@ -1750,8 +1754,8 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(600px 220px at 15% 110%, color-mix(in oklch, var(--color-accent) 55%, transparent), transparent 70%),
-    radial-gradient(500px 200px at 90% -10%, color-mix(in oklch, var(--color-companion) 40%, transparent), transparent 70%);
+    radial-gradient(600px 250px at 15% 105%, color-mix(in oklch, var(--color-accent) 30%, transparent), transparent 70%),
+    radial-gradient(500px 220px at 85% -5%, color-mix(in oklch, var(--color-companion) 25%, transparent), transparent 70%);
   z-index: -1;
 }
 
@@ -1760,9 +1764,11 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklch, var(--color-ink-0) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--color-ink-0) 7%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
   z-index: -1;
 }
 
@@ -1775,13 +1781,14 @@ onBeforeUnmount(() => {
   margin: 0 0 var(--space-md);
   max-width: 18ch;
   margin-inline: auto;
+  color: var(--color-ink-0);
   font-style: normal;
 }
 
-.ts-cta-panel__title .ts-italic { color: var(--color-companion); }
+.ts-cta-panel__title .ts-italic { color: var(--color-accent-soft); }
 
 .ts-cta-panel__sub {
-  color: color-mix(in oklch, var(--color-paper-0) 72%, transparent);
+  color: var(--color-ink-1);
   max-width: 50ch;
   margin: 0 auto var(--space-xl);
   font-size: var(--text-md);
