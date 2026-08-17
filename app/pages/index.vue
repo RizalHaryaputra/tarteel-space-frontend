@@ -234,12 +234,12 @@
 
         <div class="ts-stats">
           <div class="ts-stats__card ts-stats__card--1">
-            <div class="ts-stats__num">95<small>%</small></div>
+            <div class="ts-stats__num">{{ Math.round(statAccuracy) }}<small>%</small></div>
             <div class="ts-stats__label">akurasi model CNN</div>
             <div class="ts-stats__note">Diuji pada dataset pelafalan hijaiyah dengan validasi silang.</div>
           </div>
           <div class="ts-stats__card ts-stats__card--2">
-            <div class="ts-stats__num">84<small>kelas</small></div>
+            <div class="ts-stats__num">{{ Math.round(statClasses) }}<small>kelas</small></div>
             <div class="ts-stats__label">kelas klasifikasi</div>
             <div class="ts-stats__note">28 huruf hijaiyah × 3 harakat (fathah, kasrah, dhommah).</div>
           </div>
@@ -344,9 +344,14 @@
               Dengan arsitektur Convolutional Neural Network (CNN), sistem kami memproses spektrogram
               audio untuk mengenali pola pelafalan yang benar sesuai kaidah tajwid.
             </p>
-            <button class="ts-btn ts-btn--primary ts-about__btn" @click="navigateTo('/dashboard/practice')">
-              Mulai Latihan <span aria-hidden="true">→</span>
-            </button>
+            <div class="ts-about__actions">
+              <button class="ts-btn ts-btn--primary" @click="navigateTo('/dashboard/practice')">
+                Mulai Latihan <span aria-hidden="true">→</span>
+              </button>
+              <button class="ts-btn ts-btn--ghost" @click="scrollTo('cara-kerja')">
+                Lihat Cara Kerja
+              </button>
+            </div>
           </div>
 
           <div class="ts-about__visual" aria-label="Visualisasi arsitektur model dan spektrogram audio">
@@ -501,11 +506,18 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const authStore = useAuthStore()
 const isDropdownOpen = ref(false)
 const isScrolled = ref(false)
 const dropdownRef = ref(null)
+
+const statAccuracy = ref(0)
+const statClasses = ref(0)
+
+let ctx = null
 
 useHead({
   title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
@@ -568,11 +580,197 @@ const getHeatmapStyle = (col, row) => {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('click', handleClickOutside)
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  ctx = gsap.context(() => {
+    // 1. Hero Entrance Animation
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    heroTl
+      .from('.ts-nav', {
+        y: -30,
+        opacity: 0,
+        duration: 0.8,
+      })
+      .from('.ts-hero__live', {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+      }, '-=0.4')
+      .from('.ts-hero__h1', {
+        y: 35,
+        opacity: 0,
+        duration: 0.85,
+      }, '-=0.4')
+      .from('.ts-hero__sub', {
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+      }, '-=0.5')
+      .from('.ts-hero__ctas .ts-btn', {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+      }, '-=0.5')
+      .from('.ts-hero__fineprint span', {
+        opacity: 0,
+        y: 10,
+        duration: 0.5,
+        stagger: 0.08,
+      }, '-=0.4')
+      .from('.ts-eval-card', {
+        x: 40,
+        opacity: 0,
+        rotate: 3,
+        duration: 0.9,
+      }, '-=0.8')
+      .from('.ts-marquee', {
+        opacity: 0,
+        duration: 0.8,
+      }, '-=0.4')
+
+    // 2. Cara Kerja (Step Sequence) ScrollTrigger
+    gsap.from('#cara-kerja .ts-section-head > *', {
+      scrollTrigger: {
+        trigger: '#cara-kerja',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-step', {
+      scrollTrigger: {
+        trigger: '.ts-steps',
+        start: 'top 78%',
+        toggleActions: 'play none none none',
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.85,
+      stagger: 0.2,
+      ease: 'power2.out',
+    })
+
+    // 3. Stats Section & Number Counter Roll
+    gsap.from('#fitur .ts-section-head > *', {
+      scrollTrigger: {
+        trigger: '#fitur',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-stats__card', {
+      scrollTrigger: {
+        trigger: '.ts-stats',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 35,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+      onStart: () => {
+        const stats = { acc: 0, cls: 0 }
+        gsap.to(stats, {
+          acc: 95,
+          cls: 84,
+          duration: 1.8,
+          ease: 'power2.out',
+          onUpdate: () => {
+            statAccuracy.value = stats.acc
+            statClasses.value = stats.cls
+          },
+        })
+      },
+    })
+
+    // 4. Features Section Stagger
+    gsap.from('.ts-feature', {
+      scrollTrigger: {
+        trigger: '.ts-features',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    // 5. Tentang Section
+    gsap.from('.ts-about__copy > *', {
+      scrollTrigger: {
+        trigger: '#tentang',
+        start: 'top 78%',
+        toggleActions: 'play none none none',
+      },
+      x: -30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-spec-console', {
+      scrollTrigger: {
+        trigger: '.ts-spec-console',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      x: 35,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power2.out',
+    })
+
+    // 6. CTA Panel
+    gsap.from('.ts-cta-panel', {
+      scrollTrigger: {
+        trigger: '.ts-cta-section',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      scale: 0.96,
+      y: 30,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+    })
+
+    // 7. Footer
+    gsap.from('.ts-footer', {
+      scrollTrigger: {
+        trigger: '.ts-footer',
+        start: 'top 90%',
+        toggleActions: 'play none none none',
+      },
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      ease: 'power2.out',
+    })
+  })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
   document.removeEventListener('click', handleClickOutside)
+  if (ctx) ctx.revert()
 })
 </script>
 
@@ -1072,17 +1270,27 @@ onBeforeUnmount(() => {
 }
 
 .ts-hero__fineprint {
-  margin-top: var(--space-md);
+  margin-top: var(--space-xl);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-ink-2);
   display: flex;
-  gap: var(--space-md);
+  align-items: center;
+  gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
-.ts-hero__fineprint span::before { content: "·"; margin-right: var(--space-xs); color: var(--color-ink-3); }
-.ts-hero__fineprint span:first-child::before { content: ""; margin: 0; }
+.ts-hero__fineprint span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ts-hero__fineprint span:not(:first-child)::before {
+  content: "·";
+  margin-right: var(--space-sm);
+  color: var(--color-ink-3);
+  font-weight: bold;
+}
 
 /* ── eval card (Tier-A pure-CSS art) ── */
 .ts-eval-card {
@@ -1730,10 +1938,12 @@ onBeforeUnmount(() => {
   align-items: flex-start;
 }
 
-.ts-about__btn {
-  align-self: flex-start;
-  width: fit-content;
-  margin-top: var(--space-xs);
+.ts-about__actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-md);
 }
 
 .ts-about__title {
