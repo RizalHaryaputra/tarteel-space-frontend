@@ -512,9 +512,9 @@ onBeforeUnmount(() => {
 
   /* accent — blue (preserving original palette intent) */
   --color-accent: oklch(62% 0.190 250);       /* primary blue */
-  --color-accent-soft: oklch(72% 0.130 250);
-  --color-accent-tint: oklch(20% 0.060 250);  /* dark tint for cards */
-  --color-companion: oklch(78% 0.160 160);    /* teal — sparingly */
+  --color-accent-soft: oklch(76% 0.140 240);   /* soft sky blue */
+  --color-accent-tint: oklch(22% 0.080 250);  /* dark blue tint for cards */
+  --color-companion: oklch(70% 0.160 235);    /* vibrant cyan-blue/azure */
   --color-success: oklch(70% 0.150 150);
   --color-danger: oklch(64% 0.200 25);
 
@@ -908,8 +908,8 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(900px 500px at 30% 0%, color-mix(in oklch, var(--color-accent-tint) 80%, transparent), transparent 60%),
-    radial-gradient(600px 400px at 80% 20%, color-mix(in oklch, var(--color-companion) 15%, transparent), transparent 55%);
+    radial-gradient(900px 500px at 25% 10%, color-mix(in oklch, var(--color-accent) 22%, transparent), transparent 65%),
+    radial-gradient(700px 450px at 80% 20%, color-mix(in oklch, var(--color-companion) 18%, transparent), transparent 60%);
   pointer-events: none;
 }
 
