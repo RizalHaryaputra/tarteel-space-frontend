@@ -344,23 +344,91 @@
               Dengan arsitektur Convolutional Neural Network (CNN), sistem kami memproses spektrogram
               audio untuk mengenali pola pelafalan yang benar sesuai kaidah tajwid.
             </p>
-            <button class="ts-btn ts-btn--primary" @click="navigateTo('/dashboard/practice')">
+            <button class="ts-btn ts-btn--primary ts-about__btn" @click="navigateTo('/dashboard/practice')">
               Mulai Latihan <span aria-hidden="true">→</span>
             </button>
           </div>
 
-          <div class="ts-about__visual" aria-hidden="true">
-            <!-- Pure CSS art: spectrogram visualization -->
-            <div class="ts-spectrogram">
-              <div class="ts-spectrogram__label">SPEKTROGRAM AUDIO</div>
-              <div class="ts-spectrogram__grid">
-                <div v-for="i in 32" :key="i" class="ts-spectrogram__col">
-                  <div v-for="j in 8" :key="j" class="ts-spectrogram__cell" :style="spectrogramStyle(i, j)"></div>
+          <div class="ts-about__visual" aria-label="Visualisasi arsitektur model dan spektrogram audio">
+            <!-- Rich CNN Pipeline & Spectrogram Visual -->
+            <div class="ts-spec-console">
+              <!-- Top header bar -->
+              <div class="ts-spec-console__head">
+                <div class="ts-spec-console__title-wrap">
+                  <span class="ts-spec-console__badge">CNN · ARSITEKTUR</span>
+                  <div class="ts-spec-console__title">Spektrogram Audio 2D</div>
+                </div>
+                <div class="ts-spec-console__status">
+                  <span class="ts-live-dot" aria-hidden="true"></span>
+                  <span>16 kHz · STFT Mel</span>
                 </div>
               </div>
-              <div class="ts-spectrogram__overlay">
-                <span class="ts-spectrogram__result">بَ</span>
-                <span class="ts-spectrogram__score">96%</span>
+
+              <!-- Main spectrogram canvas / matrix -->
+              <div class="ts-spec-view">
+                <div class="ts-spec-y-axis">
+                  <span>8k</span>
+                  <span>4k</span>
+                  <span>2k</span>
+                  <span>0</span>
+                </div>
+                <div class="ts-spec-heatmap">
+                  <div v-for="c in 24" :key="c" class="ts-spec-col">
+                    <div
+                      v-for="r in 12"
+                      :key="r"
+                      class="ts-spec-bin"
+                      :style="getHeatmapStyle(c, r)"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Time axis -->
+              <div class="ts-spec-x-axis">
+                <span>0.0s</span>
+                <span>0.2s</span>
+                <span>0.4s</span>
+                <span>0.6s</span>
+                <span>0.8s</span>
+              </div>
+
+              <!-- CNN Pipeline mini-flow -->
+              <div class="ts-spec-pipeline">
+                <div class="ts-spec-pipe-node">
+                  <span class="ts-spec-pipe-icon">〰</span>
+                  <span>1. Audio WAV</span>
+                </div>
+                <span class="ts-spec-pipe-arrow">→</span>
+                <div class="ts-spec-pipe-node ts-spec-pipe-node--active">
+                  <span class="ts-spec-pipe-icon">▦</span>
+                  <span>2. Mel-Spec</span>
+                </div>
+                <span class="ts-spec-pipe-arrow">→</span>
+                <div class="ts-spec-pipe-node">
+                  <span class="ts-spec-pipe-icon">☵</span>
+                  <span>3. Conv2D</span>
+                </div>
+              </div>
+
+              <!-- Bottom prediction result card -->
+              <div class="ts-spec-result">
+                <div class="ts-spec-result__letter">
+                  <span class="ts-spec-result__char">بَ</span>
+                  <span class="ts-spec-result__tag">Fathah</span>
+                </div>
+                <div class="ts-spec-result__info">
+                  <div class="ts-spec-result__row">
+                    <span class="ts-spec-result__label">Hasil Klasifikasi</span>
+                    <span class="ts-spec-result__score">96.4% Akurat</span>
+                  </div>
+                  <div class="ts-spec-result__meter">
+                    <div class="ts-spec-result__fill" style="width: 96.4%"></div>
+                  </div>
+                  <div class="ts-spec-result__meta">
+                    Makhraj: Asy-Syafatain (Dua Bibir) · Benar
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -466,15 +534,34 @@ const handleClickOutside = (e) => {
   }
 }
 
-// Spectrogram CSS art — seeded random heights
-const spectrogramStyle = (col, row) => {
-  const seed = (col * 7 + row * 13) % 100
-  const intensity = Math.sin(col * 0.4) * 30 + Math.cos(row * 0.8) * 20 + 50
-  const clamped = Math.max(5, Math.min(95, intensity + (seed % 30) - 15))
-  const opacity = clamped / 100
+// Spectrogram 2D Heatmap simulation for Arabic vowel formant (بَ)
+const getHeatmapStyle = (col, row) => {
+  const inSound = col >= 3 && col <= 21
+  if (!inSound) {
+    return {
+      background: 'oklch(15% 0.015 255)',
+      opacity: '0.2',
+    }
+  }
+
+  // Formant F1 (low-mid around row 8) & F2 (high around row 3)
+  const distF1 = Math.abs(row - 8)
+  const distF2 = Math.abs(row - 3)
+  const timeEnvelope = Math.sin(((col - 3) / 18) * Math.PI)
+
+  const intensity1 = Math.max(0, 1 - distF1 * 0.28) * timeEnvelope
+  const intensity2 = Math.max(0, 1 - distF2 * 0.35) * timeEnvelope
+  const noise = ((col * 17 + row * 29) % 20) / 100
+
+  const total = Math.min(1, Math.max(0.08, intensity1 * 0.75 + intensity2 * 0.55 + noise * 0.2))
+
+  const lightness = (18 + total * 58).toFixed(1)
+  const chroma = (0.04 + total * 0.18).toFixed(3)
+  const hue = (255 - total * 20).toFixed(1)
+
   return {
-    opacity: opacity.toFixed(2),
-    height: `${Math.max(2, Math.floor(clamped / 12))}px`,
+    background: `oklch(${lightness}% ${chroma} ${hue})`,
+    opacity: Math.max(0.25, total).toFixed(2),
   }
 }
 
@@ -1636,7 +1723,18 @@ onBeforeUnmount(() => {
   .ts-about { grid-template-columns: 1fr; }
 }
 
-.ts-about__copy { display: flex; flex-direction: column; gap: var(--space-md); }
+.ts-about__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+
+.ts-about__btn {
+  align-self: flex-start;
+  width: fit-content;
+  margin-top: var(--space-xs);
+}
 
 .ts-about__title {
   font-family: var(--font-display);
@@ -1657,76 +1755,232 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
-/* spectrogram CSS art */
-.ts-spectrogram {
+/* ── Rich CNN Pipeline & Spectrogram Console ── */
+.ts-spec-console {
   background: var(--color-paper-1);
   border: var(--rule-soft);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 4/3;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  box-shadow:
+    0 1px 0 color-mix(in oklch, var(--color-ink-0) 6%, transparent) inset,
+    0 24px 60px -28px rgba(0, 10, 80, 0.7);
+  position: relative;
 }
 
-.ts-spectrogram__label {
+.ts-spec-console__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: var(--space-xs);
+  border-bottom: var(--rule-hair);
+}
+
+.ts-spec-console__badge {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-ink-3);
+  color: var(--color-accent-soft);
 }
 
-.ts-spectrogram__grid {
+.ts-spec-console__title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-ink-0);
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+}
+
+.ts-spec-console__status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-2);
   display: flex;
-  gap: 3px;
-  align-items: flex-end;
-  flex: 1;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-paper-2);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: var(--rule-hair);
 }
 
-.ts-spectrogram__col {
+/* Spectrogram 2D Heatmap View */
+.ts-spec-view {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: stretch;
+  background: var(--color-paper-0);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: var(--rule-hair);
+}
+
+.ts-spec-y-axis {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-ink-3);
+  padding-right: 6px;
+  border-right: 1px dashed color-mix(in oklch, var(--color-ink-0) 8%, transparent);
+}
+
+.ts-spec-heatmap {
+  display: flex;
+  gap: 3px;
   flex: 1;
+  height: 120px;
   align-items: stretch;
 }
 
-.ts-spectrogram__cell {
-  background: var(--color-accent);
-  border-radius: 1px;
-  min-height: 2px;
+.ts-spec-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
 }
 
-.ts-spectrogram__overlay {
-  position: absolute;
-  bottom: var(--space-lg);
-  right: var(--space-lg);
-  background: var(--color-paper-0);
-  border: var(--rule-soft);
+.ts-spec-bin {
+  flex: 1;
+  border-radius: 1px;
+  min-height: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.ts-spec-x-axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-ink-3);
+  padding: 0 8px 0 28px;
+  margin-top: -6px;
+}
+
+/* Pipeline Sequence */
+.ts-spec-pipeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-paper-2);
   border-radius: var(--radius-md);
-  padding: var(--space-xs) var(--space-sm);
+  border: var(--rule-hair);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-ink-2);
+}
+
+.ts-spec-pipe-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ts-spec-pipe-node--active {
+  color: var(--color-accent-soft);
+  font-weight: 500;
+}
+
+.ts-spec-pipe-arrow {
+  color: var(--color-ink-3);
+  font-size: 10px;
+}
+
+/* Prediction Result Bar */
+.ts-spec-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px 14px;
+  background: var(--color-paper-0);
+  border-radius: var(--radius-md);
+  border: var(--rule-soft);
+}
+
+.ts-spec-result__letter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  box-shadow: 0 8px 20px -8px rgba(0, 10, 60, 0.5);
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-tint);
+  border: 1px solid color-mix(in oklch, var(--color-accent) 30%, transparent);
+  flex: none;
 }
 
-.ts-spectrogram__result {
+.ts-spec-result__char {
   font-family: var(--font-body);
-  font-size: 1.6rem;
-  color: var(--color-ink-0);
+  font-size: 1.4rem;
   line-height: 1;
+  color: var(--color-accent-soft);
 }
 
-.ts-spectrogram__score {
+.ts-spec-result__tag {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-soft);
+  margin-top: 1px;
+}
+
+.ts-spec-result__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ts-spec-result__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ts-spec-result__label {
+  color: var(--color-ink-1);
+  font-weight: 500;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ts-spec-result__score {
+  font-family: var(--font-mono);
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.ts-spec-result__meter {
+  height: 4px;
+  background: var(--color-paper-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ts-spec-result__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+  border-radius: 2px;
+}
+
+.ts-spec-result__meta {
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.06em;
-  color: var(--color-success);
+  color: var(--color-ink-2);
 }
 
 /* ── cta panel ── */
