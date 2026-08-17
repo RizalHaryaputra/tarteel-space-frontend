@@ -21,7 +21,7 @@ export default defineNuxtConfig({
       ],
       // Fix: Set dark background di level HTML agar tidak ada white flash saat transisi
       style: [
-        { innerHTML: 'html, body { background-color: #020617; margin: 0; padding: 0; }' }
+        { innerHTML: 'html, body { background-color: #0b0d11; margin: 0; padding: 0; }' }
       ]
     },
   },
