@@ -1,405 +1,1337 @@
 <template>
-    <div class="min-h-screen bg-dark-950 text-white font-sans selection:bg-primary-500/30 selection:text-primary-400 relative overflow-hidden">
-        <!-- Background Ambient Glow -->
-        <div class="absolute inset-0 bg-hero-glow pointer-events-none z-0"></div>
+  <div class="ts-root bg-dark-950 text-ink-0 font-sans selection:bg-primary-500 selection:text-dark-950 min-h-screen overflow-x-clip antialiased">
 
-        <nav class="fixed top-0 w-full z-50 bg-dark-950/80 backdrop-blur-md border-b border-dark-800">
-            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center gap-3 relative z-10 cursor-pointer" @click="scrollTo('beranda')">
-                    <img src="/logo.png" alt="Tarteel Space Logo" class="w-10 h-10 rounded-lg object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-                    <span class="font-bold text-xl tracking-tight text-white hidden sm:block">Tarteel <span class="text-primary-400">Space</span></span>
-                </div>
-
-                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400 relative z-10">
-                    <button @click="scrollTo('cara-kerja')" class="hover:text-primary-400 transition-colors">Cara Kerja</button>
-                    <button @click="scrollTo('fitur')" class="hover:text-primary-400 transition-colors">Fitur</button>
-                    <button @click="scrollTo('tentang')" class="hover:text-primary-400 transition-colors">Tentang</button>
-                </div>
-
-                <div class="flex items-center gap-4 relative z-10">
-                    <ClientOnly>
-                        <template v-if="authStore.isLoggedIn">
-                            <!-- User Profile Dropdown -->
-                            <div class="relative">
-                                <div @click="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-2 sm:gap-3 p-1.5 sm:px-4 sm:py-2 rounded-full sm:rounded-xl bg-dark-900/50 border border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer group">
-                                    <div class="text-right hidden sm:block">
-                                        <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
-                                    </div>
-                                    <div v-if="authStore.avatarUrl" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg shadow-dark-800/20 border border-dark-700">
-                                        <img :src="authStore.avatarUrl" class="w-full h-full object-cover" alt="Avatar">
-                                    </div>
-                                    <div v-else class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-dark-800 to-dark-750 flex items-center justify-center text-slate-300 font-bold text-xs sm:text-sm shadow-lg shadow-dark-800/20 border border-dark-700">
-                                        {{ authStore.initials || '?' }}
-                                    </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-white transition-transform duration-200 hidden sm:block" :class="{'rotate-180': isDropdownOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                                
-                                <!-- Dropdown Overlay -->
-                                <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="fixed inset-0 z-40"></div>
-
-                                <!-- Dropdown Menu -->
-                                <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-56 sm:w-64 bg-dark-900 border border-dark-800 rounded-xl shadow-xl overflow-hidden z-50">
-                                    <div class="py-2">
-                                        <div class="px-4 py-3 border-b border-dark-800 mb-1 sm:hidden">
-                                            <p class="text-sm font-medium text-white">{{ authStore.userName || 'Pengguna' }}</p>
-                                        </div>
-                                        <button @click="navigateTo(authStore.isAdmin ? '/admin' : '/dashboard'); isDropdownOpen = false" class="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-dark-800 hover:text-white transition-colors flex items-center gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                            </svg>
-                                            {{ authStore.isAdmin ? 'Halaman Admin' : 'Halaman Dashboard' }}
-                                        </button>
-                                        <button @click="authStore.logout(); navigateTo('/login')" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-dark-800 hover:text-red-300 transition-colors flex items-center gap-3 border-t border-dark-800 mt-1 pt-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                            </svg>
-                                            Keluar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <button @click="navigateTo('/login')" class="text-sm font-semibold px-4 py-2 text-slate-300 hover:text-primary-400 transition-colors hidden sm:block">
-                                Masuk
-                            </button>
-                            <button @click="navigateTo('/register')" class="text-sm font-semibold bg-primary-500 text-dark-950 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-primary-400 transition-all shadow-lg shadow-primary-500/20 active:scale-95">
-                                Daftar
-                            </button>
-                        </template>
-                        <template #fallback>
-                            <div class="w-24 h-10 bg-dark-800/50 rounded-full animate-pulse"></div>
-                        </template>
-                    </ClientOnly>
-                </div>
+    <!-- ───────── nav · N5 Floating pill ───────── -->
+    <nav class="ts-nav" aria-label="Primary" :class="{ 'ts-nav--scrolled': isScrolled }">
+      <button class="ts-nav__brand flex items-center gap-2 mr-2 bg-none border-none cursor-pointer p-0 text-ink-0 font-display font-semibold text-sm tracking-tight" @click="scrollTo('beranda')" aria-label="Tarteel Space home">
+        <img src="/logo.png" alt="" class="w-[22px] h-[22px] rounded-[5px] object-contain" aria-hidden="true" />
+        <span class="text-ink-0">Tarteel<span class="text-primary-400">Space</span></span>
+      </button>
+      <div class="ts-nav__links flex gap-0.5">
+        <button class="ts-nav__link" @click="scrollTo('cara-kerja')">Cara Kerja</button>
+        <button class="ts-nav__link" @click="scrollTo('fitur')">Fitur</button>
+        <button class="ts-nav__link" @click="scrollTo('tentang')">Tentang</button>
+      </div>
+      <ClientOnly>
+        <template v-if="authStore.isLoggedIn">
+          <div class="ts-nav__user-wrap relative" ref="dropdownRef">
+            <button
+              @click="isDropdownOpen = !isDropdownOpen"
+              class="ts-nav__user-btn"
+              :aria-expanded="isDropdownOpen"
+              aria-haspopup="true"
+            >
+              <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-[26px] h-[26px] rounded-full object-cover shrink-0" alt="Avatar" />
+              <span v-else class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[11px] font-semibold bg-primary-950 text-primary-400 shrink-0">{{ authStore.initials || '?' }}</span>
+              <span class="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">{{ authStore.userName || 'Pengguna' }}</span>
+            </button>
+            <div v-if="isDropdownOpen" class="ts-dropdown" role="menu">
+              <button
+                class="ts-dropdown__item"
+                role="menuitem"
+                @click="navigateTo(authStore.isAdmin ? '/admin' : '/dashboard'); isDropdownOpen = false"
+              >
+                <svg class="w-3.5 h-3.5 shrink-0 opacity-70" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/>
+                  <rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>
+                </svg>
+                {{ authStore.isAdmin ? 'Halaman Admin' : 'Dasbor' }}
+              </button>
+              <button
+                class="ts-dropdown__item ts-dropdown__item--danger"
+                role="menuitem"
+                @click="authStore.logout(); navigateTo('/login')"
+              >
+                <svg class="w-3.5 h-3.5 shrink-0 opacity-70" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M10 3h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-3M6 11l4-3-4-3M1 8h9"/>
+                </svg>
+                Keluar
+              </button>
             </div>
-        </nav>
+          </div>
+        </template>
+        <template v-else>
+          <button class="ts-nav__link" @click="navigateTo('/login')">Masuk</button>
+          <button class="ts-nav__cta" @click="navigateTo('/register')">Mulai Gratis</button>
+        </template>
+        <template #fallback>
+          <div class="w-[90px] h-[34px] bg-dark-850 rounded-full animate-pulse"></div>
+        </template>
+      </ClientOnly>
+    </nav>
 
-        <section id="beranda" class="pt-32 pb-20 px-6 relative z-10">
-            <div class="max-w-7xl mx-auto text-center mt-12 md:mt-20">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-bold mb-8 border border-primary-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
-                    </span>
-                    POWERED BY DEEP LEARNING (CNN)
-                </div>
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1] text-white">
-                    Sempurnakan Pelafalan <br />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-400">
-                        Hijaiyah Anda Secara Akurat
-                    </span>
-                </h1>
-                <p class="max-w-2xl mx-auto text-slate-400 text-lg md:text-xl mb-12 leading-relaxed">
-                    Tarteel Space menggunakan kecerdasan buatan untuk mengevaluasi akurasi pelafalan Al-Qur'an Anda
-                    secara real-time, memberikan koreksi instan tanpa batas ruang dan waktu.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button @click="navigateTo('/dashboard/practice')" class="w-full sm:w-auto px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95 flex items-center justify-center gap-2">
-                        Mulai Latihan Sekarang
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <button class="w-full sm:w-auto px-8 py-4 bg-dark-900 border border-dark-800 text-slate-300 rounded-2xl font-bold text-lg hover:bg-dark-800 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 group">
-                        <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-primary-500/20 group-hover:text-primary-400 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        Lihat Demo Video
-                    </button>
-                </div>
+    <!-- ───────── hero · Marquee Hero + split diptych ───────── -->
+    <section class="ts-hero pt-24 sm:pt-[130px] pb-12 sm:pb-20 relative overflow-clip" id="beranda">
+      <div class="ts-container max-w-[1240px] mx-auto px-4 sm:px-6 w-full">
+
+        <!-- live badge -->
+        <div class="ts-hero__live inline-flex items-center gap-2 py-1 sm:py-1.5 px-3 sm:px-3.5 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] sm:text-xs text-ink-1 relative z-10 max-w-full" role="status" aria-live="polite">
+          <span class="ts-live-dot w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true"></span>
+          <span class="truncate sm:overflow-visible">DITENAGAI DEEP LEARNING · <strong class="font-semibold text-ink-0">CNN</strong> · REAL-TIME</span>
+        </div>
+
+        <!-- split layout: headline left, art right -->
+        <div class="ts-hero__layout grid grid-cols-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-8 sm:gap-12 lg:gap-20 items-center mt-6 sm:mt-8 relative z-10">
+          <div class="ts-hero__copy">
+            <h1 class="ts-hero__h1 font-display font-semibold text-[clamp(2.1rem,7vw,4.5rem)] leading-[1.02] tracking-tight my-3 sm:my-4 text-ink-0">
+              Sempurnakan Pelafalan<br>
+              Hijaiyah<em class="ts-italic font-serif italic text-primary-400 font-normal ml-1.5 sm:ml-2">dengan benar.</em>
+            </h1>
+            <p class="ts-hero__sub text-sm sm:text-base md:text-lg text-ink-1 max-w-[50ch] mb-6 sm:mb-8 leading-relaxed">
+              Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time
+              menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.
+            </p>
+            <div class="ts-hero__ctas flex gap-3 items-center flex-wrap">
+              <button class="ts-btn ts-btn--primary" @click="navigateTo('/dashboard/practice')">
+                Mulai Latihan <span aria-hidden="true">→</span>
+              </button>
+              <button class="ts-btn ts-btn--ghost" @click="scrollTo('cara-kerja')">
+                Lihat Cara Kerja
+              </button>
             </div>
-        </section>
-
-        <!-- CARA KERJA -->
-        <section id="cara-kerja" class="py-24 px-6 relative z-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-20">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Bagaimana Cara Kerjanya?</h2>
-                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">Tiga langkah mudah untuk mulai mengevaluasi dan menyempurnakan pelafalan hijaiyah Anda.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-                    <!-- Connecting Line -->
-                    <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-dark-800 z-0">
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"></div>
-                    </div>
-
-                    <!-- Step 1 -->
-                    <div class="relative z-10 flex flex-col items-center text-center group">
-                        <div class="w-24 h-24 rounded-full bg-dark-900 border border-dark-800 flex items-center justify-center mb-8 group-hover:border-primary-500/50 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all relative">
-                            <div class="absolute inset-2 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                                🎙️
-                            </div>
-                            <div class="absolute -bottom-3 w-8 h-8 rounded-full bg-primary-500 text-dark-950 font-bold flex items-center justify-center border-4 border-dark-950">1</div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-white">Izinkan Mikrofon</h3>
-                        <p class="text-slate-400 leading-relaxed">Berikan akses mikrofon pada peramban Anda untuk mulai merekam suara.</p>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="relative z-10 flex flex-col items-center text-center group">
-                        <div class="w-24 h-24 rounded-full bg-dark-900 border border-dark-800 flex items-center justify-center mb-8 group-hover:border-primary-500/50 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all relative">
-                            <div class="absolute inset-2 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                                🗣️
-                            </div>
-                            <div class="absolute -bottom-3 w-8 h-8 rounded-full bg-primary-500 text-dark-950 font-bold flex items-center justify-center border-4 border-dark-950">2</div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-white">Mulai Melafalkan</h3>
-                        <p class="text-slate-400 leading-relaxed">Pilih huruf hijaiyah dan lafalkan dengan jelas sesuai dengan tajwid.</p>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="relative z-10 flex flex-col items-center text-center group">
-                        <div class="w-24 h-24 rounded-full bg-dark-900 border border-dark-800 flex items-center justify-center mb-8 group-hover:border-primary-500/50 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all relative">
-                            <div class="absolute inset-2 rounded-full bg-dark-950 border border-dark-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                                ✨
-                            </div>
-                            <div class="absolute -bottom-3 w-8 h-8 rounded-full bg-primary-500 text-dark-950 font-bold flex items-center justify-center border-4 border-dark-950">3</div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-white">Terima Evaluasi</h3>
-                        <p class="text-slate-400 leading-relaxed">AI kami memproses suara dan memberikan persentase akurasi secara instan.</p>
-                    </div>
-                </div>
+            <div class="ts-hero__fineprint mt-10 sm:mt-12 font-mono text-[11px] sm:text-xs text-ink-2">
+              <span>gratis sepenuhnya</span>
+              <span>langsung dari browser</span>
+              <span>tanpa instal aplikasi</span>
             </div>
-        </section>
+          </div>
 
-        <!-- FITUR -->
-        <section id="fitur" class="py-24 px-6 relative z-10 border-t border-dark-800/50 bg-dark-900/20">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-16 text-center md:text-left">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Fitur Utama</h2>
-                    <p class="text-slate-400 text-lg">Teknologi canggih di balik perjalanan belajar Anda.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-[600px]">
-                    <!-- Feature 1: Real-time Analysis -->
-                    <div class="md:col-span-2 md:row-span-2 bg-dark-900 border border-dark-800 rounded-[2rem] p-8 flex flex-col justify-between hover:border-primary-500/30 hover:shadow-[0_0_30px_rgba(59,130,246,0.05)] transition-all group overflow-hidden relative">
-                        <!-- Glow effect on hover -->
-                        <div class="absolute -inset-px bg-gradient-to-br from-primary-500/20 to-transparent opacity-0 group-hover:opacity-100 rounded-[2rem] transition-opacity duration-500 pointer-events-none"></div>
-                        
-                        <div class="relative z-10">
-                            <div class="w-14 h-14 bg-primary-500/10 border border-primary-500/20 rounded-2xl flex items-center justify-center mb-6 text-primary-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-3xl font-bold mb-4 text-white">Evaluasi Audio Real-time</h3>
-                            <p class="text-slate-400 leading-relaxed text-lg">
-                                Algoritma Deep Learning kami memproses input suara Anda dan memberikan persentase
-                                akurasi pelafalan secara instan berdasarkan kaidah tajwid yang benar.
-                            </p>
-                        </div>
-                        <div class="mt-8 bg-dark-950 rounded-2xl p-6 border border-dark-800 group-hover:border-primary-500/30 transition-colors relative z-10">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-bold text-slate-500 tracking-wider">ANALYSIS STATE</span>
-                                <span class="text-xs font-bold text-primary-400 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse"></span>
-                                    88.5% ACCURATE
-                                </span>
-                            </div>
-                            <div class="w-full bg-dark-800 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-primary-600 to-primary-400 h-full w-[88.5%] rounded-full relative">
-                                    <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite] -translate-x-full" style="background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Feature 2: Harakat Support -->
-                    <div class="md:col-span-2 bg-gradient-to-br from-primary-600 to-cyan-700 rounded-[2rem] p-8 text-white flex flex-col justify-between relative overflow-hidden group shadow-lg shadow-primary-600/20">
-                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-                        <div class="relative z-10">
-                            <h3 class="text-2xl font-bold mb-3 text-white">Mendukung Harakat Lengkap</h3>
-                            <p class="text-primary-100 opacity-90 text-lg">Klasifikasi mencakup Fathah, Kasrah, dan Dhommah
-                                untuk setiap huruf hijaiyah.</p>
-                        </div>
-                        <div class="flex gap-3 mt-6 relative z-10">
-                            <span class="w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-xl text-xl font-bold border border-white/20 shadow-inner">بَ</span>
-                            <span class="w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-xl text-xl font-bold border border-white/20 shadow-inner">بِ</span>
-                            <span class="w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-xl text-xl font-bold border border-white/20 shadow-inner">بُ</span>
-                        </div>
-                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000 pointer-events-none"></div>
-                    </div>
-
-                    <!-- Feature 3: Progress Report -->
-                    <div class="bg-dark-900 border border-dark-800 rounded-[2rem] p-8 hover:border-primary-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.05)] transition-all relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-gradient-to-t from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <h3 class="font-bold mb-2 text-xl text-white relative z-10">Laporan Kemajuan</h3>
-                        <p class="text-sm text-slate-400 relative z-10">Pantau grafik perkembangan harian.</p>
-                        <div class="mt-8 flex items-end justify-between gap-1.5 h-16 relative z-10">
-                            <div class="w-full bg-dark-800 group-hover:bg-primary-500/20 transition-colors h-[30%] rounded-t-sm"></div>
-                            <div class="w-full bg-dark-800 group-hover:bg-primary-500/40 transition-colors h-[50%] rounded-t-sm"></div>
-                            <div class="w-full bg-dark-800 group-hover:bg-primary-500/60 transition-colors h-[80%] rounded-t-sm"></div>
-                            <div class="w-full bg-dark-800 group-hover:bg-primary-500/80 transition-colors h-[60%] rounded-t-sm"></div>
-                            <div class="w-full bg-primary-500 h-[95%] rounded-t-sm shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-                        </div>
-                    </div>
-
-                    <!-- Feature 4: Web Access -->
-                    <div class="bg-dark-950 border border-dark-800 rounded-[2rem] p-8 hover:border-primary-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.05)] transition-all group">
-                        <h3 class="font-bold mb-2 text-xl text-white">Akses Website</h3>
-                        <p class="text-sm text-slate-400">Latih pelafalan langsung dari browser Anda.</p>
-                        <div class="mt-8 flex justify-center">
-                            <div class="relative flex items-center justify-center">
-                                <div class="w-14 h-14 border-2 border-dark-800 rounded-full"></div>
-                                <div class="absolute w-14 h-14 border-2 border-transparent border-t-primary-500 rounded-full animate-spin"></div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-400 absolute" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <!-- Arabic evaluation card (Hallmark Style Line-Item Sheet) -->
+          <aside class="ts-eval-card" aria-label="Pratinjau evaluasi pelafalan">
+            <div class="ts-eval-card__head flex justify-between items-start pb-3.5 sm:pb-4 border-b border-white/10">
+              <div>
+                <div class="font-mono font-bold text-ink-0 text-base sm:text-lg tracking-tight">SESI-04212</div>
+                <div class="font-mono text-[11px] sm:text-xs text-ink-2 mt-0.5 sm:mt-1">Ahmad Rizal · Pelafalan Hijaiyah</div>
+              </div>
+              <span class="font-mono text-[9px] sm:text-[10px] tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-1 px-2.5 rounded-full font-medium">EVALUASI · LIVE</span>
             </div>
-        </section>
 
-        <!-- TENTANG -->
-        <section id="tentang" class="py-24 px-6 relative z-10 border-t border-dark-800/50">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col lg:flex-row items-center gap-16">
-                    <div class="w-full lg:w-1/2">
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dark-800 text-slate-300 text-xs font-bold mb-6 border border-dark-700">
-                            TENTANG PROYEK INI
-                        </div>
-                        <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white leading-tight">
-                            Menyatukan Tradisi dan <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-400">Teknologi Modern</span>
-                        </h2>
-                        <p class="text-slate-400 text-lg mb-6 leading-relaxed">
-                            Tarteel Space berawal dari sebuah penelitian Skripsi Teknologi Informasi. Misi utama proyek ini adalah mengembangkan alat bantu mandiri untuk pembelajaran pelafalan Al-Qur'an yang dapat diakses oleh siapa saja, kapan saja, dan di mana saja.
-                        </p>
-                        <p class="text-slate-400 text-lg mb-8 leading-relaxed">
-                            Dengan memanfaatkan arsitektur Convolutional Neural Network (CNN), sistem kami memproses spektrogram audio untuk mengenali pola pelafalan yang benar sesuai dengan kaidah tajwid.
-                        </p>
-                        
-                        <div class="flex gap-4">
-                            <div class="px-6 py-4 bg-dark-900 border border-dark-800 rounded-2xl flex-1 hover:border-primary-500/30 transition-colors">
-                                <h4 class="text-3xl font-extrabold text-white mb-1">95<span class="text-primary-400">%</span></h4>
-                                <p class="text-sm text-slate-500 font-medium">Akurasi Model</p>
-                            </div>
-                            <div class="px-6 py-4 bg-dark-900 border border-dark-800 rounded-2xl flex-1 hover:border-primary-500/30 transition-colors">
-                                <h4 class="text-3xl font-extrabold text-white mb-1">84</h4>
-                                <p class="text-sm text-slate-500 font-medium">Kelas Hijaiyah</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="w-full lg:w-1/2 relative mt-10 lg:mt-0">
-                        <div class="aspect-square max-w-md mx-auto relative group">
-                            <!-- Glow -->
-                            <div class="absolute inset-0 bg-gradient-to-tr from-primary-600/30 to-cyan-500/30 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
-                            
-                            <!-- Card Graphic -->
-                            <div class="absolute inset-4 bg-dark-900/80 backdrop-blur-xl border border-dark-700 rounded-[3rem] overflow-hidden rotate-3 group-hover:rotate-0 transition-transform duration-500 z-10 shadow-2xl shadow-dark-950/50">
-                                <div class="p-6 md:p-8 h-full flex flex-col">
-                                    <div class="flex gap-2 mb-6">
-                                        <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-                                        <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-                                        <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-                                    </div>
-                                    <div class="flex-1 bg-dark-950 rounded-2xl border border-dark-800 p-5 relative overflow-hidden flex flex-col justify-end">
-                                        <div class="absolute top-0 left-0 w-full h-full opacity-20 flex items-end gap-1.5 px-5 pb-5">
-                                            <div class="w-1/6 bg-primary-500 h-[30%] rounded-t-sm"></div>
-                                            <div class="w-1/6 bg-primary-500 h-[50%] rounded-t-sm"></div>
-                                            <div class="w-1/6 bg-primary-500 h-[40%] rounded-t-sm"></div>
-                                            <div class="w-1/6 bg-primary-500 h-[80%] rounded-t-sm"></div>
-                                            <div class="w-1/6 bg-primary-500 h-[60%] rounded-t-sm"></div>
-                                            <div class="w-1/6 bg-primary-400 h-[95%] rounded-t-sm shadow-[0_0_15px_rgba(59,130,246,0.8)]"></div>
-                                        </div>
-                                        <div class="relative z-10 bg-dark-900/90 backdrop-blur-sm border border-dark-800 rounded-xl p-4">
-                                            <p class="text-xs text-primary-400 font-mono mb-2">import tensorflow as tf</p>
-                                            <p class="text-xs text-slate-300 font-mono mb-2">model = CNN_Architecture()</p>
-                                            <p class="text-xs text-slate-300 font-mono mb-2">audio = load_spectrogram()</p>
-                                            <p class="text-xs text-primary-400 font-mono">predict(audio) -> "Sangat Baik"</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="ts-eval-card__rows py-3.5 sm:py-4 border-b border-white/10 flex flex-col gap-2 sm:gap-2.5">
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">بَ (Ba · Fathah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">96.4%</span>
+              </div>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">تِ (Ta · Kasrah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">91.2%</span>
+              </div>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">ثُ (Tsa · Dhommah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">88.5%</span>
+              </div>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm text-emerald-400 gap-2">
+                <span class="truncate">Kesesuaian Makhraj</span>
+                <span class="font-semibold tracking-tight shrink-0">Sangat Baik</span>
+              </div>
             </div>
-        </section>
 
-        <!-- CTA SECTION -->
-        <section class="py-24 px-6 relative z-10">
-            <div class="max-w-5xl mx-auto bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-[3rem] p-10 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-primary-900/5 group">
-                <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none group-hover:bg-primary-500/20 transition-colors duration-700"></div>
-                <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-                
-                <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white relative z-10">Siap Menyempurnakan Bacaan Anda?</h2>
-                <p class="text-slate-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto relative z-10 leading-relaxed">
-                    Bergabunglah sekarang dan rasakan pengalaman belajar Al-Qur'an interaktif yang didukung oleh kecerdasan buatan. Tanpa biaya, langsung dari browser Anda.
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-                    <button @click="navigateTo('/dashboard/practice')" class="px-8 py-4 bg-primary-500 text-dark-950 rounded-2xl font-bold text-lg hover:bg-primary-400 transition-all shadow-xl shadow-primary-500/20 active:scale-95">
-                        Mulai Latihan Sekarang
-                    </button>
-                    <button @click="scrollTo('tentang')" class="px-8 py-4 bg-dark-950 border border-dark-700 text-white rounded-2xl font-bold text-lg hover:bg-dark-800 hover:border-dark-600 transition-all active:scale-95">
-                        Pelajari Lebih Lanjut
-                    </button>
-                </div>
+            <div class="ts-eval-card__total flex justify-between items-baseline pt-3.5 sm:pt-4 mt-0.5">
+              <span class="font-mono text-xs sm:text-sm text-ink-1">Total Akurasi Sesi</span>
+              <span class="font-mono font-bold text-2xl sm:text-3xl lg:text-4xl text-ink-0 tracking-tight">88.5<small class="text-[0.65em] font-normal text-ink-1 ml-0.5">%</small></span>
             </div>
-        </section>
+            
+            <div class="ts-eval-card__bar h-2 bg-dark-800 rounded-full mt-3.5 sm:mt-4 overflow-hidden" aria-hidden="true">
+              <i class="block h-full bg-gradient-to-r from-primary-500 via-primary-azure to-emerald-400 rounded-full" style="width: 88.5%"></i>
+            </div>
+            
+            <div class="font-mono text-[9px] sm:text-[10px] tracking-wider uppercase text-ink-3 mt-2.5 sm:mt-3 flex justify-between items-center">
+              <span>84 KELAS HIJAIYAH</span>
+              <span>MODEL CNN 95% AKURASI</span>
+            </div>
+          </aside>
+        </div>
 
-        <footer class="py-12 border-t border-dark-800 bg-dark-950 text-center px-6 relative z-10">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-2 cursor-pointer" @click="scrollTo('beranda')">
-                    <img src="/logo.png" alt="Tarteel Space Logo" class="w-8 h-8 rounded-lg object-contain" />
-                    <span class="font-bold text-white tracking-tight">Tarteel <span class="text-primary-400">Space</span></span>
-                </div>
-                <p class="text-sm text-slate-500">&copy; 2026 Tarteel Space Project. Proyek Skripsi Teknologi Informasi.
-                </p>
-                <div class="flex gap-4">
-                    <div class="w-10 h-10 bg-dark-900 border border-dark-800 rounded-full flex items-center justify-center text-slate-400 hover:bg-dark-800 hover:text-primary-400 transition-colors cursor-pointer font-bold">
-                        in
-                    </div>
-                    <div class="w-10 h-10 bg-dark-900 border border-dark-800 rounded-full flex items-center justify-center text-slate-400 hover:bg-dark-800 hover:text-primary-400 transition-colors cursor-pointer font-bold">
-                        gh
-                    </div>
-                </div>
+        <!-- marquee strip -->
+        <div class="ts-marquee w-full overflow-hidden border-y border-white/5 py-3 sm:py-4 mt-12 sm:mt-20 relative z-10" aria-hidden="true">
+          <div class="ts-marquee__track flex gap-12 font-mono text-sm text-ink-2 uppercase tracking-[0.18em] whitespace-nowrap animate-marquee">
+            <span class="inline-flex items-center gap-3">REKAM · SUARA · ANDA</span>
+            <span class="inline-flex items-center gap-3">EVALUASI · REAL-TIME</span>
+            <span class="inline-flex items-center gap-3">PELAJARI · TAJWID · HIJAIYAH</span>
+            <span class="inline-flex items-center gap-3">BERBASIS · CNN · AI</span>
+            <span class="inline-flex items-center gap-3">AKURASI · INSTAN</span>
+            <span class="inline-flex items-center gap-3">REKAM · SUARA · ANDA</span>
+            <span class="inline-flex items-center gap-3">EVALUASI · REAL-TIME</span>
+            <span class="inline-flex items-center gap-3">PELAJARI · TAJWID · HIJAIYAH</span>
+            <span class="inline-flex items-center gap-3">BERBASIS · CNN · AI</span>
+            <span class="inline-flex items-center gap-3">AKURASI · INSTAN</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ───────── cara kerja · step sequence ───────── -->
+    <section class="ts-section py-24 border-t border-white/5" id="cara-kerja">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <div class="ts-section-head grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-end mb-12">
+          <div>
+            <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ cara kerja</span>
+            <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
+              Rekam, proses, terima — <em class="ts-italic font-serif italic text-primary-400 font-normal">langsung</em>.
+            </h2>
+          </div>
+          <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
+            Tiga langkah sederhana untuk mulai mengevaluasi akurasi pelafalan hijaiyah Anda.
+            Tidak perlu pengaturan rumit — cukup browser dan mikrofon.
+          </p>
+        </div>
+
+        <div class="ts-steps flex flex-col">
+          <div class="ts-step">
+            <div class="ts-step__art ts-step-art--mic" aria-hidden="true">
+              <div class="w-12 h-12 text-primary-400 relative z-10">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+                </svg>
+              </div>
+              <div class="ts-step__art-bars absolute bottom-4 left-1/2 -translate-x-1/2 flex items-end gap-1" aria-hidden="true">
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 8px; animation-delay: 0ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 14px; animation-delay: 80ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 20px; animation-delay: 160ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 28px; animation-delay: 240ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 20px; animation-delay: 320ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 14px; animation-delay: 400ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 8px; animation-delay: 480ms;"></i>
+              </div>
             </div>
-        </footer>
-    </div>
+            <div class="ts-step__body flex flex-col gap-1.5">
+              <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">1.0</div>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Izinkan Mikrofon</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Berikan akses mikrofon pada peramban Anda. Tidak ada data suara yang disimpan di server — semua diproses lokal lalu dikirim sebagai fitur audio.</p>
+            </div>
+          </div>
+
+          <div class="ts-step">
+            <div class="ts-step__art ts-step-art--letter" aria-hidden="true">
+              <div class="ts-step__art-letters flex gap-3 items-center">
+                <span class="text-3xl text-ink-1 py-1 px-2.5 rounded-lg border border-white/10">ب</span>
+                <span class="text-3xl text-primary-400 py-1 px-2.5 rounded-lg border border-primary-500/30 bg-primary-950 scale-110">ت</span>
+                <span class="text-3xl text-ink-1 py-1 px-2.5 rounded-lg border border-white/10">ث</span>
+                <span class="text-3xl text-ink-1 py-1 px-2.5 rounded-lg border border-white/10">ج</span>
+              </div>
+              <div class="w-0.5 h-8 bg-primary-500 rounded-sm animate-blink -ml-2"></div>
+            </div>
+            <div class="ts-step__body flex flex-col gap-1.5">
+              <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">2.0</div>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Lafalkan Huruf</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Pilih huruf hijaiyah yang ingin dilatih, lalu lafalkan dengan jelas sesuai kaidah makhraj dan tajwid. Sistem akan merekam dan menganalisis audio Anda.</p>
+            </div>
+          </div>
+
+          <div class="ts-step">
+            <div class="ts-step__art ts-step-art--result flex flex-col gap-2" aria-hidden="true">
+              <div class="font-display text-5xl font-semibold tracking-tight text-primary-400 leading-none">88<small class="text-2xl font-normal">%</small></div>
+              <div class="font-mono text-xs tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-1 px-3 rounded-full">Sangat Baik</div>
+            </div>
+            <div class="ts-step__body flex flex-col gap-1.5">
+              <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">3.0</div>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Terima Evaluasi</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Model CNN memproses spektrogram audio dan memberikan persentase akurasi secara instan beserta umpan balik untuk perbaikan pelafalan Anda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── stats ───────── -->
+    <section class="ts-section py-24 border-t border-white/5" id="fitur">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <div class="ts-section-head grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-end mb-12">
+          <div>
+            <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ model AI</span>
+            <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
+              Angka yang <em class="ts-italic font-serif italic text-primary-400 font-normal">tidak</em> perlu catatan kaki.
+            </h2>
+          </div>
+          <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
+            Dibangun dari penelitian Skripsi Teknologi Informasi dengan arsitektur CNN yang dilatih
+            khusus untuk mengenali pola pelafalan huruf hijaiyah beserta harakatnya.
+          </p>
+        </div>
+
+        <div class="ts-stats grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div class="ts-stats__card ts-stats__card--1">
+            <div class="ts-stats__num">{{ Math.round(statAccuracy) }}<small class="text-[0.45em] font-medium text-ink-1 ml-1">%</small></div>
+            <div class="ts-stats__label font-mono uppercase tracking-wider text-xs text-ink-2 mt-4">akurasi model CNN</div>
+            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Diuji pada dataset pelafalan hijaiyah dengan validasi silang.</div>
+          </div>
+          <div class="ts-stats__card ts-stats__card--2">
+            <div class="ts-stats__num">{{ Math.round(statClasses) }}<small class="text-[0.45em] font-medium text-ink-1 ml-1">kelas</small></div>
+            <div class="ts-stats__label font-mono uppercase tracking-wider text-xs text-ink-2 mt-4">kelas klasifikasi</div>
+            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">28 huruf hijaiyah × 3 harakat (fathah, kasrah, dhommah).</div>
+          </div>
+          <div class="ts-stats__card ts-stats__card--3">
+            <div class="ts-stats__num">&lt;1<small class="text-[0.45em] font-medium text-ink-1 ml-1">dtk</small></div>
+            <div class="ts-stats__label font-mono uppercase tracking-wider text-xs text-ink-2 mt-4">waktu evaluasi</div>
+            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Dari rekaman suara hingga skor akurasi langsung dari browser.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── features ───────── -->
+    <section class="ts-section py-24 border-t border-white/5">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <div class="ts-section-head grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-end mb-12">
+          <div>
+            <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ fitur utama</span>
+            <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
+              Meter, pelajari, pantau — <em class="ts-italic font-serif italic text-primary-400 font-normal">lalu</em> ulangi.
+            </h2>
+          </div>
+          <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
+            Tiga fitur inti yang membuat Tarteel Space berbeda dari cara belajar hijaiyah konvensional.
+          </p>
+        </div>
+
+        <div class="ts-features grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <article class="ts-feature">
+            <div class="ts-feature__art ts-feature-art--wave" aria-hidden="true">
+              <svg viewBox="0 0 300 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full">
+                <defs>
+                  <linearGradient id="wave-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path class="ts-wave-area" d="M0,70 C20,60 40,40 60,50 C80,60 100,30 120,40 C140,50 160,20 180,35 C200,50 220,25 240,30 C260,35 280,50 300,45 L300,100 L0,100 Z"/>
+                <path class="ts-wave-line" d="M0,70 C20,60 40,40 60,50 C80,60 100,30 120,40 C140,50 160,20 180,35 C200,50 220,25 240,30 C260,35 280,50 300,45"/>
+                <circle class="ts-wave-dot" cx="300" cy="45" r="5"/>
+              </svg>
+              <div class="ts-feature-art__label">88.5% AKURAT</div>
+            </div>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Evaluasi Audio Real-time</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Algoritma Deep Learning memproses input suara dan memberikan persentase akurasi pelafalan secara instan berdasarkan kaidah tajwid yang benar.</p>
+            <span class="ts-feature__link">Mulai latihan →</span>
+          </article>
+
+          <article class="ts-feature">
+            <div class="ts-feature__art ts-feature-art--harakat flex items-center justify-center" aria-hidden="true">
+              <div class="ts-harakat-grid flex gap-3 items-center">
+                <div class="ts-harakat-cell ts-harakat-cell--active">
+                  <span class="ts-harakat-arabic font-display text-3xl text-primary-400">بَ</span>
+                  <span class="ts-harakat-name font-mono text-[10px] tracking-wider uppercase text-ink-2">Fathah</span>
+                </div>
+                <div class="ts-harakat-cell">
+                  <span class="ts-harakat-arabic font-display text-3xl text-ink-0">بِ</span>
+                  <span class="ts-harakat-name font-mono text-[10px] tracking-wider uppercase text-ink-2">Kasrah</span>
+                </div>
+                <div class="ts-harakat-cell">
+                  <span class="ts-harakat-arabic font-display text-3xl text-ink-0">بُ</span>
+                  <span class="ts-harakat-name font-mono text-[10px] tracking-wider uppercase text-ink-2">Dhommah</span>
+                </div>
+              </div>
+            </div>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Mendukung Harakat Lengkap</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Klasifikasi mencakup fathah, kasrah, dan dhommah untuk setiap huruf hijaiyah — total 84 kelas yang dikenali oleh model CNN kami.</p>
+            <span class="ts-feature__link">Lihat daftar huruf →</span>
+          </article>
+
+          <article class="ts-feature">
+            <div class="ts-feature__art ts-feature-art--progress flex items-end p-4" aria-hidden="true">
+              <div class="ts-progress-bars flex items-end gap-1.5 w-full h-[100px]">
+                <div class="ts-progress-bar" style="--pct: 45%"><span>Sen</span><i></i></div>
+                <div class="ts-progress-bar" style="--pct: 62%"><span>Sel</span><i></i></div>
+                <div class="ts-progress-bar" style="--pct: 58%"><span>Rab</span><i></i></div>
+                <div class="ts-progress-bar" style="--pct: 80%"><span>Kam</span><i></i></div>
+                <div class="ts-progress-bar ts-progress-bar--today" style="--pct: 88%"><span>Jum</span><i></i></div>
+              </div>
+            </div>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Laporan Kemajuan Harian</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Pantau perkembangan akurasi pelafalan Anda dari hari ke hari. Dasbor menampilkan grafik skor 7 hari terakhir dan huruf yang perlu perbaikan.</p>
+            <span class="ts-feature__link">Lihat dasbor →</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── about / tentang ───────── -->
+    <section class="ts-section py-24 border-t border-white/5" id="tentang">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <div class="ts-about grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
+          <div class="ts-about__copy flex flex-col gap-4 items-start">
+            <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-1">◇ tentang proyek</span>
+            <h2 class="ts-about__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
+              Menyatukan tradisi dan <em class="ts-italic font-serif italic text-primary-400 font-normal">teknologi modern</em>.
+            </h2>
+            <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
+              Tarteel Space berawal dari penelitian Skripsi Teknologi Informasi. Misi utamanya adalah
+              mengembangkan alat bantu mandiri untuk pembelajaran pelafalan Al-Qur'an yang dapat
+              diakses oleh siapa saja, kapan saja, dan di mana saja.
+            </p>
+            <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
+              Dengan arsitektur Convolutional Neural Network (CNN), sistem kami memproses spektrogram
+              audio untuk mengenali pola pelafalan yang benar sesuai kaidah tajwid.
+            </p>
+            <div class="ts-about__actions flex gap-3 items-center flex-wrap mt-4">
+              <button class="ts-btn ts-btn--primary" @click="navigateTo('/dashboard/practice')">
+                Mulai Latihan <span aria-hidden="true">→</span>
+              </button>
+              <button class="ts-btn ts-btn--ghost" @click="scrollTo('cara-kerja')">
+                Lihat Cara Kerja
+              </button>
+            </div>
+          </div>
+
+          <div class="ts-about__visual" aria-label="Visualisasi arsitektur model dan spektrogram audio">
+            <!-- Rich CNN Pipeline & Spectrogram Visual -->
+            <div class="ts-spec-console">
+              <!-- Top header bar -->
+              <div class="ts-spec-console__head flex justify-between items-start pb-2 border-b border-white/5">
+                <div class="ts-spec-console__title-wrap">
+                  <span class="font-mono text-[10px] tracking-wider uppercase text-primary-400 block">CNN · ARSITEKTUR</span>
+                  <div class="font-display text-base font-semibold text-ink-0 tracking-tight mt-0.5">Spektrogram Audio 2D</div>
+                </div>
+                <div class="ts-spec-console__status font-mono text-[10px] text-ink-2 flex items-center gap-1.5 bg-dark-850 px-2.5 py-1 rounded-full border border-white/5">
+                  <span class="ts-live-dot w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true"></span>
+                  <span>16 kHz · STFT Mel</span>
+                </div>
+              </div>
+
+              <!-- Main spectrogram canvas / matrix -->
+              <div class="ts-spec-view flex gap-2 items-stretch bg-dark-950 p-3 rounded-xl border border-white/5">
+                <div class="ts-spec-y-axis flex flex-col justify-between font-mono text-[9px] text-ink-3 pr-2 border-r border-dashed border-white/10">
+                  <span>8k</span>
+                  <span>4k</span>
+                  <span>2k</span>
+                  <span>0</span>
+                </div>
+                <div class="ts-spec-heatmap flex gap-1 flex-1 h-[120px] items-stretch">
+                  <div v-for="c in 24" :key="c" class="flex flex-col gap-0.5 flex-1">
+                    <div
+                      v-for="r in 12"
+                      :key="r"
+                      class="flex-1 rounded-[1px] min-h-[2px] transition-opacity duration-150"
+                      :style="getHeatmapStyle(c, r)"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Time axis -->
+              <div class="ts-spec-x-axis flex justify-between font-mono text-[9px] text-ink-3 px-2 pl-7 -mt-1.5">
+                <span>0.0s</span>
+                <span>0.2s</span>
+                <span>0.4s</span>
+                <span>0.6s</span>
+                <span>0.8s</span>
+              </div>
+
+              <!-- CNN Pipeline mini-flow -->
+              <div class="ts-spec-pipeline flex items-center justify-between gap-1.5 p-2 px-3 bg-dark-850 rounded-xl border border-white/5 font-mono text-[11px] text-ink-2">
+                <div class="flex items-center gap-1.5">
+                  <span>〰</span>
+                  <span>1. Audio WAV</span>
+                </div>
+                <span class="text-ink-3 text-[10px]">→</span>
+                <div class="flex items-center gap-1.5 text-primary-400 font-medium">
+                  <span>▦</span>
+                  <span>2. Mel-Spec</span>
+                </div>
+                <span class="text-ink-3 text-[10px]">→</span>
+                <div class="flex items-center gap-1.5">
+                  <span>☵</span>
+                  <span>3. Conv2D</span>
+                </div>
+              </div>
+
+              <!-- Bottom prediction result card -->
+              <div class="ts-spec-result flex items-center gap-4 p-3 bg-dark-950 rounded-xl border border-white/10">
+                <div class="ts-spec-result__letter flex flex-col items-center justify-center w-11 h-11 rounded-lg bg-primary-950 border border-primary-500/30 shrink-0">
+                  <span class="font-display text-xl text-primary-400 leading-none">بَ</span>
+                  <span class="font-mono text-[8px] tracking-wider uppercase text-primary-400 mt-0.5">Fathah</span>
+                </div>
+                <div class="ts-spec-result__info flex flex-col gap-1 flex-1 min-w-0">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-ink-1 font-mono uppercase text-[11px] tracking-wider font-medium">Hasil Klasifikasi</span>
+                    <span class="font-mono text-emerald-400 font-semibold text-[11px]">96.4% Akurat</span>
+                  </div>
+                  <div class="h-1 bg-dark-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-primary-500 to-emerald-400 rounded-full" style="width: 96.4%"></div>
+                  </div>
+                  <div class="font-mono text-[10px] text-ink-2">
+                    Makhraj: Asy-Syafatain (Dua Bibir) · Benar
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── cta panel ───────── -->
+    <section class="ts-cta-section py-24">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <div class="ts-cta-panel relative bg-dark-900 text-ink-0 border border-white/10 rounded-3xl p-12 md:p-20 text-center overflow-hidden shadow-2xl">
+          <h2 class="ts-cta-panel__title font-display text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4 max-w-[18ch] mx-auto text-ink-0">
+            Sempurnakan bacaan Anda <em class="ts-italic font-serif italic text-primary-400 font-normal">hari ini</em>.
+          </h2>
+          <p class="ts-cta-panel__sub text-base md:text-lg text-ink-1 max-w-[50ch] mx-auto mb-8 leading-relaxed">
+            Daftarkan diri dan rasakan pengalaman belajar Al-Qur'an interaktif yang didukung
+            oleh kecerdasan buatan. Gratis sepenuhnya, langsung dari browser Anda.
+          </p>
+          <div class="ts-cta-panel__actions flex gap-3 justify-center flex-wrap">
+            <button class="ts-btn ts-btn--primary" @click="navigateTo('/register')">
+              Daftar Gratis <span aria-hidden="true">→</span>
+            </button>
+            <button class="ts-btn ts-btn--ghost" @click="navigateTo('/login')">
+              Sudah punya akun
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── footer · Ft5 Statement ───────── -->
+    <footer class="ts-footer pt-16 pb-12 border-t border-white/5">
+      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+        <p class="ts-footer__statement font-display text-3xl md:text-5xl font-semibold tracking-tight leading-tight max-w-[22ch] mb-12 text-ink-0">
+          Tarteel Space adalah alat belajar bagi mereka yang ingin <em class="ts-italic font-serif italic text-primary-400 font-normal">membaca</em> dengan benar.
+        </p>
+        <div class="ts-footer__row grid grid-cols-2 md:grid-cols-3 gap-8 border-t border-white/5 pt-8">
+          <div class="ts-footer__col">
+            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Fitur</h5>
+            <ul class="flex flex-col gap-2 list-none p-0 m-0">
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('cara-kerja')">Cara Kerja</button></li>
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('fitur')">Fitur Utama</button></li>
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="navigateTo('/dashboard/practice')">Mulai Latihan</button></li>
+            </ul>
+          </div>
+          <div class="ts-footer__col">
+            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Akun</h5>
+            <ul class="flex flex-col gap-2 list-none p-0 m-0">
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="navigateTo('/login')">Masuk</button></li>
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="navigateTo('/register')">Daftar</button></li>
+            </ul>
+          </div>
+          <div class="ts-footer__col">
+            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Proyek</h5>
+            <ul class="flex flex-col gap-2 list-none p-0 m-0">
+              <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('tentang')">Tentang</button></li>
+              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-frontend" target="_blank" rel="noopener" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="ts-footer__legal mt-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 font-mono text-xs text-ink-2 border-t border-white/5 pt-4">
+          <span class="font-display font-semibold tracking-tight text-base text-ink-0">Tarteel Space</span>
+          <span>© 2026 Tarteel Space Project · Proyek Skripsi Teknologi Informasi</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const authStore = useAuthStore()
 const isDropdownOpen = ref(false)
+const isScrolled = ref(false)
+const dropdownRef = ref(null)
 
-// Gunakan useHead jika Anda ingin menambahkan SEO meta tags
+const statAccuracy = ref(0)
+const statClasses = ref(0)
+
+let ctx = null
+
 useHead({
-    title: 'Tarteel Space - Sempurnakan Pelafalan Al-Qur\'an dengan AI',
-    meta: [
-        { name: 'description', content: 'Evaluasi akurasi pelafalan huruf hijaiyah berbasis website dengan teknologi Deep Learning.' }
-    ]
+  title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
+  meta: [
+    { name: 'description', content: 'Evaluasi akurasi pelafalan huruf hijaiyah berbasis website dengan teknologi Deep Learning CNN. Gratis, langsung dari browser.' }
+  ],
+  link: [
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap' },
+  ]
 })
 
-// Fungsi untuk scroll halus
 const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 60
+}
+
+const handleClickOutside = (e) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target)) {
+    isDropdownOpen.value = false
+  }
+}
+
+// Spectrogram 2D Heatmap simulation for Arabic vowel formant (بَ)
+const getHeatmapStyle = (col, row) => {
+  const inSound = col >= 3 && col <= 21
+  if (!inSound) {
+    return {
+      background: '#13171f',
+      opacity: '0.2',
+    }
+  }
+
+  // Formant F1 (low-mid around row 8) & F2 (high around row 3)
+  const distF1 = Math.abs(row - 8)
+  const distF2 = Math.abs(row - 3)
+  const timeEnvelope = Math.sin(((col - 3) / 18) * Math.PI)
+
+  const intensity1 = Math.max(0, 1 - distF1 * 0.28) * timeEnvelope
+  const intensity2 = Math.max(0, 1 - distF2 * 0.35) * timeEnvelope
+  const noise = ((col * 17 + row * 29) % 20) / 100
+
+  const total = Math.min(1, Math.max(0.08, intensity1 * 0.75 + intensity2 * 0.55 + noise * 0.2))
+
+  const lightness = (18 + total * 58).toFixed(1)
+  const chroma = (0.04 + total * 0.18).toFixed(3)
+  const hue = (255 - total * 20).toFixed(1)
+
+  return {
+    background: `oklch(${lightness}% ${chroma} ${hue})`,
+    opacity: Math.max(0.25, total).toFixed(2),
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  document.addEventListener('click', handleClickOutside)
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  ctx = gsap.context(() => {
+    // 1. Hero Entrance Animation
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    heroTl
+      .from('.ts-nav', {
+        y: -30,
+        opacity: 0,
+        duration: 0.8,
+      })
+      .from('.ts-hero__live', {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+      }, '-=0.4')
+      .from('.ts-hero__h1', {
+        y: 35,
+        opacity: 0,
+        duration: 0.85,
+      }, '-=0.4')
+      .from('.ts-hero__sub', {
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+      }, '-=0.5')
+      .from('.ts-hero__ctas .ts-btn', {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+      }, '-=0.5')
+      .from('.ts-hero__fineprint span', {
+        opacity: 0,
+        y: 10,
+        duration: 0.5,
+        stagger: 0.08,
+      }, '-=0.4')
+      .from('.ts-eval-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.9,
+        clearProps: 'all',
+      }, '-=0.8')
+      .from('.ts-marquee', {
+        opacity: 0,
+        duration: 0.8,
+      }, '-=0.4')
+
+    // 2. Cara Kerja (Step Sequence) ScrollTrigger
+    gsap.from('#cara-kerja .ts-section-head > *', {
+      scrollTrigger: {
+        trigger: '#cara-kerja',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-step', {
+      scrollTrigger: {
+        trigger: '.ts-steps',
+        start: 'top 78%',
+        toggleActions: 'play none none none',
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.85,
+      stagger: 0.2,
+      ease: 'power2.out',
+    })
+
+    // 3. Stats Section & Number Counter Roll
+    gsap.from('#fitur .ts-section-head > *', {
+      scrollTrigger: {
+        trigger: '#fitur',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-stats__card', {
+      scrollTrigger: {
+        trigger: '.ts-stats',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 35,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+      onStart: () => {
+        const stats = { acc: 0, cls: 0 }
+        gsap.to(stats, {
+          acc: 95,
+          cls: 84,
+          duration: 1.8,
+          ease: 'power2.out',
+          onUpdate: () => {
+            statAccuracy.value = stats.acc
+            statClasses.value = stats.cls
+          },
+        })
+      },
+    })
+
+    // 4. Features Section Stagger
+    gsap.from('.ts-feature', {
+      scrollTrigger: {
+        trigger: '.ts-features',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+
+    // 5. Tentang Section
+    gsap.from('.ts-about__copy > *', {
+      scrollTrigger: {
+        trigger: '#tentang',
+        start: 'top 78%',
+        toggleActions: 'play none none none',
+      },
+      x: -30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power2.out',
+    })
+
+    gsap.from('.ts-spec-console', {
+      scrollTrigger: {
+        trigger: '.ts-spec-console',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      x: 35,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power2.out',
+    })
+
+    // 6. CTA Panel
+    gsap.from('.ts-cta-panel', {
+      scrollTrigger: {
+        trigger: '.ts-cta-section',
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      scale: 0.96,
+      y: 30,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+    })
+
+    // 7. Footer
+    gsap.from('.ts-footer', {
+      scrollTrigger: {
+        trigger: '.ts-footer',
+        start: 'top 90%',
+        toggleActions: 'play none none none',
+      },
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      ease: 'power2.out',
+    })
+  })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleClickOutside)
+  if (ctx) ctx.revert()
+})
 </script>
 
 <style scoped>
-/* Transisi scroll yang halus sudah ditangani oleh fungsi scrollTo, 
-   tapi kita simpan untuk default browser behavior jika ada tag <a> */
-html {
-    scroll-behavior: smooth;
+/* ── N5 Floating Nav Pill ── */
+.ts-nav {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 9999px;
+  background: rgba(19, 23, 31, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 8px 32px -8px rgba(0, 10, 60, 0.6);
+  transition: all 300ms ease;
 }
 
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
-    }
+.ts-nav--scrolled {
+  top: 14px;
+  background: rgba(19, 23, 31, 0.95);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 12px 40px -16px rgba(0, 10, 60, 0.8);
+}
+
+.ts-nav__link {
+  padding: 8px 12px;
+  border-radius: 9999px;
+  color: #a8b3cf;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.ts-nav__link:hover {
+  background: #1a202c;
+  color: #f4f6fb;
+}
+
+.ts-nav__cta {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: #2563eb;
+  color: #0b0d11;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid #2563eb;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 14px -6px rgba(37, 99, 235, 0.5);
+  transition: transform 250ms ease, background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+
+.ts-nav__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.22) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.ts-nav__cta:hover::before { transform: translateX(100%); }
+.ts-nav__cta:hover {
+  background: #60a5fa;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+.ts-nav__cta:active { transform: translateY(0); }
+
+/* User dropdown button */
+.ts-nav__user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 9999px;
+  background: #1a202c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  color: #f4f6fb;
+  font-size: 0.875rem;
+  transition: background 150ms ease;
+}
+
+.ts-nav__user-btn:hover { background: #242c3d; }
+
+.ts-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px -16px rgba(0, 10, 60, 0.6);
+  overflow: hidden;
+  z-index: 60;
+}
+
+.ts-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #a8b3cf;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.ts-dropdown__item:hover { background: #1a202c; color: #f4f6fb; }
+.ts-dropdown__item--danger { color: #f87171; }
+.ts-dropdown__item--danger:hover { background: rgba(239, 68, 68, 0.15); }
+
+@media (max-width: 760px) {
+  .ts-nav__links { display: none; }
+  .ts-nav { padding: 6px 8px 6px 12px; }
+}
+
+/* ── Buttons ── */
+.ts-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  transition: transform 250ms ease, background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+
+.ts-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.ts-btn:hover::before { transform: translateX(100%); }
+
+.ts-btn--primary {
+  background: #2563eb;
+  color: #0b0d11;
+  border-color: #2563eb;
+  box-shadow: 0 8px 24px -10px rgba(37, 99, 235, 0.5);
+}
+
+.ts-btn--primary:hover {
+  background: #60a5fa;
+  border-color: #60a5fa;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -10px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+.ts-btn--ghost {
+  background: transparent;
+  color: #f4f6fb;
+  border-color: #242c3d;
+}
+
+.ts-btn--ghost:hover {
+  background: #1a202c;
+  border-color: rgba(37, 99, 235, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -10px rgba(0, 10, 60, 0.4);
+}
+
+/* ── Hero Hairline Grid & Radials ── */
+.ts-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(244, 246, 251, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 246, 251, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 72%);
+  pointer-events: none;
+}
+
+.ts-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 500px at 25% 10%, rgba(37, 99, 235, 0.22), transparent 65%),
+    radial-gradient(700px 450px at 80% 20%, rgba(56, 189, 248, 0.18), transparent 60%);
+  pointer-events: none;
+}
+
+.ts-hero__fineprint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+}
+
+.ts-hero__fineprint span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ts-hero__fineprint span:not(:last-child)::after {
+  content: "·";
+  margin-left: 0.85rem;
+  color: #414d6b;
+  font-weight: bold;
+}
+
+/* ── Eval Card ── */
+.ts-eval-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -28px rgba(0, 10, 80, 0.7), 0 4px 12px -4px rgba(0, 10, 80, 0.3);
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.875rem;
+  position: relative;
+  box-sizing: border-box;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1024px) {
+  .ts-eval-card {
+    margin-left: auto;
+    margin-right: 0;
+    padding: 1.5rem;
+  }
+  .ts-eval-card:hover {
+    transform: translateY(-6px);
+  }
+}
+
+.ts-eval-card:hover {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 32px 80px -24px rgba(0, 10, 80, 0.85), 0 0 0 1px rgba(37, 99, 235, 0.3), 0 0 40px -10px rgba(37, 99, 235, 0.2);
+}
+
+.ts-eval-card::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px dashed rgba(244, 246, 251, 0.07);
+  border-radius: 26px;
+  pointer-events: none;
+}
+
+
+
+/* ── Steps (Clean Editorial Layout) ── */
+.ts-step {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.ts-step:last-child { border-bottom: none; }
+
+@media (max-width: 880px) {
+  .ts-step {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 2rem 0;
+  }
+}
+
+.ts-step__art {
+  height: 160px;
+  border-radius: 20px;
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+@media (hover: hover) {
+  .ts-step:hover .ts-step__art {
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2), 0 12px 32px -12px rgba(0, 10, 80, 0.5);
+  }
+}
+
+/* ── Stats Cards ── */
+.ts-stats__card {
+  padding: 3rem 2rem;
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), border-color 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-stats__card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #2563eb, transparent);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-stats__card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.28), 0 24px 60px -20px rgba(37, 99, 235, 0.45);
+}
+
+.ts-stats__card:hover::after { opacity: 1; transform: scaleX(1); }
+.ts-stats__card:hover .ts-stats__num { text-shadow: 0 0 24px rgba(96, 165, 250, 0.4); }
+
+.ts-stats__card--1 { background: linear-gradient(160deg, rgba(12, 26, 48, 0.8), #13171f 55%); }
+.ts-stats__card--2 { background: linear-gradient(160deg, rgba(56, 189, 248, 0.15), #13171f 55%); }
+.ts-stats__card--3 { background: linear-gradient(160deg, rgba(26, 32, 44, 0.8), #13171f 55%); }
+
+.ts-stats__num {
+  font-family: 'Geist', sans-serif;
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+  color: #f4f6fb;
+  transition: text-shadow 350ms ease-out;
+}
+
+/* ── Features ── */
+.ts-feature {
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1), border-color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-feature::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 90% at 50% -15%, rgba(37, 99, 235, 0.22), transparent 75%);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.ts-feature:hover {
+  transform: translateY(-7px);
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3), 0 28px 70px -22px rgba(37, 99, 235, 0.45);
+}
+
+.ts-feature:hover::before { opacity: 1; transform: scale(1.1); }
+.ts-feature:hover .ts-feature__art { transform: scale(1.03); box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4); }
+
+.ts-feature__art {
+  height: 160px;
+  border-radius: 12px;
+  background: #1a202c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-wave-area { fill: url(#wave-grad); }
+.ts-wave-line { fill: none; stroke: #2563eb; stroke-width: 2; stroke-linecap: round; }
+.ts-wave-dot { fill: #13171f; stroke: #2563eb; stroke-width: 2; }
+
+.ts-feature-art__label {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.14);
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.ts-harakat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #13171f;
+  transition: all 250ms ease;
+}
+
+.ts-harakat-cell--active {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: #0c1a30;
+}
+
+.ts-progress-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  height: 100%;
+}
+
+.ts-progress-bar span {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #414d6b;
+}
+
+.ts-progress-bar i {
+  display: block;
+  width: 100%;
+  height: var(--pct, 50%);
+  background: rgba(37, 99, 235, 0.35);
+  border-radius: 3px 3px 0 0;
+}
+
+.ts-progress-bar--today i {
+  background: #2563eb;
+  box-shadow: 0 0 12px -4px rgba(37, 99, 235, 0.6);
+}
+
+.ts-feature__link {
+  margin-top: auto;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #60a5fa;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: gap 300ms ease, color 300ms ease;
+}
+
+.ts-feature:hover .ts-feature__link { gap: 8px; text-decoration: underline; }
+
+/* ── Rich CNN Pipeline & Spectrogram Console ── */
+.ts-spec-console {
+  background: #13171f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -28px rgba(0, 10, 80, 0.7);
+  position: relative;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), border-color 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-spec-console:hover {
+  transform: translateY(-5px);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 32px 80px -24px rgba(0, 10, 80, 0.85), 0 0 0 1px rgba(37, 99, 235, 0.22);
+}
+
+/* ── CTA Panel ── */
+.ts-cta-panel {
+  position: relative;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 30px 80px -30px rgba(0, 10, 60, 0.8);
+}
+
+.ts-cta-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(600px 250px at 15% 105%, rgba(37, 99, 235, 0.3), transparent 70%),
+    radial-gradient(500px 220px at 85% -5%, rgba(56, 189, 248, 0.25), transparent 70%);
+  z-index: -1;
+}
+
+.ts-cta-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(244, 246, 251, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 246, 251, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  z-index: -1;
 }
 </style>
