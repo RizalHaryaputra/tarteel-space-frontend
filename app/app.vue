@@ -11,8 +11,28 @@
 /* Background gelap di root agar tidak ada white flash */
 html,
 body {
-  background-color: #020617;
+  background-color: #0b0d11;
   margin: 0;
   padding: 0;
+}
+
+/* Smooth global page & layout transitions */
+.page-enter-active,
+.page-leave-active,
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-enter-from,
+.layout-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to,
+.layout-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 </style>

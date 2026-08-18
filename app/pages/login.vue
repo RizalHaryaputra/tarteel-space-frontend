@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import gsap from 'gsap'
+
 definePageMeta({ layout: false }) // Halaman login berdiri sendiri (tanpa sidebar layout)
 
 const email       = ref('')
@@ -33,6 +35,41 @@ if (authStore.isLoggedIn) {
   navigateTo(redirect)
 }
 
+let ctx: gsap.Context | null = null
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    tl.from('.ts-login-header', {
+      y: -15,
+      opacity: 0,
+      duration: 0.6,
+    })
+    .from('.ts-login-hero > *', {
+      y: 20,
+      opacity: 0,
+      duration: 0.65,
+      stagger: 0.08,
+    }, '-=0.35')
+    .from('.ts-auth-card', {
+      y: 25,
+      opacity: 0,
+      scale: 0.98,
+      duration: 0.75,
+      clearProps: 'all',
+    }, '-=0.45')
+    .from('.ts-login-footer', {
+      opacity: 0,
+      duration: 0.5,
+    }, '-=0.3')
+  })
+})
+
+onBeforeUnmount(() => {
+  if (ctx) ctx.revert()
+})
+
 const handleLogin = async () => {
   if (isLoading.value) return
   errorMsg.value  = ''
@@ -60,7 +97,7 @@ const handleLogin = async () => {
   <div class="ts-login-root min-h-screen bg-dark-950 text-ink-0 font-sans flex flex-col justify-between items-center relative overflow-x-hidden selection:bg-primary-500 selection:text-dark-950">
 
     <!-- Top floating navigation bar -->
-    <header class="w-full max-w-5xl mx-auto px-6 pt-6 flex justify-between items-center relative z-20">
+    <header class="ts-login-header w-full max-w-5xl mx-auto px-6 pt-6 flex justify-between items-center relative z-20">
       <NuxtLink to="/" class="inline-flex items-center gap-2 group cursor-pointer">
         <img src="/logo.png" alt="Tarteel Space Logo" class="w-6 h-6 rounded-[6px] object-contain" />
         <span class="font-display font-semibold text-sm tracking-tight text-ink-0">Tarteel<span class="text-primary-400">Space</span></span>
@@ -76,7 +113,7 @@ const handleLogin = async () => {
     <main class="w-full max-w-[440px] px-4 sm:px-6 py-8 relative z-10 my-auto">
       
       <!-- Brand & Header -->
-      <div class="text-center mb-8">
+      <div class="ts-login-hero text-center mb-8">
         <div class="inline-flex items-center gap-2 py-1 px-3 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] text-primary-400 mb-4" role="status">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
           <span>AUTENTIKASI AKUN</span>
@@ -224,7 +261,7 @@ const handleLogin = async () => {
     </main>
 
     <!-- Footer Copyright -->
-    <footer class="w-full max-w-5xl mx-auto px-6 pb-6 text-center font-mono text-xs text-ink-3 relative z-10">
+    <footer class="ts-login-footer w-full max-w-5xl mx-auto px-6 pb-6 text-center font-mono text-xs text-ink-3 relative z-10">
       © 2026 Tarteel Space · Proyek Skripsi Teknologi Informasi
     </footer>
 
