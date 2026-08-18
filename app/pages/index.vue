@@ -529,6 +529,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+definePageMeta({ layout: false })
+
 const authStore = useAuthStore()
 const isDropdownOpen = ref(false)
 const isScrolled = ref(false)

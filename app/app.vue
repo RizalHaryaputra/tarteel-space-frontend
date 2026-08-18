@@ -15,15 +15,4 @@ body {
   margin: 0;
   padding: 0;
 }
-
-/* Smooth global page transitions (Clean fade without document flow disruption) */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.18s ease-in-out;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-}
 </style>
