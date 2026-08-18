@@ -114,10 +114,10 @@ const handleLogin = async () => {
       
       <!-- Brand & Header -->
       <div class="ts-login-hero text-center mb-8">
-        <div class="inline-flex items-center gap-2 py-1 px-3 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] text-primary-400 mb-4" role="status">
+        <!-- <div class="inline-flex items-center gap-2 py-1 px-3 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] text-primary-400 mb-4" role="status">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
           <span>AUTENTIKASI AKUN</span>
-        </div>
+        </div> -->
         <h1 class="font-display font-semibold text-3xl sm:text-4xl tracking-tight text-ink-0 leading-tight">
           Selamat Datang<em class="font-serif italic text-primary-400 font-normal ml-1.5">Kembali</em>
         </h1>
