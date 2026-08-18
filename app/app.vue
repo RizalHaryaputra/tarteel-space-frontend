@@ -16,23 +16,14 @@ body {
   padding: 0;
 }
 
-/* Smooth global page & layout transitions */
+/* Smooth global page transitions (Clean fade without document flow disruption) */
 .page-enter-active,
-.page-leave-active,
-.layout-enter-active,
-.layout-leave-active {
-  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+.page-leave-active {
+  transition: opacity 0.18s ease-in-out;
 }
 
 .page-enter-from,
-.layout-enter-from {
+.page-leave-to {
   opacity: 0;
-  transform: translateY(8px);
-}
-
-.page-leave-to,
-.layout-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
 }
 </style>
