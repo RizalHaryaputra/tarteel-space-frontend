@@ -61,23 +61,23 @@
     </nav>
 
     <!-- ───────── hero · Marquee Hero + split diptych ───────── -->
-    <section class="ts-hero pt-[130px] pb-20 relative overflow-clip" id="beranda">
-      <div class="ts-container max-w-[1240px] mx-auto px-6 w-full">
+    <section class="ts-hero pt-24 sm:pt-[130px] pb-12 sm:pb-20 relative overflow-clip" id="beranda">
+      <div class="ts-container max-w-[1240px] mx-auto px-4 sm:px-6 w-full">
 
         <!-- live badge -->
-        <div class="ts-hero__live inline-flex items-center gap-2.5 py-1.5 px-3.5 border border-white/10 bg-dark-900 rounded-full font-mono text-xs text-ink-1 relative z-10" role="status" aria-live="polite">
+        <div class="ts-hero__live inline-flex items-center gap-2 py-1 sm:py-1.5 px-3 sm:px-3.5 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] sm:text-xs text-ink-1 relative z-10 max-w-full" role="status" aria-live="polite">
           <span class="ts-live-dot w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true"></span>
-          <span>DITENAGAI DEEP LEARNING · <strong class="font-semibold text-ink-0">CNN</strong> · EVALUASI REAL-TIME</span>
+          <span class="truncate sm:overflow-visible">DITENAGAI DEEP LEARNING · <strong class="font-semibold text-ink-0">CNN</strong> · REAL-TIME</span>
         </div>
 
         <!-- split layout: headline left, art right -->
-        <div class="ts-hero__layout grid grid-cols-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-12 lg:gap-20 items-center mt-8 relative z-10">
+        <div class="ts-hero__layout grid grid-cols-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-8 sm:gap-12 lg:gap-20 items-center mt-6 sm:mt-8 relative z-10">
           <div class="ts-hero__copy">
-            <h1 class="ts-hero__h1 font-display font-semibold text-[clamp(2.2rem,8vw,4.8rem)] leading-[0.98] tracking-tight my-4 text-ink-0">
+            <h1 class="ts-hero__h1 font-display font-semibold text-[clamp(2.1rem,7vw,4.5rem)] leading-[1.02] tracking-tight my-3 sm:my-4 text-ink-0">
               Sempurnakan Pelafalan<br>
-              Hijaiyah<em class="ts-italic font-serif italic text-primary-400 font-normal ml-2">dengan benar.</em>
+              Hijaiyah<em class="ts-italic font-serif italic text-primary-400 font-normal ml-1.5 sm:ml-2">dengan benar.</em>
             </h1>
-            <p class="ts-hero__sub text-base md:text-lg text-ink-1 max-w-[50ch] mb-8 leading-relaxed">
+            <p class="ts-hero__sub text-sm sm:text-base md:text-lg text-ink-1 max-w-[50ch] mb-6 sm:mb-8 leading-relaxed">
               Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time
               menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.
             </p>
@@ -86,58 +86,63 @@
                 Mulai Latihan <span aria-hidden="true">→</span>
               </button>
               <button class="ts-btn ts-btn--ghost" @click="scrollTo('cara-kerja')">
-                Lihat Cara Kerjanya
+                Lihat Cara Kerja
               </button>
             </div>
-            <div class="ts-hero__fineprint mt-8 font-mono text-xs text-ink-2 flex items-center gap-3 flex-wrap">
+            <div class="ts-hero__fineprint mt-10 sm:mt-12 font-mono text-[11px] sm:text-xs text-ink-2">
               <span>gratis sepenuhnya</span>
               <span>langsung dari browser</span>
               <span>tanpa instal aplikasi</span>
             </div>
           </div>
 
-          <!-- Tier-A pure-CSS art: Arabic evaluation card -->
+          <!-- Arabic evaluation card (Hallmark Style Line-Item Sheet) -->
           <aside class="ts-eval-card" aria-label="Pratinjau evaluasi pelafalan">
-            <div class="ts-eval-card__head flex justify-between items-start pb-3 border-b border-white/5">
+            <div class="ts-eval-card__head flex justify-between items-start pb-3.5 sm:pb-4 border-b border-white/10">
               <div>
-                <div class="font-semibold text-ink-0 text-base">SESI-04212</div>
-                <div class="text-xs text-ink-2 mt-0.5">Ahmad Rizal · Makhraj Huruf</div>
+                <div class="font-mono font-bold text-ink-0 text-base sm:text-lg tracking-tight">SESI-04212</div>
+                <div class="font-mono text-[11px] sm:text-xs text-ink-2 mt-0.5 sm:mt-1">Ahmad Rizal · Pelafalan Hijaiyah</div>
               </div>
-              <span class="text-[10px] tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-0.5 px-2 rounded-full font-mono">live · aktif</span>
+              <span class="font-mono text-[9px] sm:text-[10px] tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-1 px-2.5 rounded-full font-medium">EVALUASI · LIVE</span>
             </div>
-            <div class="ts-eval-card__letters grid grid-cols-4 gap-2 py-4 border-b border-white/5">
-              <div class="ts-eval-card__letter ts-eval-card__letter--correct">
-                <span class="text-2xl text-ink-0 leading-none">بَ</span>
-                <span class="text-[10px] tracking-wider text-emerald-400">96%</span>
+
+            <div class="ts-eval-card__rows py-3.5 sm:py-4 border-b border-white/10 flex flex-col gap-2 sm:gap-2.5">
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">بَ (Ba · Fathah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">96.4%</span>
               </div>
-              <div class="ts-eval-card__letter ts-eval-card__letter--correct">
-                <span class="text-2xl text-ink-0 leading-none">بِ</span>
-                <span class="text-[10px] tracking-wider text-emerald-400">91%</span>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">تِ (Ta · Kasrah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">91.2%</span>
               </div>
-              <div class="ts-eval-card__letter ts-eval-card__letter--improve">
-                <span class="text-2xl text-ink-0 leading-none">بُ</span>
-                <span class="text-[10px] tracking-wider text-rose-400">74%</span>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm gap-2">
+                <span class="text-ink-1 truncate">Huruf <strong class="text-ink-0 font-normal">ثُ (Tsa · Dhommah)</strong></span>
+                <span class="text-ink-0 font-semibold tracking-tight shrink-0">88.5%</span>
               </div>
-              <div class="ts-eval-card__letter ts-eval-card__letter--correct">
-                <span class="text-2xl text-ink-0 leading-none">تَ</span>
-                <span class="text-[10px] tracking-wider text-emerald-400">89%</span>
+              <div class="flex justify-between items-center font-mono text-xs sm:text-sm text-emerald-400 gap-2">
+                <span class="truncate">Kesesuaian Makhraj</span>
+                <span class="font-semibold tracking-tight shrink-0">Sangat Baik</span>
               </div>
             </div>
-            <div class="ts-eval-card__total flex justify-between items-baseline pt-3 mt-1 text-sm text-ink-1">
-              <span>Akurasi sesi ini</span>
-              <span class="font-display text-2xl font-semibold text-ink-0 tracking-tight">88.5<small class="text-[0.55em] font-normal">%</small></span>
+
+            <div class="ts-eval-card__total flex justify-between items-baseline pt-3.5 sm:pt-4 mt-0.5">
+              <span class="font-mono text-xs sm:text-sm text-ink-1">Total Akurasi Sesi</span>
+              <span class="font-mono font-bold text-2xl sm:text-3xl lg:text-4xl text-ink-0 tracking-tight">88.5<small class="text-[0.65em] font-normal text-ink-1 ml-0.5">%</small></span>
             </div>
-            <div class="ts-eval-card__bar h-1.5 bg-dark-800 rounded-full mt-4 overflow-hidden" aria-hidden="true">
-              <i class="block h-full bg-gradient-to-r from-primary-500 to-primary-azure rounded-full" style="width: 88.5%"></i>
+            
+            <div class="ts-eval-card__bar h-2 bg-dark-800 rounded-full mt-3.5 sm:mt-4 overflow-hidden" aria-hidden="true">
+              <i class="block h-full bg-gradient-to-r from-primary-500 via-primary-azure to-emerald-400 rounded-full" style="width: 88.5%"></i>
             </div>
-            <div class="text-[10px] tracking-wider uppercase text-ink-3 mt-2">
-              84 kelas hijaiyah · model CNN · 95% akurasi
+            
+            <div class="font-mono text-[9px] sm:text-[10px] tracking-wider uppercase text-ink-3 mt-2.5 sm:mt-3 flex justify-between items-center">
+              <span>84 KELAS HIJAIYAH</span>
+              <span>MODEL CNN 95% AKURASI</span>
             </div>
           </aside>
         </div>
 
         <!-- marquee strip -->
-        <div class="ts-marquee w-full overflow-hidden border-y border-white/5 py-4 mt-20 relative z-10" aria-hidden="true">
+        <div class="ts-marquee w-full overflow-hidden border-y border-white/5 py-3 sm:py-4 mt-12 sm:mt-20 relative z-10" aria-hidden="true">
           <div class="ts-marquee__track flex gap-12 font-mono text-sm text-ink-2 uppercase tracking-[0.18em] whitespace-nowrap animate-marquee">
             <span class="inline-flex items-center gap-3">REKAM · SUARA · ANDA</span>
             <span class="inline-flex items-center gap-3">EVALUASI · REAL-TIME</span>
@@ -636,10 +641,10 @@ onMounted(() => {
         stagger: 0.08,
       }, '-=0.4')
       .from('.ts-eval-card', {
-        x: 40,
+        y: 30,
         opacity: 0,
-        rotate: 3,
         duration: 0.9,
+        clearProps: 'all',
       }, '-=0.8')
       .from('.ts-marquee', {
         opacity: 0,
@@ -1002,55 +1007,67 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.ts-hero__fineprint span:not(:first-child)::before {
+.ts-hero__fineprint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+}
+
+.ts-hero__fineprint span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ts-hero__fineprint span:not(:last-child)::after {
   content: "·";
-  margin-right: 0.75rem;
+  margin-left: 0.85rem;
   color: #414d6b;
   font-weight: bold;
 }
 
 /* ── Eval Card ── */
 .ts-eval-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   background: #13171f;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -28px rgba(0, 10, 80, 0.7), 0 4px 12px -4px rgba(0, 10, 80, 0.3);
   font-family: 'Geist Mono', monospace;
   font-size: 0.875rem;
   position: relative;
-  transform: rotate(0.5deg);
-  max-width: 420px;
-  margin-left: auto;
+  box-sizing: border-box;
   transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@media (min-width: 1024px) {
+  .ts-eval-card {
+    margin-left: auto;
+    margin-right: 0;
+    padding: 1.5rem;
+  }
+  .ts-eval-card:hover {
+    transform: translateY(-6px);
+  }
+}
+
 .ts-eval-card:hover {
-  transform: rotate(0deg) translateY(-6px);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 32px 80px -24px rgba(0, 10, 80, 0.85), 0 0 0 1px rgba(37, 99, 235, 0.3), 0 0 40px -10px rgba(37, 99, 235, 0.2);
 }
 
 .ts-eval-card::before {
   content: "";
   position: absolute;
-  inset: -8px;
+  inset: -6px;
   border: 1px dashed rgba(244, 246, 251, 0.07);
-  border-radius: 28px;
+  border-radius: 26px;
   pointer-events: none;
 }
 
-.ts-eval-card__letter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 0.75rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
 
-.ts-eval-card__letter--correct { border-color: rgba(16, 185, 129, 0.3); }
-.ts-eval-card__letter--improve { border-color: rgba(239, 68, 68, 0.3); }
 
 /* ── Steps (Clean Editorial Layout) ── */
 .ts-step {
