@@ -612,6 +612,7 @@ onMounted(() => {
         y: -30,
         opacity: 0,
         duration: 0.8,
+        clearProps: 'y,opacity',
       })
       .from('.ts-hero__live', {
         y: 20,
@@ -795,10 +796,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* ── N5 Floating Nav Pill ── */
+/* ── N5 Floating Nav Pill (Ultra-Frosted Glassmorphism) ── */
 .ts-nav {
   position: fixed;
-  top: 24px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 50;
@@ -807,18 +808,24 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 6px 8px 6px 14px;
   border-radius: 9999px;
-  background: rgba(19, 23, 31, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 8px 32px -8px rgba(0, 10, 60, 0.6);
-  transition: all 300ms ease;
+  background: rgba(13, 16, 23, 0.6);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 16px 36px -8px rgba(0, 5, 20, 0.6), 0 0 20px -4px rgba(37, 99, 235, 0.15);
+  transition: background 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+@media (max-width: 640px) {
+  .ts-nav {
+    top: 14px;
+  }
 }
 
 .ts-nav--scrolled {
-  top: 14px;
-  background: rgba(19, 23, 31, 0.95);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 12px 40px -16px rgba(0, 10, 60, 0.8);
+  background: rgba(13, 16, 23, 0.78);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 24px -4px rgba(37, 99, 235, 0.22);
 }
 
 .ts-nav__link {
@@ -834,7 +841,7 @@ onBeforeUnmount(() => {
 }
 
 .ts-nav__link:hover {
-  background: #1a202c;
+  background: rgba(255, 255, 255, 0.08);
   color: #f4f6fb;
 }
 
