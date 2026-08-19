@@ -145,7 +145,7 @@ const formatDate = (dateString: string) => {
           </div>
           
           <div>
-            <NuxtLink to="/dashboard/practice" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary-500 hover:bg-primary-400 text-dark-950 font-semibold text-sm sm:text-base rounded-full transition-all duration-300 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer">
+            <NuxtLink to="/dashboard/practice" class="ts-btn ts-btn--primary ts-btn--lg">
               <span>Mulai Sesi Latihan</span>
               <span aria-hidden="true">→</span>
             </NuxtLink>

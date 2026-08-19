@@ -312,7 +312,7 @@ const formatDate = (isoStr: string) => {
                     <!-- User Audio Button -->
                     <div class="flex flex-col items-center gap-1">
                       <button v-if="item.user_audio" @click.stop="toggleAudio(item.user_audio, 'user', item.id)"
-                        class="p-2 rounded-full transition-all border cursor-pointer"
+                        class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 border cursor-pointer"
                         :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user' ? 'bg-primary-500 text-dark-950 border-primary-400 shadow-md shadow-primary-500/30' : 'bg-dark-950 text-ink-1 hover:text-ink-0 border-white/10 hover:border-white/20'"
                         title="Putar Rekaman Anda">
                         <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user'" xmlns="http://www.w3.org/2000/svg"
@@ -330,7 +330,7 @@ const formatDate = (isoStr: string) => {
                     <!-- Ustadz Audio Button -->
                     <div class="flex flex-col items-center gap-1">
                       <button v-if="item.ustadz_audio" @click.stop="toggleAudio(item.ustadz_audio, 'ustadz', item.id)"
-                        class="p-2 rounded-full transition-all border cursor-pointer"
+                        class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 border cursor-pointer"
                         :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz' ? 'bg-cyan-500 text-dark-950 border-cyan-400 shadow-md shadow-cyan-500/30' : 'bg-dark-950 text-ink-1 hover:text-ink-0 border-white/10 hover:border-white/20'"
                         title="Putar Audio Referensi">
                         <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz'" xmlns="http://www.w3.org/2000/svg"
@@ -360,7 +360,7 @@ const formatDate = (isoStr: string) => {
                 <td class="py-4 px-4 text-center">
                   <button 
                     @click="openExplanationModal(item.id)"
-                    class="font-mono text-xs uppercase tracking-wider py-1.5 px-3 rounded-full transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer border"
+                    class="font-sans text-xs font-semibold py-1.5 px-3.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center justify-center gap-1.5 cursor-pointer border"
                     :class="item.ai_explanation || explanations[item.id]?.text ? 'text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 border-primary-500/30' : 'text-ink-2 bg-dark-950 hover:text-ink-0 hover:border-white/20 border-white/10'"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
@@ -419,7 +419,7 @@ const formatDate = (isoStr: string) => {
           
           <!-- Footer -->
           <div class="px-6 py-4 border-t border-white/5 bg-dark-950/40 flex justify-end">
-            <button @click="closeExplanationModal" class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-0 border border-white/10 hover:border-white/20 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+            <button @click="closeExplanationModal" class="ts-btn ts-btn--ghost">
               Tutup
             </button>
           </div>

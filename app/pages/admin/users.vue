@@ -250,7 +250,7 @@ const formatDate = (isoStr: string) => {
               <td class="p-5 text-right">
                 <button v-if="user.id !== authStore.userId" :disabled="actionLoading === user.id"
                   @click="confirmDelete(user.id)"
-                  class="p-2 text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10 rounded-full transition-all duration-200 disabled:opacity-50 cursor-pointer"
+                  class="w-8 h-8 inline-flex items-center justify-center text-rose-400/80 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 rounded-full transition-all duration-200 hover:scale-110 disabled:opacity-50 cursor-pointer"
                   title="Hapus Pengguna">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="1.75">
@@ -294,14 +294,14 @@ const formatDate = (isoStr: string) => {
             Tindakan ini tidak dapat dibatalkan. Semua riwayat latihan pelafalan, evaluasi, dan laporan umpan balik dari pengguna ini akan dihapus secara permanen.
           </p>
 
-          <div class="flex gap-2.5 justify-end">
+          <div class="flex gap-3 justify-end">
             <button @click="isDeleting = null"
-              class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider cursor-pointer">
+              class="ts-btn ts-btn--ghost">
               Batal
             </button>
             <button @click="handleDeleteUser"
-              class="px-5 py-2 bg-rose-500 hover:bg-rose-400 text-white rounded-full font-mono text-xs uppercase tracking-wider transition-colors shadow-md shadow-rose-500/25 cursor-pointer">
-              Ya, Hapus
+              class="ts-btn ts-btn--danger">
+              Hapus Pengguna
             </button>
           </div>
         </div>

@@ -290,7 +290,7 @@ const handleDeleteLetter = async () => {
 
         <!-- Add Button -->
         <button @click="openFormModal()"
-          class="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary-500 hover:bg-primary-400 text-dark-950 rounded-full text-sm font-semibold transition-all shadow-md shadow-primary-500/25 whitespace-nowrap cursor-pointer">
+          class="ts-btn ts-btn--primary">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
@@ -357,7 +357,7 @@ const handleDeleteLetter = async () => {
                 <div class="flex items-center gap-2">
                   <!-- Play Button -->
                   <button v-if="letter.audio_url" @click="playAudio(letter.audio_url)"
-                    class="p-2 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all shadow-md shadow-primary-500/25 cursor-pointer"
+                    class="w-8 h-8 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 shadow-md shadow-primary-500/25 flex items-center justify-center cursor-pointer"
                     :title="currentPlayingUrl === letter.audio_url ? 'Pause' : 'Putar Audio Referensi'">
                     <svg v-if="currentPlayingUrl === letter.audio_url" xmlns="http://www.w3.org/2000/svg"
                       class="h-3.5 w-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
@@ -377,7 +377,7 @@ const handleDeleteLetter = async () => {
 
                   <!-- Upload Icon Button -->
                   <button @click="openAudioModal(letter)"
-                    class="p-2 rounded-full border border-white/10 hover:border-white/20 bg-dark-950 text-ink-2 hover:text-ink-0 transition-all cursor-pointer"
+                    class="w-8 h-8 rounded-full border border-white/10 hover:border-primary-500/40 bg-dark-950 hover:bg-dark-850 text-ink-2 hover:text-primary-300 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 flex items-center justify-center cursor-pointer"
                     title="Unggah Audio Referensi Ustadz">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="1.75">
@@ -391,7 +391,7 @@ const handleDeleteLetter = async () => {
               <td class="p-5 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button @click="openFormModal(letter)"
-                    class="p-1.5 text-ink-2 hover:text-primary-400 hover:bg-primary-500/10 rounded-full transition-all cursor-pointer"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-ink-2 hover:text-primary-400 hover:bg-primary-500/10 border border-transparent hover:border-primary-500/20 transition-all duration-200 hover:scale-110 cursor-pointer"
                     title="Edit Huruf">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="1.75">
@@ -400,7 +400,7 @@ const handleDeleteLetter = async () => {
                     </svg>
                   </button>
                   <button @click="confirmDelete(letter)"
-                    class="p-1.5 text-rose-400/70 hover:text-rose-400 hover:bg-rose-500/10 rounded-full transition-all cursor-pointer"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-rose-400/80 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-200 hover:scale-110 cursor-pointer"
                     title="Hapus Huruf">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="1.75">
@@ -449,25 +449,27 @@ const handleDeleteLetter = async () => {
                   class="w-full bg-dark-950 border border-white/10 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 transition-all cursor-pointer font-sans">
                   <option value="Fathah" class="bg-dark-950 text-white">Fathah</option>
                   <option value="Kasrah" class="bg-dark-950 text-white">Kasrah</option>
-                  <option value="Dhummah" class="bg-dark-950 text-white">Dommah</option>
+                  <option value="Dhammah" class="bg-dark-950 text-white">Dhammah</option>
+                  <option value="Tanwin Fathah" class="bg-dark-950 text-white">Tanwin Fathah</option>
+                  <option value="Tanwin Kasrah" class="bg-dark-950 text-white">Tanwin Kasrah</option>
+                  <option value="Tanwin Dhammah" class="bg-dark-950 text-white">Tanwin Dhammah</option>
+                  <option value="Sukun" class="bg-dark-950 text-white">Sukun</option>
                 </select>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <!-- Pronunciation -->
-              <div class="space-y-1.5">
-                <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Transliterasi</label>
-                <input v-model="formPronunciation" type="text" required placeholder="Contoh: A"
-                  class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-sans" />
-              </div>
+            <!-- Arabic Script -->
+            <div class="space-y-1.5">
+              <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Simbol / Tulisan Arab</label>
+              <input v-model="formArabicScript" type="text" required placeholder="Contoh: أَ"
+                class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-lg rounded-xl px-4 py-2 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-sans" />
+            </div>
 
-              <!-- Arabic Script -->
-              <div class="space-y-1.5">
-                <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Simbol Arab</label>
-                <input v-model="formArabicScript" type="text" required placeholder="Contoh: أ"
-                  class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-lg rounded-xl px-4 py-2 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-sans" />
-              </div>
+            <!-- Pronunciation -->
+            <div class="space-y-1.5">
+              <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Cara Baca (Transliterasi)</label>
+              <input v-model="formPronunciation" type="text" required placeholder="Contoh: A / 'A"
+                class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-sans" />
             </div>
 
             <!-- Model Label -->
@@ -477,16 +479,16 @@ const handleDeleteLetter = async () => {
                 class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-mono" />
             </div>
 
-            <div class="flex gap-2.5 justify-end pt-3">
+            <div class="flex gap-3 justify-end pt-3">
               <button type="button" @click="isFormModalOpen = false"
-                class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+                class="ts-btn ts-btn--ghost">
                 Batal
               </button>
               <button type="submit" :disabled="formIsSubmitting"
-                class="px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 rounded-full font-medium text-xs transition-colors shadow-md shadow-primary-500/25 flex items-center gap-2 cursor-pointer">
+                class="ts-btn ts-btn--primary">
                 <span v-if="formIsSubmitting"
-                  class="w-3 h-3 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
-                <span>Simpan</span>
+                  class="w-4 h-4 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
+                <span>Simpan Huruf</span>
               </button>
             </div>
           </form>
@@ -533,15 +535,15 @@ const handleDeleteLetter = async () => {
             <span class="font-mono text-[10px] text-ink-3 mt-1">Format: .wav audio</span>
           </div>
 
-          <div class="flex gap-2.5 justify-end mt-6">
+          <div class="flex gap-3 justify-end mt-6">
             <button @click="isAudioModalOpen = false"
-              class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+              class="ts-btn ts-btn--ghost">
               Batal
             </button>
             <button @click="handleAudioUpload" :disabled="!selectedAudioFile || isUploadingAudio"
-              class="px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 disabled:cursor-not-allowed text-dark-950 rounded-full font-medium text-xs transition-colors shadow-md shadow-primary-500/25 flex items-center gap-2 cursor-pointer">
+              class="ts-btn ts-btn--primary">
               <span v-if="isUploadingAudio"
-                class="w-3 h-3 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
+                class="w-4 h-4 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
               <span>Unggah Audio</span>
             </button>
           </div>
@@ -573,14 +575,14 @@ const handleDeleteLetter = async () => {
             Apakah Anda yakin ingin menghapus huruf <strong class="text-ink-0 font-medium">{{ deleteLetterDisplay }}</strong> dari daftar latihan?
           </p>
 
-          <div class="flex gap-2.5 justify-end">
+          <div class="flex gap-3 justify-end">
             <button @click="isDeleteModalOpen = false"
-              class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider cursor-pointer">
+              class="ts-btn ts-btn--ghost">
               Batal
             </button>
             <button @click="handleDeleteLetter"
-              class="px-5 py-2 bg-rose-500 hover:bg-rose-400 text-white rounded-full font-mono text-xs uppercase tracking-wider transition-colors shadow-md shadow-rose-500/25 cursor-pointer">
-              Hapus
+              class="ts-btn ts-btn--danger">
+              Hapus Huruf
             </button>
           </div>
         </div>

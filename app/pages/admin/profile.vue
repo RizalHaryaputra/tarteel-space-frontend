@@ -260,8 +260,8 @@ const getInitials = (name: string) => {
 
               <div class="flex flex-wrap gap-2.5 justify-center sm:justify-start">
                 <label
-                  class="px-5 py-2.5 bg-dark-950 hover:bg-dark-850 text-ink-1 hover:text-ink-0 border border-white/10 hover:border-white/20 rounded-full font-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer inline-flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  class="ts-btn ts-btn--ghost inline-flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="1.75">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -271,15 +271,15 @@ const getInitials = (name: string) => {
                 </label>
 
                 <button v-if="selectedAvatarFile" @click="handleUploadAvatar" :disabled="isUploadingAvatar"
-                  class="px-5 py-2.5 bg-primary-500 hover:bg-primary-400 text-dark-950 disabled:opacity-50 rounded-full font-semibold text-xs sm:text-sm transition-all shadow-md shadow-primary-500/25 inline-flex items-center gap-2 cursor-pointer">
+                  class="ts-btn ts-btn--primary inline-flex items-center gap-2">
                   <span v-if="isUploadingAvatar"
                     class="w-3.5 h-3.5 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
                   <span>Simpan Foto</span>
                 </button>
 
                 <button v-if="profile.avatar_url && !selectedAvatarFile" @click="confirmDeleteAvatar"
-                  class="px-5 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-full font-mono text-xs uppercase tracking-wider font-semibold transition-colors inline-flex items-center gap-1.5 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  class="ts-btn ts-btn--soft-danger inline-flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="1.75">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -329,7 +329,7 @@ const getInitials = (name: string) => {
 
             <div class="pt-2">
               <button type="submit" :disabled="isSavingProfile"
-                class="w-full sm:w-auto px-6 py-2.5 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 font-medium text-sm rounded-full transition-all shadow-md shadow-primary-500/25 inline-flex items-center justify-center gap-2 cursor-pointer">
+                class="ts-btn ts-btn--primary w-full sm:w-auto">
                 <span v-if="isSavingProfile"
                   class="w-3.5 h-3.5 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
                 <span>Simpan Perubahan</span>
@@ -383,9 +383,9 @@ const getInitials = (name: string) => {
 
             <div class="pt-2">
               <button type="submit" :disabled="isSavingPassword"
-                class="w-full py-2.5 bg-dark-950 hover:bg-dark-850 text-ink-0 border border-white/10 hover:border-white/20 disabled:opacity-50 rounded-full font-mono text-xs uppercase tracking-wider transition-all inline-flex items-center justify-center gap-2 cursor-pointer">
+                class="ts-btn ts-btn--ghost w-full">
                 <span v-if="isSavingPassword"
-                  class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                 <span>Ubah Password</span>
               </button>
             </div>
@@ -410,18 +410,16 @@ const getInitials = (name: string) => {
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </div>
-          <div>
-            <h4 class="font-display font-semibold text-lg text-ink-0">Hapus Foto Profil?</h4>
-            <p class="font-sans text-xs text-ink-2 mt-1">Foto profil Anda akan dihapus dan kembali ke inisial nama.</p>
-          </div>
-          <div class="flex gap-2.5 justify-center pt-2">
+          <h4 class="font-display font-semibold text-lg text-ink-0">Hapus Foto Profil?</h4>
+          <p class="font-sans text-xs text-ink-2">Foto profil Anda akan dihapus dan kembali menggunakan inisial nama.</p>
+          <div class="flex gap-3 justify-center pt-2">
             <button @click="isDeleteModalOpen = false"
-              class="px-4 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider cursor-pointer">
+              class="ts-btn ts-btn--ghost">
               Batal
             </button>
             <button @click="handleDeleteAvatar" :disabled="isDeletingAvatar"
-              class="px-4 py-2 bg-rose-500 hover:bg-rose-400 text-white rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
-              {{ isDeletingAvatar ? 'Menghapus...' : 'Ya, Hapus' }}
+              class="ts-btn ts-btn--danger">
+              Ya, Hapus
             </button>
           </div>
         </div>

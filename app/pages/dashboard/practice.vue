@@ -477,7 +477,7 @@ const sendFeedback = async () => {
 
           <!-- Gemini Explanation Button / Box -->
           <button v-if="!showExplanation && evalId" @click="fetchExplanation" :disabled="isFetchingExplanation"
-            class="w-full mb-6 py-3 px-5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-full font-mono text-xs sm:text-sm uppercase tracking-wider font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+            class="ts-btn ts-btn--emerald w-full mb-6 py-3">
             <svg v-if="isFetchingExplanation" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg"
               fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -493,7 +493,7 @@ const sendFeedback = async () => {
 
           <div v-if="showExplanation"
             class="w-full text-left bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 mb-6 shadow-inner animate-fade-in">
-            <div class="flex items-center gap-2 text-emerald-400 font-mono font-bold text-xs sm:text-sm uppercase tracking-wider mb-2.5">
+            <div class="flex items-center gap-2 text-emerald-400 font-sans font-semibold text-sm mb-2.5">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -504,13 +504,13 @@ const sendFeedback = async () => {
             <p class="font-sans text-ink-1 text-sm sm:text-base leading-relaxed whitespace-pre-line">{{ explanationText }}</p>
           </div>
 
-          <div class="flex gap-3 w-full mt-auto">
+          <div class="flex flex-col sm:flex-row gap-3 w-full mt-auto">
             <button @click="showResult = false"
-              class="flex-1 py-3 px-6 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs sm:text-sm uppercase tracking-wider font-semibold transition-colors cursor-pointer">
+              class="ts-btn ts-btn--ghost flex-1 py-3">
               Coba Lagi
             </button>
             <button @click="nextLetter"
-              class="flex-1 py-3 px-6 bg-primary-500 hover:bg-primary-400 text-dark-950 font-semibold text-xs sm:text-sm rounded-full transition-colors shadow-md shadow-primary-500/25 flex items-center justify-center gap-2 cursor-pointer">
+              class="ts-btn ts-btn--primary flex-1 py-3">
               <span>Lanjut Huruf Berikutnya</span>
             </button>
           </div>
@@ -597,14 +597,14 @@ const sendFeedback = async () => {
                 class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 resize-none"></textarea>
             </div>
 
-            <div class="flex gap-2.5 justify-end">
+            <div class="flex gap-3 justify-end">
               <button type="button" @click="showFeedbackModal = false"
-                class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+                class="ts-btn ts-btn--ghost">
                 Batal
               </button>
               <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim()"
-                class="px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 font-medium text-xs rounded-full transition-colors shadow-md shadow-primary-500/25 flex items-center justify-center gap-2 cursor-pointer">
-                <svg v-if="isSubmittingFeedback" class="animate-spin h-3.5 w-3.5 text-dark-950"
+                class="ts-btn ts-btn--primary">
+                <svg v-if="isSubmittingFeedback" class="animate-spin h-4 w-4 text-dark-950"
                   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>

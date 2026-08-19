@@ -331,7 +331,7 @@ const formatDate = (dateStr: string) => {
           <!-- Upload Model Button -->
           <button 
             @click="isUploadModalOpen = true"
-            class="flex items-center justify-center gap-2 px-5 py-2.5 bg-dark-950 hover:bg-dark-850 text-ink-0 border border-white/10 hover:border-white/20 rounded-full font-mono text-xs uppercase tracking-wider transition-all cursor-pointer"
+            class="ts-btn ts-btn--ghost"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -344,21 +344,21 @@ const formatDate = (dateStr: string) => {
             <button 
               @click="exportCSV" 
               :disabled="dataset.length === 0"
-              class="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 rounded-full font-medium text-xs transition-all shadow-md shadow-primary-500/25 cursor-pointer whitespace-nowrap"
+              class="ts-btn ts-btn--primary flex-1 whitespace-nowrap"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span>CSV</span>
+              <span>Ekspor CSV</span>
             </button>
 
             <!-- Export JSON Button -->
             <button 
               @click="exportJSON" 
               :disabled="dataset.length === 0"
-              class="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-dark-950 rounded-full font-medium text-xs transition-all shadow-md shadow-cyan-500/25 cursor-pointer whitespace-nowrap"
+              class="ts-btn ts-btn--cyan flex-1 whitespace-nowrap"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0L8 8m4-4v12" />
               </svg>
               <span>JSON</span>
@@ -437,7 +437,7 @@ const formatDate = (dateStr: string) => {
                 <button 
                   v-if="item.audio_url"
                   @click="playAudio(item.audio_url)"
-                  class="p-1.5 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all shadow-md shadow-primary-500/25 cursor-pointer"
+                  class="w-7 h-7 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 shadow-md shadow-primary-500/25 flex items-center justify-center cursor-pointer"
                   :title="currentPlayingUrl === item.audio_url ? 'Pause' : 'Putar Audio'"
                 >
                   <svg v-if="currentPlayingUrl === item.audio_url" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
@@ -450,15 +450,17 @@ const formatDate = (dateStr: string) => {
                 <span v-else class="font-mono text-[10px] text-ink-3 italic">-</span>
               </td>
               <!-- Accuracy -->
-              <td class="py-3.5 px-4 font-mono text-xs font-semibold text-ink-0">
-                {{ item.accuracy_score?.toFixed(1) }}%
+              <td class="py-3.5 px-4 font-mono text-xs">
+                <span :class="item.accuracy_score >= 80 ? 'text-emerald-400' : item.accuracy_score >= 60 ? 'text-amber-400' : 'text-rose-400'">
+                  {{ item.accuracy_score.toFixed(1) }}%
+                </span>
               </td>
-              <!-- Notes -->
-              <td class="py-3.5 px-4 font-sans text-xs text-ink-2 max-w-xs truncate" :title="item.admin_notes || ''">
+              <!-- Admin Notes -->
+              <td class="py-3.5 px-4 text-xs text-ink-2 max-w-xs truncate" :title="item.admin_notes || ''">
                 {{ item.admin_notes || '-' }}
               </td>
-              <!-- Date Verified -->
-              <td class="py-3.5 px-4 font-mono text-xs text-ink-3">
+              <!-- Date -->
+              <td class="py-3.5 px-4 font-mono text-xs text-ink-3 whitespace-nowrap">
                 {{ formatDate(item.verified_at) }}
               </td>
             </tr>
@@ -466,15 +468,9 @@ const formatDate = (dateStr: string) => {
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <p v-if="!isNaN(currentPage)" class="font-sans text-xs text-ink-2">
-          Menampilkan <span class="font-mono font-semibold text-ink-0">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> - 
-          <span class="font-mono font-semibold text-ink-0">{{ Math.min(currentPage * itemsPerPage, dataset.length) }}</span> dari 
-          <span class="font-mono font-semibold text-ink-0">{{ dataset.length }}</span> baris
-        </p>
-        
-        <AppPagination
+      <div class="px-6 py-4 border-t border-white/5">
+        <AppPagination 
+          v-if="dataset.length > 0"
           :totalItems="dataset.length"
           :itemsPerPage="itemsPerPage"
           v-model="currentPage"
@@ -500,19 +496,19 @@ const formatDate = (dateStr: string) => {
           
           <button 
             @click="handleMarkTrained(true)"
-            class="px-4 py-1.5 bg-primary-500 hover:bg-primary-400 text-dark-950 rounded-full font-medium text-xs transition-colors shadow-md cursor-pointer"
+            class="ts-btn ts-btn--primary ts-btn--sm"
           >
             Tandai Ditraining
           </button>
           
           <button 
             @click="handleMarkTrained(false)"
-            class="px-4 py-1.5 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
+            class="ts-btn ts-btn--ghost ts-btn--sm"
           >
-            Unmark
+            Batal Status
           </button>
           
-          <button @click="selectedIds = []" class="p-1 text-ink-3 hover:text-ink-0 rounded-full cursor-pointer" title="Batal Pilih Semua">
+          <button @click="selectedIds = []" class="p-1.5 text-ink-3 hover:text-ink-0 rounded-full transition-colors cursor-pointer" title="Batal Pilih Semua">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
           </button>
         </div>
@@ -552,13 +548,13 @@ const formatDate = (dateStr: string) => {
             </div>
 
             <!-- Submit -->
-            <div class="flex gap-2.5 mt-6 pt-2 justify-end">
-              <button type="button" @click="isUploadModalOpen = false" class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+            <div class="flex gap-3 mt-6 pt-2 justify-end">
+              <button type="button" @click="isUploadModalOpen = false" class="ts-btn ts-btn--ghost">
                 Batal
               </button>
-              <button type="submit" :disabled="isUploadingModel || !modelFile || !meanFile || !stdFile" class="px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 font-medium text-xs rounded-full transition-colors shadow-md shadow-primary-500/25 flex items-center justify-center gap-2 cursor-pointer">
+              <button type="submit" :disabled="isUploadingModel || !modelFile || !meanFile || !stdFile" class="ts-btn ts-btn--primary">
                 <template v-if="isUploadingModel">
-                  <div class="w-3.5 h-3.5 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></div>
+                  <div class="w-4 h-4 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></div>
                   <span>Memproses...</span>
                 </template>
                 <template v-else>

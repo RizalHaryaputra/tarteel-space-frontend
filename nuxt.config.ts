@@ -9,6 +9,7 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/css/fonts.css',
+    '~/assets/css/main.css',
   ],
  
   // Konfigurasi URL backend — baca dari .env
@@ -29,7 +30,6 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap',
         },
       ],
-      // Fix: Set dark background di level HTML agar tidak ada white flash saat transisi
       style: [
         {
           innerHTML: `

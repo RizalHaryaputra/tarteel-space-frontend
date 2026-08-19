@@ -246,10 +246,10 @@ const formatDate = (dateStr: string) => {
                   <span class="font-sans text-[10px] text-ink-2">Audio pelafalan</span>
                 </div>
                 <button @click="playAudio(fb.audio_url)"
-                  class="p-2 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all shadow-md shadow-primary-500/25 cursor-pointer"
+                  class="w-8 h-8 rounded-full bg-primary-500 hover:bg-primary-400 text-dark-950 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 shadow-md shadow-primary-500/25 flex items-center justify-center cursor-pointer"
                   :title="currentPlayingUrl === fb.audio_url ? 'Pause' : 'Putar rekaman user'">
                   <svg v-if="currentPlayingUrl === fb.audio_url" xmlns="http://www.w3.org/2000/svg"
-                    class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    class="h-3.5 w-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                     <path fill-rule="evenodd"
                       d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
                       clip-rule="evenodd" />
@@ -284,7 +284,7 @@ const formatDate = (dateStr: string) => {
             class="w-full lg:w-auto shrink-0 flex flex-col justify-center items-end self-stretch lg:border-l border-white/5 lg:pl-6 pt-4 lg:pt-0">
             <template v-if="fb.is_verified">
               <div
-                class="w-full lg:w-auto px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs uppercase tracking-wider font-semibold rounded-full flex items-center justify-center gap-2">
+                class="w-full lg:w-auto px-5 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs uppercase tracking-wider font-semibold rounded-full flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -295,7 +295,7 @@ const formatDate = (dateStr: string) => {
             </template>
             <template v-else>
               <button @click="openVerifyModal(fb)"
-                class="w-full lg:w-auto px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 rounded-full text-xs font-medium transition-colors shadow-md shadow-primary-500/25 flex items-center justify-center gap-2 cursor-pointer">
+                class="ts-btn ts-btn--primary w-full lg:w-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -351,20 +351,19 @@ const formatDate = (dateStr: string) => {
             <div class="space-y-1.5">
               <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Label Makhraj Sebenarnya (Ground Truth)</label>
               <select v-model="verifiedLabel" required
-                class="w-full bg-dark-950 border border-white/10 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 transition-all cursor-pointer font-mono">
+                class="w-full bg-dark-950 border border-white/10 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 transition-all font-mono cursor-pointer">
                 <option v-for="letOpt in lettersList" :key="letOpt.id" :value="letOpt.model_label" class="bg-dark-950 text-white">
-                  {{ letOpt.arabic_script }} — {{ letOpt.pronunciation }} ({{ letOpt.model_label }})
+                  {{ letOpt.arabic_script }} - {{ letOpt.pronunciation }} ({{ letOpt.model_label }})
                 </option>
               </select>
             </div>
 
-            <!-- Pronunciation correctness check -->
+            <!-- Is Correct Radio -->
             <div class="space-y-1.5">
-              <label class="block font-mono text-xs uppercase tracking-wider text-ink-2 mb-1.5">Penilaian Pelafalan</label>
+              <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Status Pelafalan User</label>
               <div class="grid grid-cols-2 gap-3">
-                <!-- Benar -->
                 <label
-                  class="flex items-center justify-center gap-2 p-3 rounded-2xl border border-white/10 cursor-pointer bg-dark-950/60 hover:bg-dark-950 transition-all font-mono text-xs uppercase tracking-wider"
+                  class="flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-dark-950/60 cursor-pointer transition-all font-medium text-xs"
                   :class="isVerifiedCorrect ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' : 'text-ink-3'">
                   <input type="radio" :value="true" v-model="isVerifiedCorrect" class="hidden" />
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -374,9 +373,8 @@ const formatDate = (dateStr: string) => {
                   <span>Lafal Benar</span>
                 </label>
 
-                <!-- Salah -->
                 <label
-                  class="flex items-center justify-center gap-2 p-3 rounded-2xl border border-white/10 cursor-pointer bg-dark-950/60 hover:bg-dark-950 transition-all font-mono text-xs uppercase tracking-wider"
+                  class="flex items-center justify-center gap-2 p-3 rounded-xl border border-white/10 bg-dark-950/60 cursor-pointer transition-all font-medium text-xs"
                   :class="!isVerifiedCorrect ? 'border-rose-500/50 text-rose-400 bg-rose-500/10' : 'text-ink-3'">
                   <input type="radio" :value="false" v-model="isVerifiedCorrect" class="hidden" />
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -396,15 +394,15 @@ const formatDate = (dateStr: string) => {
                 class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 font-sans resize-none"></textarea>
             </div>
 
-            <div class="flex gap-2.5 justify-end pt-3">
+            <div class="flex gap-3 justify-end pt-3">
               <button type="button" @click="isVerifyModalOpen = false"
-                class="px-5 py-2 bg-dark-950 hover:bg-dark-850 text-ink-1 border border-white/10 rounded-full font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer">
+                class="ts-btn ts-btn--ghost">
                 Batal
               </button>
               <button type="submit" :disabled="isSubmittingVerification"
-                class="px-5 py-2 bg-primary-500 hover:bg-primary-400 disabled:opacity-50 text-dark-950 rounded-full font-medium text-xs transition-colors shadow-md shadow-primary-500/25 flex items-center gap-2 cursor-pointer">
+                class="ts-btn ts-btn--primary">
                 <span v-if="isSubmittingVerification"
-                  class="w-3 h-3 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
+                  class="w-4 h-4 border-2 border-dark-950/30 border-t-dark-950 rounded-full animate-spin"></span>
                 <span>Simpan ke Pool</span>
               </button>
             </div>
