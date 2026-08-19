@@ -71,7 +71,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="ts-auth-root min-h-screen bg-dark-950 text-ink-0 font-sans flex flex-col justify-center items-center relative overflow-x-hidden selection:bg-primary-500 selection:text-dark-950 p-4 sm:p-6 lg:p-8">
+  <div class="ts-auth-root min-h-screen bg-dark-950 text-ink-0 font-sans flex flex-col justify-center items-center relative overflow-x-hidden selection:bg-primary-500 selection:text-dark-950 antialiased p-4 sm:p-6 lg:p-8">
 
     <!-- Main Container Card (Split 2-Column Showcase) -->
     <main class="w-full max-w-[1000px] my-auto relative z-10">
@@ -314,3 +314,4 @@ const handleSubmit = async () => {
   transform: translateX(100%);
 }
 </style>
+

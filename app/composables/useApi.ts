@@ -274,6 +274,9 @@ export const useApi = () => {
     const verifyDatasetPool = (data: { evaluation_id: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
         post<{ message: string }>('/admin/dataset-pool', data)
 
+    const verifyFeedbackEvaluation = (data: { feedback_id?: string; evaluation_id?: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
+        post<{ message: string }>('/admin/feedbacks/verify', data)
+
     const getDatasetPoolExport = (training_status: string = 'all') =>
         get<Array<{
             id: number
@@ -326,7 +329,7 @@ export const useApi = () => {
         // auth
         login, register, forgotPassword, resetPassword,
         // profile
-        getProfile, updateProfile, updateAvatar, deleteAvatar, updatePassword,
+        getProfile, updateProfile, updateAvatar, uploadAvatar: updateAvatar, deleteAvatar, updatePassword,
         // letters
         getLetters, getLetter,
         // session
@@ -338,7 +341,7 @@ export const useApi = () => {
         // admin
         getAdminStats, getAdminUsers, updateUserRole, deleteUser,
         createLetter, updateLetter, deleteLetter, uploadLetterAudio,
-        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
+        getAdminFeedbacks, verifyFeedbackEvaluation, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
         // feedback
         submitFeedback,
     }
