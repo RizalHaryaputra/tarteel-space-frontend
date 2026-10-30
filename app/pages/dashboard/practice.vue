@@ -30,11 +30,7 @@ const evaluationResult = ref({
 })
 
 const evalId = ref<string | null>(null)
-const tajweedGrade = ref<string>('')
 const top3Predictions = ref<Array<{ label: string; score: number }>>([])
-const explanationText = ref<string>('')
-const isFetchingExplanation = ref(false)
-const showExplanation = ref(false)
 
 const formatLabel = (label: string) => {
   if (!label) return ''
@@ -55,20 +51,6 @@ const showCustomAlert = (message: string, title = 'Informasi') => {
   showAlertModal.value = true
 }
 
-const fetchExplanation = async () => {
-  if (!evalId.value) return
-  isFetchingExplanation.value = true
-  try {
-    const res = await api.getExplanation(evalId.value)
-    explanationText.value = res.explanation
-    showExplanation.value = true
-  } catch (err: any) {
-    console.error(err)
-    showCustomAlert(err.message || 'Gagal mendapatkan penjelasan tajwid.', 'Terjadi Kesalahan')
-  } finally {
-    isFetchingExplanation.value = false
-  }
-}
 
 let recordingStartTime = 0
 const MAX_RECORDING_TIME_MS = 5000 // 5 detik
@@ -216,10 +198,7 @@ const processAudio = async (audioBlob: Blob) => {
     const result = await api.evaluate(targetLetter.value.id, audioBlob, currentSessionId.value || undefined)
 
     evalId.value = result.id
-    tajweedGrade.value = result.tajweed_grade
     top3Predictions.value = result.top3_predictions || []
-    explanationText.value = ''
-    showExplanation.value = false
 
     evaluationResult.value.score = Math.round(result.accuracy_score)
     evaluationResult.value.feedback = result.feedback
@@ -242,7 +221,6 @@ const processAudio = async (audioBlob: Blob) => {
     evaluationResult.value.feedback = err.message || 'Terjadi kesalahan saat mengevaluasi audio.'
     evaluationResult.value.color = 'text-rose-400'
     evalId.value = null
-    tajweedGrade.value = ''
     top3Predictions.value = []
   } finally {
     isProcessing.value = false
@@ -435,12 +413,6 @@ const sendFeedback = async () => {
             {{ evaluationResult.score }}<span class="text-3xl font-medium">%</span>
           </div>
 
-          <div v-if="tajweedGrade" class="mb-4">
-            <span
-              class="px-3.5 py-1 rounded-full font-mono text-xs sm:text-sm font-bold bg-primary-500/10 text-primary-400 border border-primary-500/20">
-              {{ tajweedGrade }}
-            </span>
-          </div>
 
           <div
             class="bg-dark-950/60 px-6 py-4 rounded-2xl border border-white/10 mb-4 w-full min-h-[50px] flex items-center justify-center">
@@ -475,34 +447,6 @@ const sendFeedback = async () => {
             </div>
           </div>
 
-          <!-- Gemini Explanation Button / Box -->
-          <button v-if="!showExplanation && evalId" @click="fetchExplanation" :disabled="isFetchingExplanation"
-            class="ts-btn ts-btn--emerald w-full mb-6 py-3">
-            <svg v-if="isFetchingExplanation" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-              fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" stroke-width="1.75">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            <span>{{ isFetchingExplanation ? 'Membuat Penjelasan...' : 'Lihat Penjelasan Tajwid AI' }}</span>
-          </button>
-
-          <div v-if="showExplanation"
-            class="w-full text-left bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 mb-6 shadow-inner animate-fade-in">
-            <div class="flex items-center gap-2 text-emerald-400 font-sans font-semibold text-sm mb-2.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="1.75">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span>Penjelasan Tajwid Ustadz AI</span>
-            </div>
-            <p class="font-sans text-ink-1 text-sm sm:text-base leading-relaxed whitespace-pre-line">{{ explanationText }}</p>
-          </div>
 
           <div class="flex flex-col sm:flex-row gap-3 w-full mt-auto">
             <button @click="showResult = false"

@@ -171,14 +171,10 @@ export const useApi = () => {
             is_correct: boolean
             status_label: string
             feedback: string
-            tajweed_grade: string
             top3_predictions: Array<{ label: string; score: number }>
         }>(url, form)
     }
 
-    const getExplanation = (evalId: string) => {
-        return get<{ explanation: string }>(`/evaluate/${evalId}/explain`)
-    }
 
     // ── History endpoints ──────────────────────────────────────
 
@@ -335,7 +331,7 @@ export const useApi = () => {
         // session
         startSession, endSession,
         // evaluate
-        evaluate, getExplanation,
+        evaluate,
         // history
         getHistory, getWeeklyScores, getDashboard,
         // admin

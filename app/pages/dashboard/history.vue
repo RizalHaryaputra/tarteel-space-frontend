@@ -23,35 +23,6 @@ const paginatedHistory = computed(() => {
   return historyList.value.slice(start, end)
 })
 
-// State for AI Explanations
-const isModalOpen = ref(false)
-const selectedEvalId = ref<string | null>(null)
-const explanations = ref<Record<string, { loading: boolean, text: string }>>({})
-
-const openExplanationModal = async (evalId: string) => {
-  selectedEvalId.value = evalId
-  isModalOpen.value = true
-  
-  if (!explanations.value[evalId] || !explanations.value[evalId].text) {
-    explanations.value[evalId] = { loading: true, text: '' }
-    try {
-      const res = await api.getExplanation(evalId)
-      explanations.value[evalId] = { loading: false, text: res.explanation }
-      
-      const item = historyList.value?.find((i: any) => i.id === evalId)
-      if (item) item.ai_explanation = res.explanation
-    } catch {
-      explanations.value[evalId] = { loading: false, text: 'Gagal memuat penjelasan dari AI. Silakan coba lagi.' }
-    }
-  }
-}
-
-const closeExplanationModal = () => {
-  isModalOpen.value = false
-  setTimeout(() => {
-    selectedEvalId.value = null
-  }, 300)
-}
 
 // State for Audio Playback
 const currentlyPlaying = ref<{ url: string, type: 'user' | 'ustadz', id: string } | null>(null)
@@ -279,15 +250,14 @@ const formatDate = (isoStr: string) => {
               <th class="py-4 px-4 font-semibold">Huruf Target</th>
               <th class="py-4 px-4 font-semibold text-center">Putar Audio</th>
               <th class="py-4 px-4 font-semibold text-right">Skor Akurasi</th>
-              <th class="py-4 px-4 font-semibold text-center w-36">Analisis AI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5 text-ink-0">
             <tr v-if="loadingHistory">
-              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3 animate-pulse">Memuat riwayat latihan...</td>
+              <td colspan="4" class="py-10 text-center font-sans text-xs text-ink-3 animate-pulse">Memuat riwayat latihan...</td>
             </tr>
             <tr v-else-if="!historyList?.length">
-              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3">Belum ada riwayat latihan.</td>
+              <td colspan="4" class="py-10 text-center font-sans text-xs text-ink-3">Belum ada riwayat latihan.</td>
             </tr>
             <template v-else v-for="item in paginatedHistory" :key="item.id">
               <tr class="hover:bg-dark-850/50 transition-colors group">
@@ -301,7 +271,6 @@ const formatDate = (isoStr: string) => {
                     </div>
                     <div>
                       <div class="font-medium text-sm text-ink-0">{{ item.base_letter }} · <span class="text-ink-2 font-normal text-xs">{{ item.harakat }}</span></div>
-                      <div v-if="item.tajweed_grade" class="font-mono text-[10px] text-ink-3 uppercase tracking-wider mt-0.5">{{ item.tajweed_grade }}</div>
                     </div>
                   </div>
                 </td>
@@ -357,18 +326,6 @@ const formatDate = (isoStr: string) => {
                     {{ item.accuracy_score.toFixed(1) }}%
                   </span>
                 </td>
-                <td class="py-4 px-4 text-center">
-                  <button 
-                    @click="openExplanationModal(item.id)"
-                    class="font-sans text-xs font-semibold py-1.5 px-3.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center justify-center gap-1.5 cursor-pointer border"
-                    :class="item.ai_explanation || explanations[item.id]?.text ? 'text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 border-primary-500/30' : 'text-ink-2 bg-dark-950 hover:text-ink-0 hover:border-white/20 border-white/10'"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                    <span>{{ item.ai_explanation || explanations[item.id]?.text ? 'Lihat' : 'Minta' }}</span>
-                  </button>
-                </td>
               </tr>
             </template>
           </tbody>
@@ -385,46 +342,5 @@ const formatDate = (isoStr: string) => {
       </div>
     </div>
     
-    <!-- AI Explanation Modal -->
-    <Teleport to="body">
-      <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-md transition-opacity" @click="closeExplanationModal"></div>
-        <div class="relative w-full max-w-lg bg-dark-900/95 border border-white/10 rounded-3xl shadow-2xl overflow-hidden font-sans">
-          <!-- Header -->
-          <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-dark-950/40">
-            <h4 class="font-display font-semibold text-base text-ink-0 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              <span>Analisis AI Tarteel</span>
-              <span class="px-2 py-0.5 rounded-full font-mono text-[9px] font-semibold bg-primary-500/10 text-primary-400 border border-primary-500/20 uppercase tracking-wider ml-1">AI INSIGHT</span>
-            </h4>
-            <button @click="closeExplanationModal" class="text-ink-3 hover:text-ink-0 transition-colors p-1.5 rounded-full hover:bg-dark-850">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          
-          <!-- Content -->
-          <div class="p-6 min-h-[150px] max-h-[60vh] overflow-y-auto">
-            <div v-if="selectedEvalId && explanations[selectedEvalId]?.loading" class="flex flex-col items-center justify-center py-8">
-              <div class="w-8 h-8 border-2 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mb-3"></div>
-              <p class="font-sans text-xs text-ink-2">AI sedang menganalisis pelafalan Anda...</p>
-            </div>
-            <div v-else-if="selectedEvalId" class="font-sans text-xs sm:text-sm text-ink-1 leading-relaxed whitespace-pre-wrap">
-              {{ explanations[selectedEvalId]?.text }}
-            </div>
-          </div>
-          
-          <!-- Footer -->
-          <div class="px-6 py-4 border-t border-white/5 bg-dark-950/40 flex justify-end">
-            <button @click="closeExplanationModal" class="ts-btn ts-btn--ghost">
-              Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-    </Teleport>
   </div>
 </template>
