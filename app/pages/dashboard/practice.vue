@@ -223,8 +223,7 @@ const processAudio = async (audioBlob: Blob) => {
     api.recordMetric({
       evaluation_id: result.id,
       client_e2e_ms: Number(e2eTimeMs.toFixed(2)),
-      device_type: deviceType,
-      server_process_ms: result.server_process_ms
+      device_type: deviceType
     }).catch(metricErr => {
       console.warn('[Benchmark] Gagal mencatat metrik latensi:', metricErr)
     })

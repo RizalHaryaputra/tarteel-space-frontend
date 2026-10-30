@@ -179,7 +179,6 @@ export const useApi = () => {
         evaluation_id: string
         client_e2e_ms: number
         device_type?: string
-        server_process_ms?: number
     }) => post<{ message: string }>('/evaluate/metrics', data)
 
 
