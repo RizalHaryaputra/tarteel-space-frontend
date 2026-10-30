@@ -171,8 +171,16 @@ export const useApi = () => {
             status_label: string
             feedback: string
             top3_predictions: Array<{ label: string; score: number }>
+            server_process_ms?: number
         }>(url, form)
     }
+
+    const recordMetric = (data: {
+        evaluation_id: string
+        client_e2e_ms: number
+        device_type?: string
+        server_process_ms?: number
+    }) => post<{ message: string }>('/evaluate/metrics', data)
 
 
     // ── History endpoints ──────────────────────────────────────
@@ -329,7 +337,7 @@ export const useApi = () => {
         // session
         startSession, endSession,
         // evaluate
-        evaluate,
+        evaluate, recordMetric,
         // history
         getHistory, getWeeklyScores, getDashboard,
         // admin

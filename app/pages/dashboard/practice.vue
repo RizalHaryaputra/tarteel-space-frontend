@@ -212,8 +212,22 @@ const processAudio = async (audioBlob: Blob) => {
     }
 
     const endTime = performance.now()
-    const e2eTime = (endTime - startTime) / 1000
-    console.log(`⏱️ [METRIK] Waktu Respons End-to-End: ${e2eTime.toFixed(3)} detik`)
+    const e2eTimeMs = endTime - startTime
+    console.log(`⏱️ [METRIK] Waktu Respons End-to-End: ${(e2eTimeMs / 1000).toFixed(3)} detik (${e2eTimeMs.toFixed(1)} ms)`)
+
+    // Deteksi tipe perangkat (mobile vs desktop)
+    const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    const deviceType = isMobile ? 'mobile' : 'desktop'
+
+    // Kirim metrik telemetri ke server secara asinkron (fire-and-forget) tanpa memblokir UI
+    api.recordMetric({
+      evaluation_id: result.id,
+      client_e2e_ms: Number(e2eTimeMs.toFixed(2)),
+      device_type: deviceType,
+      server_process_ms: result.server_process_ms
+    }).catch(metricErr => {
+      console.warn('[Benchmark] Gagal mencatat metrik latensi:', metricErr)
+    })
 
   } catch (err: any) {
     console.error(err)
