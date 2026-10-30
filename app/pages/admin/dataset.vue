@@ -328,7 +328,8 @@ const formatDate = (dateStr: string) => {
         </select>
 
         <div class="flex flex-col sm:flex-row flex-wrap items-stretch gap-2.5 w-full md:w-auto">
-          <!-- Upload Model Button -->
+          <!-- Upload Model Button (Ditahan sementara untuk penyederhanaan skripsi) -->
+          <!--
           <button 
             @click="isUploadModalOpen = true"
             class="ts-btn ts-btn--ghost"
@@ -338,6 +339,7 @@ const formatDate = (dateStr: string) => {
             </svg>
             <span>Upload Model Baru</span>
           </button>
+          -->
 
           <div class="flex gap-2">
             <!-- Export CSV Button -->
@@ -515,7 +517,8 @@ const formatDate = (dateStr: string) => {
       </Transition>
     </Teleport>
 
-    <!-- Upload Model Modal -->
+    <!-- Upload Model Modal (Ditahan sementara untuk penyederhanaan skripsi) -->
+    <!--
     <Teleport to="body">
       <div v-if="isUploadModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-md transition-opacity" @click="isUploadModalOpen = false"></div>
@@ -529,25 +532,21 @@ const formatDate = (dateStr: string) => {
           <p class="font-sans text-xs text-ink-2 mb-6">Unggah file TFLite beserta array normalisasi mean dan std untuk hot-swap model AI.</p>
 
           <form @submit.prevent="submitModelUpload" class="space-y-3.5">
-            <!-- TFLite Model -->
             <div class="space-y-1.5">
               <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Model TFLite (.tflite)</label>
               <input type="file" accept=".tflite" @change="(e) => handleFileUpload(e, 'model')" class="block w-full text-xs text-ink-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-mono file:bg-dark-850 file:text-primary-400 hover:file:bg-dark-800 border border-white/10 rounded-xl bg-dark-950 p-1 cursor-pointer">
             </div>
 
-            <!-- Norm Mean -->
             <div class="space-y-1.5">
               <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Array Mean (.npy)</label>
               <input type="file" accept=".npy" @change="(e) => handleFileUpload(e, 'mean')" class="block w-full text-xs text-ink-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-mono file:bg-dark-850 file:text-emerald-400 hover:file:bg-dark-800 border border-white/10 rounded-xl bg-dark-950 p-1 cursor-pointer">
             </div>
 
-            <!-- Norm Std -->
             <div class="space-y-1.5">
               <label class="block font-mono text-xs uppercase tracking-wider text-ink-2">Array Std (.npy)</label>
               <input type="file" accept=".npy" @change="(e) => handleFileUpload(e, 'std')" class="block w-full text-xs text-ink-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-mono file:bg-dark-850 file:text-cyan-400 hover:file:bg-dark-800 border border-white/10 rounded-xl bg-dark-950 p-1 cursor-pointer">
             </div>
 
-            <!-- Submit -->
             <div class="flex gap-3 mt-6 pt-2 justify-end">
               <button type="button" @click="isUploadModalOpen = false" class="ts-btn ts-btn--ghost">
                 Batal
@@ -566,5 +565,6 @@ const formatDate = (dateStr: string) => {
         </div>
       </div>
     </Teleport>
+    -->
   </div>
 </template>
