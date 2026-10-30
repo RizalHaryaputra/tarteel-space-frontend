@@ -12,9 +12,14 @@ const api = useApi()
 const { data: weeklyData, pending: loadingWeekly, error: weeklyError } = useAsyncData('weeklyScores', () => api.getWeeklyScores(), { server: false })
 const { data: historyList, pending: loadingHistory } = useAsyncData('historyList', () => api.getHistory(100, 0), { server: false })
 
-// Pagination
+// Pagination & Expandable Row
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const expandedRowId = ref<string | null>(null)
+
+const toggleExpandRow = (id: string) => {
+  expandedRowId.value = expandedRowId.value === id ? null : id
+}
 
 const paginatedHistory = computed(() => {
   if (!historyList.value) return []
@@ -249,15 +254,16 @@ const formatDate = (isoStr: string) => {
               <th class="py-4 px-4 font-semibold">Hari / Tanggal</th>
               <th class="py-4 px-4 font-semibold">Huruf Target</th>
               <th class="py-4 px-4 font-semibold text-center">Putar Audio</th>
+              <th class="py-4 px-4 font-semibold text-center">Status Koreksi</th>
               <th class="py-4 px-4 font-semibold text-right">Skor Akurasi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5 text-ink-0">
             <tr v-if="loadingHistory">
-              <td colspan="4" class="py-10 text-center font-sans text-xs text-ink-3 animate-pulse">Memuat riwayat latihan...</td>
+              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3 animate-pulse">Memuat riwayat latihan...</td>
             </tr>
             <tr v-else-if="!historyList?.length">
-              <td colspan="4" class="py-10 text-center font-sans text-xs text-ink-3">Belum ada riwayat latihan.</td>
+              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3">Belum ada riwayat latihan.</td>
             </tr>
             <template v-else v-for="item in paginatedHistory" :key="item.id">
               <tr class="hover:bg-dark-850/50 transition-colors group">
@@ -316,15 +322,82 @@ const formatDate = (isoStr: string) => {
                   </div>
                 </td>
 
+                <!-- Status Koreksi Column -->
+                <td class="py-4 px-4 text-center">
+                  <button v-if="item.is_verified" @click="toggleExpandRow(item.id)"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-mono text-[11px] font-semibold transition-all cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Lihat Koreksi</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform duration-200" :class="{ 'rotate-180': expandedRowId === item.id }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <button v-else-if="item.is_reported" @click="toggleExpandRow(item.id)"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 font-mono text-[11px] font-semibold transition-all cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Menunggu Tinjauan</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform duration-200" :class="{ 'rotate-180': expandedRowId === item.id }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <span v-else class="font-mono text-xs text-ink-3">—</span>
+                </td>
+
                 <td class="py-4 px-4 text-right">
                   <span 
                     class="inline-block px-2.5 py-1 rounded-full font-mono text-xs font-semibold"
-                    :class="item.accuracy_score >= 90 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
-                            item.accuracy_score >= 75 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
+                    :class="item.accuracy_score >= 80 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                            item.accuracy_score >= 60 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
                             'bg-rose-500/10 text-rose-400 border border-rose-500/20'"
                   >
                     {{ item.accuracy_score.toFixed(1) }}%
                   </span>
+                </td>
+              </tr>
+
+              <!-- Expandable Detail Row for Reported / Verified Evaluation -->
+              <tr v-if="expandedRowId === item.id && (item.is_reported || item.is_verified)" class="bg-dark-950/60">
+                <td colspan="5" class="px-4 sm:px-6 py-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <!-- User Report Comment -->
+                    <div class="bg-dark-900/90 border border-white/10 rounded-2xl p-4 space-y-1.5">
+                      <span class="block font-mono text-[10px] uppercase tracking-wider text-ink-3 font-semibold">Catatan Laporan Anda</span>
+                      <p class="font-sans text-ink-1 leading-relaxed">{{ item.user_comment || 'Tidak ada catatan keluhan.' }}</p>
+                    </div>
+
+                    <!-- Admin / Ustadz Verification Result -->
+                    <div v-if="item.is_verified" class="bg-dark-900/90 border border-emerald-500/20 rounded-2xl p-4 space-y-2">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-semibold">Hasil Tinjauan Ustadz / Admin</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <span v-if="item.verified_label" class="px-2.5 py-0.5 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20 font-mono text-[11px] font-semibold">
+                            Makhraj: {{ item.verified_label }}
+                          </span>
+                          <span v-if="item.is_verified_correct !== null && item.is_verified_correct !== undefined"
+                            class="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold"
+                            :class="item.is_verified_correct ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'">
+                            {{ item.is_verified_correct ? 'Lafal Benar' : 'Lafal Salah' }}
+                          </span>
+                        </div>
+                      </div>
+                      <p class="font-sans text-ink-0 leading-relaxed pt-1.5 border-t border-white/5">
+                        {{ item.admin_notes || 'Pelafalan telah divalidasi oleh Ustadz/Admin tanpa catatan tambahan.' }}
+                      </p>
+                    </div>
+
+                    <div v-else class="bg-dark-900/90 border border-amber-500/20 rounded-2xl p-4 flex items-center gap-3 text-ink-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p class="font-sans leading-relaxed">
+                        Laporan Anda sedang dalam antrean peninjauan oleh Ustadz/Admin. Hasil validasi dan catatan koreksi akan muncul di sini setelah diperiksa.
+                      </p>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </template>

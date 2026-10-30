@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 definePageMeta({
   layout: 'dashboard',
@@ -288,9 +288,23 @@ const showFeedbackModal = ref(false)
 const feedbackComment = ref('')
 const isSubmittingFeedback = ref(false)
 const feedbackSubmitted = ref(false)
+const consentChecked = ref(false)
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    consentChecked.value = localStorage.getItem('tarteel_dataset_consent') === 'true'
+  }
+})
+
+const saveConsentPreference = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('tarteel_dataset_consent', consentChecked.value ? 'true' : 'false')
+  }
+}
 
 const sendFeedback = async () => {
-  if (!evalId.value || !feedbackComment.value.trim()) return
+  if (!evalId.value || !feedbackComment.value.trim() || !consentChecked.value) return
+  saveConsentPreference()
   isSubmittingFeedback.value = true
   try {
     await api.submitFeedback(evalId.value, feedbackComment.value)
@@ -554,12 +568,20 @@ const sendFeedback = async () => {
                 class="w-full bg-dark-950 border border-white/10 hover:border-white/20 text-ink-0 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder:text-ink-3 resize-none"></textarea>
             </div>
 
+            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-dark-950/60 border border-white/10 hover:border-white/20 cursor-pointer transition-colors mb-5 select-none">
+              <input type="checkbox" v-model="consentChecked" @change="saveConsentPreference"
+                class="mt-0.5 w-4 h-4 rounded border-white/20 bg-dark-900 text-primary-500 focus:ring-primary-500/40 cursor-pointer accent-blue-500 shrink-0" />
+              <span class="font-sans text-xs text-ink-2 leading-relaxed">
+                Saya menyetujui rekaman audio ini ditinjau oleh Admin/Ustadz dan digunakan untuk pengembangan dataset model AI.
+              </span>
+            </label>
+
             <div class="flex gap-3 justify-end">
               <button type="button" @click="showFeedbackModal = false"
                 class="ts-btn ts-btn--ghost">
                 Batal
               </button>
-              <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim()"
+              <button type="submit" :disabled="isSubmittingFeedback || !feedbackComment.trim() || !consentChecked"
                 class="ts-btn ts-btn--primary">
                 <svg v-if="isSubmittingFeedback" class="animate-spin h-4 w-4 text-dark-950"
                   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
