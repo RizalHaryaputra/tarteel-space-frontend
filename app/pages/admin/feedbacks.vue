@@ -61,6 +61,25 @@ onMounted(() => {
   fetchData()
 })
 
+const getStatusBadge = (score: number) => {
+  if (score >= 80) {
+    return {
+      label: 'Sangat Baik',
+      class: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+    }
+  }
+  if (score >= 60) {
+    return {
+      label: 'Cukup Baik',
+      class: 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+    }
+  }
+  return {
+    label: 'Perlu Latihan',
+    class: 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+  }
+}
+
 const showToast = (message: string, isError = false) => {
   if (isError) {
     errorToast.value = message
@@ -226,8 +245,8 @@ const formatDate = (dateStr: string) => {
               <div class="bg-dark-950/40 border border-white/5 p-4 rounded-2xl">
                 <span class="block font-mono text-xs text-ink-2 uppercase tracking-wider font-semibold">Hasil Model CNN</span>
                 <span class="font-mono text-xs sm:text-sm font-semibold px-2.5 py-1 rounded-full inline-block mt-1.5"
-                  :class="fb.is_correct ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'">
-                  {{ fb.is_correct ? 'Benar' : 'Salah' }}
+                  :class="getStatusBadge(fb.accuracy_score).class">
+                  {{ getStatusBadge(fb.accuracy_score).label }}
                 </span>
               </div>
 
@@ -264,11 +283,11 @@ const formatDate = (dateStr: string) => {
               </div>
             </div>
 
-            <!-- Top 5 Predictions -->
-            <div class="space-y-1.5" v-if="fb.top5_predictions && fb.top5_predictions.length > 0">
-              <span class="font-mono text-[10px] text-ink-3 uppercase tracking-wider block">Top 5 Prediksi CNN</span>
+            <!-- Top 3 Predictions -->
+            <div class="space-y-1.5" v-if="fb.top3_predictions && fb.top3_predictions.length > 0">
+              <span class="font-mono text-[10px] text-ink-3 uppercase tracking-wider block">Top 3 Prediksi CNN</span>
               <div class="flex flex-wrap gap-2">
-                <div v-for="(pred, i) in fb.top5_predictions" :key="pred.label"
+                <div v-for="(pred, i) in fb.top3_predictions" :key="pred.label"
                   class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-dark-950 border border-white/10 font-mono text-[11px]"
                   :class="i === 0 ? 'border-primary-500/40 text-primary-400' : 'text-ink-2'">
                   <span class="font-semibold">#{{ Number(i) + 1 }}</span>

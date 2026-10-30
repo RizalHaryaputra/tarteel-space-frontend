@@ -203,9 +203,9 @@ const processAudio = async (audioBlob: Blob) => {
     evaluationResult.value.score = Math.round(result.accuracy_score)
     evaluationResult.value.feedback = result.feedback
 
-    if (result.is_correct) {
+    if (result.accuracy_score >= 80) {
       evaluationResult.value.color = 'text-emerald-400'
-    } else if (result.accuracy_score >= 70) {
+    } else if (result.accuracy_score >= 60) {
       evaluationResult.value.color = 'text-amber-400'
     } else {
       evaluationResult.value.color = 'text-rose-400'

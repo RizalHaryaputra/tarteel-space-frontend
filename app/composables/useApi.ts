@@ -168,7 +168,6 @@ export const useApi = () => {
             arabic_script: string
             accuracy_score: number
             top_prediction: string
-            is_correct: boolean
             status_label: string
             feedback: string
             top3_predictions: Array<{ label: string; score: number }>
@@ -258,8 +257,7 @@ export const useApi = () => {
             evaluation_id: string
             accuracy_score: number
             top_prediction: string
-            top5_predictions: Array<{ label: string; score: number }>
-            is_correct: boolean
+            top3_predictions: Array<{ label: string; score: number }>
             audio_url: string
             base_letter: string
             harakat: string
