@@ -1,0 +1,172 @@
+/* ── Tarteel Space Global Styles & Button Design System ── */
+
+.ts-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 250ms ease, background 250ms ease, border-color 250ms ease, box-shadow 250ms ease, color 250ms ease;
+}
+
+.ts-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.22) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.ts-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.ts-btn:active {
+  transform: translateY(0) !important;
+}
+
+.ts-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Sizes */
+.ts-btn--sm {
+  padding: 7px 16px;
+  font-size: 0.75rem;
+  gap: 6px;
+}
+
+.ts-btn--md {
+  padding: 10px 22px;
+  font-size: 0.875rem;
+  gap: 8px;
+}
+
+.ts-btn--lg {
+  padding: 13px 26px;
+  font-size: 1rem;
+  gap: 10px;
+}
+
+.ts-btn--icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ts-btn--icon-sm {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Primary (Blue / Electric Blue Hover with double glow and ring) */
+.ts-btn--primary {
+  background: #2563eb;
+  color: #0b0d11;
+  border-color: #2563eb;
+  box-shadow: 0 8px 24px -10px rgba(37, 99, 235, 0.5);
+}
+
+.ts-btn--primary:hover:not(:disabled) {
+  background: #60a5fa;
+  border-color: #60a5fa;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -10px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+/* Ghost / Secondary */
+.ts-btn--ghost {
+  background: #0e121a;
+  color: #f4f6fb;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ts-btn--ghost:hover:not(:disabled) {
+  background: #1a202c;
+  color: #ffffff;
+  border-color: rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -10px rgba(0, 10, 60, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Danger / Rose */
+.ts-btn--danger {
+  background: #f43f5e;
+  color: #ffffff;
+  border-color: #f43f5e;
+  box-shadow: 0 8px 24px -10px rgba(244, 63, 94, 0.5);
+}
+
+.ts-btn--danger:hover:not(:disabled) {
+  background: #fb7185;
+  border-color: #fb7185;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -10px rgba(244, 63, 94, 0.6), 0 0 0 1px rgba(251, 113, 133, 0.4);
+}
+
+/* Cyan / Secondary Accent */
+.ts-btn--cyan {
+  background: #06b6d4;
+  color: #0b0d11;
+  border-color: #06b6d4;
+  box-shadow: 0 8px 24px -10px rgba(6, 182, 212, 0.5);
+}
+
+.ts-btn--cyan:hover:not(:disabled) {
+  background: #38bdf8;
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -10px rgba(6, 182, 212, 0.6), 0 0 0 1px rgba(56, 189, 248, 0.4);
+}
+
+/* Emerald / Success */
+.ts-btn--emerald {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.ts-btn--emerald:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #34d399;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(52, 211, 153, 0.4);
+}
+
+/* Soft Rose */
+.ts-btn--soft-danger {
+  background: rgba(244, 63, 94, 0.1);
+  color: #fb7185;
+  border-color: rgba(244, 63, 94, 0.2);
+}
+
+.ts-btn--soft-danger:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.2);
+  border-color: rgba(244, 63, 94, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(244, 63, 94, 0.4), 0 0 0 1px rgba(251, 113, 133, 0.3);
+}

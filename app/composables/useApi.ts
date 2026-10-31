@@ -168,17 +168,19 @@ export const useApi = () => {
             arabic_script: string
             accuracy_score: number
             top_prediction: string
-            is_correct: boolean
             status_label: string
             feedback: string
-            tajweed_grade: string
             top3_predictions: Array<{ label: string; score: number }>
+            server_process_ms?: number
         }>(url, form)
     }
 
-    const getExplanation = (evalId: string) => {
-        return get<{ explanation: string }>(`/evaluate/${evalId}/explain`)
-    }
+    const recordMetric = (data: {
+        evaluation_id: string
+        client_e2e_ms: number
+        device_type?: string
+    }) => post<{ message: string }>('/evaluate/metrics', data)
+
 
     // ── History endpoints ──────────────────────────────────────
 
@@ -197,8 +199,8 @@ export const useApi = () => {
             total_latihan: number
             rata_rata_akurasi: number
             streak_hari: number
-            huruf_terlemah: string | null
-            huruf_terkuat: string | null
+            huruf_terlemah: Array<{ base_letter: string; arabic_script: string; avg_score: number; total_trials: number }>
+            huruf_terkuat: Array<{ base_letter: string; arabic_script: string; avg_score: number; total_trials: number }>
         }>('/history/dashboard')
 
     // ── Admin endpoints ─────────────────────────────────────────
@@ -262,8 +264,7 @@ export const useApi = () => {
             evaluation_id: string
             accuracy_score: number
             top_prediction: string
-            top5_predictions: Array<{ label: string; score: number }>
-            is_correct: boolean
+            top3_predictions: Array<{ label: string; score: number }>
             audio_url: string
             base_letter: string
             harakat: string
@@ -273,6 +274,9 @@ export const useApi = () => {
 
     const verifyDatasetPool = (data: { evaluation_id: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
         post<{ message: string }>('/admin/dataset-pool', data)
+
+    const verifyFeedbackEvaluation = (data: { feedback_id?: string; evaluation_id?: string; verified_label: string; is_verified_correct: boolean; admin_notes?: string }) =>
+        post<{ message: string }>('/admin/feedbacks/verify', data)
 
     const getDatasetPoolExport = (training_status: string = 'all') =>
         get<Array<{
@@ -326,19 +330,19 @@ export const useApi = () => {
         // auth
         login, register, forgotPassword, resetPassword,
         // profile
-        getProfile, updateProfile, updateAvatar, deleteAvatar, updatePassword,
+        getProfile, updateProfile, updateAvatar, uploadAvatar: updateAvatar, deleteAvatar, updatePassword,
         // letters
         getLetters, getLetter,
         // session
         startSession, endSession,
         // evaluate
-        evaluate, getExplanation,
+        evaluate, recordMetric,
         // history
         getHistory, getWeeklyScores, getDashboard,
         // admin
         getAdminStats, getAdminUsers, updateUserRole, deleteUser,
         createLetter, updateLetter, deleteLetter, uploadLetterAudio,
-        getAdminFeedbacks, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
+        getAdminFeedbacks, verifyFeedbackEvaluation, verifyDatasetPool, getDatasetPoolExport, markDatasetPoolTrained, uploadModelFiles,
         // feedback
         submitFeedback,
     }

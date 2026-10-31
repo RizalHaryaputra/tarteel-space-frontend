@@ -57,9 +57,9 @@ const displayedPages = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-    <div class="text-sm text-slate-400">
-      Menampilkan <span class="font-medium text-white">{{ startItem }}</span> hingga <span class="font-medium text-white">{{ endItem }}</span> dari <span class="font-medium text-white">{{ totalItems }}</span> entri
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+    <div class="text-xs text-ink-2">
+      Menampilkan <span class="font-mono font-semibold text-ink-0">{{ startItem }}</span> - <span class="font-mono font-semibold text-ink-0">{{ endItem }}</span> dari <span class="font-mono font-semibold text-ink-0">{{ totalItems }}</span> data
     </div>
     
     <div class="flex items-center gap-2">
@@ -67,10 +67,11 @@ const displayedPages = computed(() => {
       <button 
         @click="previousPage" 
         :disabled="currentPage === 1"
-        class="p-2 rounded-xl border border-dark-800 bg-dark-950/60 text-slate-400 hover:text-white hover:bg-dark-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-9 h-9 rounded-full border border-white/10 bg-dark-950 text-ink-2 hover:text-ink-0 hover:border-white/20 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center cursor-pointer shadow-sm"
+        title="Halaman Sebelumnya"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
@@ -79,10 +80,10 @@ const displayedPages = computed(() => {
         v-for="page in displayedPages" 
         :key="page"
         @click="currentPage = page"
-        class="w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-all border"
+        class="w-9 h-9 flex items-center justify-center rounded-full text-xs font-mono font-semibold transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
         :class="page === currentPage 
-          ? 'bg-primary-500 border-primary-500 text-white shadow-lg shadow-primary-500/20' 
-          : 'bg-dark-950/60 border-dark-800 text-slate-400 hover:text-white hover:bg-dark-800'"
+          ? 'bg-primary-500 text-dark-950 shadow-md shadow-primary-500/25' 
+          : 'bg-dark-950 border border-white/10 text-ink-2 hover:text-ink-0 hover:border-white/20'"
       >
         {{ page }}
       </button>
@@ -91,10 +92,11 @@ const displayedPages = computed(() => {
       <button 
         @click="nextPage" 
         :disabled="currentPage === totalPages"
-        class="p-2 rounded-xl border border-dark-800 bg-dark-950/60 text-slate-400 hover:text-white hover:bg-dark-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-9 h-9 rounded-full border border-white/10 bg-dark-950 text-ink-2 hover:text-ink-0 hover:border-white/20 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center cursor-pointer shadow-sm"
+        title="Halaman Selanjutnya"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
     </div>

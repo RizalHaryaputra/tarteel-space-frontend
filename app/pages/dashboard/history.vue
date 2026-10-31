@@ -10,11 +10,18 @@ const api = useApi()
 
 // Fetch data (client-side only to ensure token is available)
 const { data: weeklyData, pending: loadingWeekly, error: weeklyError } = useAsyncData('weeklyScores', () => api.getWeeklyScores(), { server: false })
-const { data: historyList, pending: loadingHistory, error: historyError } = useAsyncData('historyList', () => api.getHistory(100, 0), { server: false })
+const { data: historyList, pending: loadingHistory } = useAsyncData('historyList', () => api.getHistory(100, 0), { server: false })
 
 // Pagination
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+
+// Report Detail Modal State
+const selectedReportItem = ref<any | null>(null)
+
+const openReportModal = (item: any) => {
+  selectedReportItem.value = item
+}
 
 const paginatedHistory = computed(() => {
   if (!historyList.value) return []
@@ -23,35 +30,6 @@ const paginatedHistory = computed(() => {
   return historyList.value.slice(start, end)
 })
 
-// State for AI Explanations
-const isModalOpen = ref(false)
-const selectedEvalId = ref<string | null>(null)
-const explanations = ref<Record<string, { loading: boolean, text: string }>>({})
-
-const openExplanationModal = async (evalId: string) => {
-  selectedEvalId.value = evalId
-  isModalOpen.value = true
-  
-  if (!explanations.value[evalId] || !explanations.value[evalId].text) {
-    explanations.value[evalId] = { loading: true, text: '' }
-    try {
-      const res = await api.getExplanation(evalId)
-      explanations.value[evalId] = { loading: false, text: res.explanation }
-      
-      const item = historyList.value?.find((i: any) => i.id === evalId)
-      if (item) item.ai_explanation = res.explanation
-    } catch (err) {
-      explanations.value[evalId] = { loading: false, text: 'Gagal memuat penjelasan dari AI. Silakan coba lagi.' }
-    }
-  }
-}
-
-const closeExplanationModal = () => {
-  isModalOpen.value = false
-  setTimeout(() => {
-    selectedEvalId.value = null
-  }, 300)
-}
 
 // State for Audio Playback
 const currentlyPlaying = ref<{ url: string, type: 'user' | 'ustadz', id: string } | null>(null)
@@ -97,9 +75,9 @@ onUnmounted(() => {
 
 // SVG Line Chart Logic
 const svgWidth = 1000
-const svgHeight = 300
+const svgHeight = 280
 const maxScore = 100
-const minScore = 0 // Fixed: using 0 so actual scores under 50% are shown correctly
+const minScore = 0
 
 const points = computed(() => {
   const dataList = weeklyData.value
@@ -112,7 +90,6 @@ const points = computed(() => {
     const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
     const dateStr = new Date(firstWeekly.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
     
-    // Jika hanya 1 data, buat garis lurus mendatar agar grafik tetap terlihat
     return [
       { x: 0, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true },
       { x: svgWidth / 2, y, score: Math.round(firstWeekly.rata_rata), date: dateStr },
@@ -127,7 +104,7 @@ const points = computed(() => {
     if (!item) return null
     const x = paddingX + (index / (dataList.length - 1)) * availableWidth
     const normalizedScore = Math.max(0, item.rata_rata - minScore) / (maxScore - minScore)
-    const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30 // Add padding
+    const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
     return { x, y, score: Math.round(item.rata_rata), date: new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
   }).filter((p): p is { x: number; y: number; score: number; date: string; isFake?: boolean } => p !== null)
 })
@@ -152,7 +129,7 @@ const polygonPoints = computed(() => {
   const lastP = points.value[points.value.length - 1]
   if (!firstP || !lastP) return ''
   
-  return `${polylinePoints.value} ${lastP.x},${svgHeight} ${firstP.x},${svgHeight}`
+  return `${firstP.x},${svgHeight} ${polylinePoints.value} ${lastP.x},${svgHeight}`
 })
 
 const formatDate = (isoStr: string) => {
@@ -163,112 +140,99 @@ const formatDate = (isoStr: string) => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="max-w-5xl mx-auto space-y-8 pb-10">
     
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 shrink-0 gap-4 border-b border-dark-800 pb-5">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
       <div>
-        <h2 class="text-3xl font-extrabold text-white tracking-tight">Riwayat & Kemajuan</h2>
-        <p class="text-slate-400 mt-1 text-sm">Pantau perkembangan pelafalan Anda dari waktu ke waktu.</p>
+        <h2 class="font-display font-semibold text-3xl sm:text-4xl text-ink-0 tracking-tight">Riwayat & Kemajuan</h2>
+        <p class="font-sans text-sm sm:text-base text-ink-1 mt-1 leading-relaxed">Pantau perkembangan dan detail akurasi pelafalan Anda dari waktu ke waktu.</p>
       </div>
     </div>
 
     <!-- Chart Section -->
-    <div class="bg-dark-900/80 backdrop-blur-xl border border-dark-800 rounded-3xl p-6 mb-8 shadow-2xl overflow-hidden relative group">
-      <!-- Glow background -->
-      <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl pointer-events-none transition-all duration-1000 group-hover:bg-primary-500/10"></div>
-      
-      <div class="flex items-center justify-between mb-8 relative z-10">
-        <h3 class="text-lg font-bold text-white">Grafik Skor (7 Hari Terakhir)</h3>
+    <div class="bg-dark-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-xl overflow-hidden relative group">
+      <div class="flex items-center justify-between mb-6 relative z-10">
+        <div>
+          <h3 class="font-display font-semibold text-xl sm:text-2xl text-ink-0 tracking-tight">Grafik Skor Mingguan</h3>
+          <p class="font-sans text-sm text-ink-1 mt-1 leading-relaxed">Rata-rata akurasi 7 hari terakhir</p>
+        </div>
         <div class="flex items-center gap-2">
-          <div class="w-3 h-3 rounded-full bg-primary-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-          <span class="text-sm font-medium text-slate-400">Akurasi (%)</span>
+          <div class="w-2.5 h-2.5 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+          <span class="font-mono text-xs sm:text-sm text-ink-2 font-semibold">Akurasi (%)</span>
         </div>
       </div>
 
       <!-- Custom SVG Chart -->
-      <div class="w-full relative z-10 overflow-x-auto pb-4 custom-scrollbar">
+      <div class="w-full relative z-10 overflow-x-auto custom-scrollbar">
         <!-- Error State -->
-        <div v-if="weeklyError" class="flex flex-col items-center justify-center py-20 text-center">
-          <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4 mx-auto border border-red-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p class="text-red-400 font-semibold text-lg mb-2">Gagal Memuat Data</p>
-          <p class="text-slate-500 text-sm max-w-sm mx-auto">{{ weeklyError.message || 'Terjadi kesalahan saat menghubungi server.' }}</p>
+        <div v-if="weeklyError" class="flex flex-col items-center justify-center py-16 text-center">
+          <p class="font-mono text-sm text-rose-400 mb-1 font-semibold">Gagal Memuat Data Grafik</p>
+          <p class="font-sans text-xs sm:text-sm text-ink-2 max-w-sm mx-auto">{{ weeklyError.message || 'Terjadi kesalahan saat menghubungi server.' }}</p>
         </div>
 
         <!-- Loading State -->
-        <div v-else-if="loadingWeekly" class="flex flex-col items-center justify-center py-20 text-center">
-          <div class="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mb-4 mx-auto"></div>
-          <p class="text-slate-400 font-medium">Memuat grafik skor...</p>
+        <div v-else-if="loadingWeekly" class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-10 h-10 border-2 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mb-4 mx-auto"></div>
+          <p class="font-sans text-sm text-ink-2">Memuat grafik skor...</p>
         </div>
         
         <!-- Empty State -->
-        <div v-else-if="!points.length" class="flex flex-col items-center justify-center py-20 text-center">
-          <div class="w-16 h-16 rounded-full bg-dark-800/50 flex items-center justify-center mb-4 mx-auto border border-dark-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-            </svg>
-          </div>
-          <p class="text-slate-300 font-semibold text-lg mb-2">Belum Ada Data Skor</p>
-          <p class="text-slate-500 text-sm max-w-sm mx-auto">Selesaikan sesi latihan hari ini untuk mulai melihat perkembangan skor akurasi Anda di grafik ini.</p>
+        <div v-else-if="!points.length" class="flex flex-col items-center justify-center py-16 text-center bg-dark-950/40 rounded-2xl border border-dashed border-white/10">
+          <p class="font-semibold text-sm text-ink-1 mb-1">Belum Ada Data Skor</p>
+          <p class="font-sans text-xs sm:text-sm text-ink-2 max-w-sm mx-auto">Selesaikan sesi latihan untuk mulai melihat grafik perkembangan skor Anda.</p>
         </div>
 
         <div v-else class="min-w-[600px]">
           <svg :viewBox="`0 0 ${svgWidth} ${svgHeight + 40}`" class="w-full h-auto overflow-visible">
             <defs>
               <linearGradient id="gradient-area" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(59, 130, 246, 0.4)" />
-                <stop offset="100%" stop-color="rgba(59, 130, 246, 0)" />
+                <stop offset="0%" stop-color="rgba(37, 99, 235, 0.25)" />
+                <stop offset="100%" stop-color="rgba(37, 99, 235, 0.0)" />
               </linearGradient>
             </defs>
 
             <!-- Grid Lines -->
-            <line x1="0" y1="30" :x2="svgWidth" y2="30" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5,5" />
-            <line x1="0" :y1="(svgHeight/2)+15" :x2="svgWidth" :y2="(svgHeight/2)+15" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5,5" />
-            <line x1="0" :y1="svgHeight" :x2="svgWidth" :y2="svgHeight" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+            <line x1="0" y1="30" :x2="svgWidth" y2="30" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4" />
+            <line x1="0" :y1="(svgHeight/2)+15" :x2="svgWidth" :y2="(svgHeight/2)+15" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4" />
+            <line x1="0" :y1="svgHeight" :x2="svgWidth" y2="svgHeight" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
 
             <!-- Filled Area -->
             <polygon 
               :points="polygonPoints" 
               fill="url(#gradient-area)"
-              class="animate-fade-in"
-              style="animation-duration: 1.5s;"
+              class="transition-all duration-700 ease-in-out"
             />
 
             <!-- Line Path -->
             <polyline 
               :points="polylinePoints" 
               fill="none" 
-              stroke="#3b82f6" 
-              stroke-width="4" 
-              stroke-linecap="round"
+              stroke="rgba(59,130,246,0.85)" 
+              stroke-width="3" 
+              stroke-linecap="round" 
               stroke-linejoin="round"
-              class="draw-line drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+              class="draw-line drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"
             />
 
             <!-- Data Points -->
-            <g v-for="(point, i) in points" :key="i" class="animate-fade-in" :style="`animation-delay: ${i * 0.1 + 0.5}s; opacity: 0; animation-fill-mode: forwards;`">
+            <g v-for="(point, i) in points" :key="i" class="group/point cursor-crosshair">
               <template v-if="!point.isFake">
-                <!-- Point circle -->
                 <circle 
                   :cx="point.x" 
                   :cy="point.y" 
-                  r="6" 
-                  fill="#0f172a" 
-                  stroke="#60a5fa" 
-                  stroke-width="3" 
-                  class="hover:r-8 transition-all cursor-pointer shadow-lg drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]"
+                  r="5" 
+                  fill="#0b0d11" 
+                  stroke="#3b82f6" 
+                  stroke-width="2.5" 
+                  class="hover:r-7 transition-all duration-200"
                 />
                 
-                <!-- Value Text -->
-                <text :x="point.x" :y="point.y - 15" fill="white" font-size="14" font-weight="bold" text-anchor="middle" class="select-none">
+                <text :x="point.x" :y="point.y - 12" fill="#f4f6fb" font-family="'Geist Mono', monospace" font-size="13" font-weight="700" text-anchor="middle" class="opacity-0 group-hover/point:opacity-100 transition-opacity select-none pointer-events-none">
                   {{ point.score }}%
                 </text>
                 
-                <!-- X Axis Labels -->
-                <text :x="point.x" :y="svgHeight + 25" fill="#94a3b8" font-size="14" font-weight="500" text-anchor="middle" class="select-none">
+                <text :x="point.x" :y="svgHeight + 25" fill="#6c7a9c" font-family="'Geist Mono', monospace" font-size="12" text-anchor="middle" class="select-none pointer-events-none font-semibold">
                   {{ point.date }}
                 </text>
               </template>
@@ -279,126 +243,123 @@ const formatDate = (isoStr: string) => {
     </div>
 
     <!-- History Table -->
-    <div class="bg-dark-900/80 backdrop-blur-xl border border-dark-800 rounded-3xl p-6 shadow-2xl">
-      <h3 class="text-lg font-bold text-white mb-6">Riwayat Sesi Latihan</h3>
+    <div class="bg-dark-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div class="mb-6">
+        <h3 class="font-display font-semibold text-xl sm:text-2xl text-ink-0 tracking-tight">Riwayat Sesi Latihan</h3>
+        <p class="font-sans text-sm text-ink-1 mt-1 leading-relaxed">Daftar rekaman latihan audio dan evaluasi AI</p>
+      </div>
       
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse font-sans text-sm">
           <thead>
-            <tr class="border-b border-dark-800/80">
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider w-1/4">Hari/Tanggal</th>
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Huruf Target</th>
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-center">Putar Audio</th>
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-right">Skor Akurasi</th>
-              <th class="py-4 px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider text-center w-36">Penjelasan AI</th>
+            <tr class="border-b border-white/10 font-mono text-xs uppercase tracking-wider text-ink-2 font-semibold">
+              <th class="py-4 px-4 font-semibold">Hari / Tanggal</th>
+              <th class="py-4 px-4 font-semibold">Huruf Target</th>
+              <th class="py-4 px-4 font-semibold text-center">Putar Audio</th>
+              <th class="py-4 px-4 font-semibold text-center">Status Laporan</th>
+              <th class="py-4 px-4 font-semibold text-right">Skor Akurasi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-dark-800/50">
+          <tbody class="divide-y divide-white/5 text-ink-0">
             <tr v-if="loadingHistory">
-              <td colspan="5" class="py-8 text-center text-slate-500 animate-pulse">Memuat riwayat...</td>
+              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3 animate-pulse">Memuat riwayat latihan...</td>
             </tr>
             <tr v-else-if="!historyList?.length">
-              <td colspan="5" class="py-8 text-center text-slate-500">Belum ada riwayat latihan.</td>
+              <td colspan="5" class="py-10 text-center font-sans text-xs text-ink-3">Belum ada riwayat latihan.</td>
             </tr>
             <template v-else v-for="item in paginatedHistory" :key="item.id">
-              <tr class="hover:bg-dark-800/30 transition-colors group">
-              <td class="py-4 px-4 text-slate-300 font-medium text-sm">
-                {{ formatDate(item.created_at) }}
-              </td>
-              <td class="py-4 px-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-dark-950 border border-dark-700 flex items-center justify-center font-arabic text-xl text-white group-hover:text-primary-400 transition-colors shadow-inner">
-                    {{ item.arabic_script }}
+              <tr class="hover:bg-dark-850/50 transition-colors group">
+                <td class="py-4 px-4 font-mono text-xs text-ink-1">
+                  {{ formatDate(item.created_at) }}
+                </td>
+                <td class="py-4 px-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-dark-950 border border-white/10 flex items-center justify-center font-sans text-xl font-semibold text-ink-0 group-hover:text-primary-400 transition-colors">
+                      {{ item.arabic_script }}
+                    </div>
+                    <div>
+                      <div class="font-medium text-sm text-ink-0">{{ item.base_letter }} · <span class="text-ink-2 font-normal text-xs">{{ item.harakat }}</span></div>
+                    </div>
                   </div>
-                  <div>
-                    <div class="font-medium text-slate-300">{{ item.base_letter }} · {{ item.harakat }}</div>
-                    <div v-if="item.tajweed_grade" class="text-xs text-slate-500 font-semibold mt-0.5">{{ item.tajweed_grade }}</div>
-                  </div>
-                </div>
-              </td>
-              
-              <!-- Audio Playback Column -->
-              <td class="py-4 px-4 text-center">
-                <div class="flex items-center justify-center gap-4">
-                  <!-- User Audio Button -->
-                  <div class="flex flex-col items-center gap-1.5">
-                    <button v-if="item.user_audio" @click.stop="toggleAudio(item.user_audio, 'user', item.id)"
-                      class="p-2 rounded-lg transition-all shadow-md"
-                      :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user' ? 'bg-primary-600 text-white' : 'bg-primary-500 hover:bg-primary-600 text-white'"
-                      title="Putar Rekaman Anda">
-                      <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user'" xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                          d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
-                          clip-rule="evenodd" />
-                      </svg>
-                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                          d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </button>
-                    <span v-else class="text-[10px] text-slate-600 italic leading-none py-2">Kosong</span>
-                    <span v-if="item.user_audio" class="text-[10px] text-slate-400 font-medium">Anda</span>
-                  </div>
+                </td>
+                
+                <!-- Audio Playback Column -->
+                <td class="py-4 px-4 text-center">
+                  <div class="flex items-center justify-center gap-3">
+                    <!-- User Audio Button -->
+                    <div class="flex flex-col items-center gap-1">
+                      <button v-if="item.user_audio" @click.stop="toggleAudio(item.user_audio, 'user', item.id)"
+                        class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 border cursor-pointer"
+                        :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user' ? 'bg-primary-500 text-dark-950 border-primary-400 shadow-md shadow-primary-500/30' : 'bg-dark-950 text-ink-1 hover:text-ink-0 border-white/10 hover:border-white/20'"
+                        title="Putar Rekaman Anda">
+                        <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'user'" xmlns="http://www.w3.org/2000/svg"
+                          class="h-3.5 w-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                          <path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <span v-else class="font-mono text-[9px] text-ink-3 italic py-1">-</span>
+                      <span v-if="item.user_audio" class="font-mono text-[9px] text-ink-3 uppercase">Anda</span>
+                    </div>
 
-                  <!-- Ustadz Audio Button -->
-                  <div class="flex flex-col items-center gap-1.5">
-                    <button v-if="item.ustadz_audio" @click.stop="toggleAudio(item.ustadz_audio, 'ustadz', item.id)"
-                      class="p-2 rounded-lg transition-all shadow-md"
-                      :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz' ? 'bg-purple-600 text-white' : 'bg-purple-500 hover:bg-purple-600 text-white'"
-                      title="Putar Audio Ustadz">
-                      <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz'" xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                          d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
-                          clip-rule="evenodd" />
-                      </svg>
-                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                          d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </button>
-                    <span v-else class="text-[10px] text-slate-600 italic leading-none py-2">Kosong</span>
-                    <span v-if="item.ustadz_audio" class="text-[10px] text-slate-400 font-medium">Ustadz</span>
+                    <!-- Ustadz Audio Button -->
+                    <div class="flex flex-col items-center gap-1">
+                      <button v-if="item.ustadz_audio" @click.stop="toggleAudio(item.ustadz_audio, 'ustadz', item.id)"
+                        class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:-translate-y-0.5 border cursor-pointer"
+                        :class="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz' ? 'bg-cyan-500 text-dark-950 border-cyan-400 shadow-md shadow-cyan-500/30' : 'bg-dark-950 text-ink-1 hover:text-ink-0 border-white/10 hover:border-white/20'"
+                        title="Putar Audio Referensi">
+                        <svg v-if="currentlyPlaying?.id === item.id && currentlyPlaying?.type === 'ustadz'" xmlns="http://www.w3.org/2000/svg"
+                          class="h-3.5 w-3.5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                          <path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <span v-else class="font-mono text-[9px] text-ink-3 italic py-1">-</span>
+                      <span v-if="item.ustadz_audio" class="font-mono text-[9px] text-ink-3 uppercase">Ustadz</span>
+                    </div>
                   </div>
-                </div>
-              </td>
+                </td>
 
-              <td class="py-4 px-4 text-right">
-                <span 
-                  class="inline-block px-3 py-1 rounded-md text-sm font-bold"
-                  :class="item.accuracy_score >= 90 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
-                          item.accuracy_score >= 75 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
-                          'bg-red-500/10 text-red-400 border border-red-500/20'"
-                >
-                  {{ item.accuracy_score.toFixed(1) }}%
-                </span>
-              </td>
-              <td class="py-4 px-4 text-center">
-                <button 
-                  @click="openExplanationModal(item.id)"
-                  class="p-2 rounded-xl transition-colors tooltip-trigger flex items-center justify-center mx-auto gap-1.5 px-3"
-                  :class="item.ai_explanation || explanations[item.id]?.text ? 'text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/20' : 'text-slate-400 bg-dark-800 hover:text-primary-400 hover:bg-primary-500/10 border border-dark-700'"
-                  :title="item.ai_explanation || explanations[item.id]?.text ? 'Lihat Penjelasan AI (Tersedia)' : 'Minta Penjelasan AI'"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                  <span class="text-xs font-bold" v-if="item.ai_explanation || explanations[item.id]?.text">Lihat</span>
-                  <span class="text-xs font-bold" v-else>Minta</span>
-                </button>
-              </td>
-            </tr>
+                <!-- Status Laporan Column -->
+                <td class="py-4 px-4 text-center">
+                  <button v-if="item.is_verified" @click="openReportModal(item)"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-mono text-[11px] font-semibold transition-all cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Lihat Koreksi</span>
+                  </button>
+                  <button v-else-if="item.is_reported" @click="openReportModal(item)"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 font-mono text-[11px] font-semibold transition-all cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Menunggu Tinjauan</span>
+                  </button>
+                  <span v-else class="font-mono text-xs text-ink-3">—</span>
+                </td>
+
+                <td class="py-4 px-4 text-right">
+                  <span 
+                    class="inline-block px-2.5 py-1 rounded-full font-mono text-xs font-semibold"
+                    :class="item.accuracy_score >= 80 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                            item.accuracy_score >= 60 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
+                            'bg-rose-500/10 text-rose-400 border border-rose-500/20'"
+                  >
+                    {{ item.accuracy_score.toFixed(1) }}%
+                  </span>
+                </td>
+              </tr>
             </template>
           </tbody>
         </table>
       </div>
 
-      <div class="px-6 pb-6 mt-6 border-t border-dark-800/50 pt-6">
+      <div class="mt-6 border-t border-white/5 pt-6">
         <AppPagination 
           v-if="historyList && historyList.length > 0"
           :totalItems="historyList.length" 
@@ -408,93 +369,92 @@ const formatDate = (isoStr: string) => {
       </div>
     </div>
     
-    <!-- AI Explanation Modal -->
+    <!-- Report Detail Modal -->
     <Teleport to="body">
-      <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm transition-opacity" @click="closeExplanationModal"></div>
-        <div class="relative w-full max-w-lg bg-dark-900 border border-dark-800 rounded-3xl shadow-2xl overflow-hidden animate-fade-in" style="animation-duration: 0.3s;">
-          <!-- Header -->
-          <div class="px-6 py-4 border-b border-dark-800 flex items-center justify-between bg-dark-800/50">
-            <h4 class="text-lg font-bold text-white flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              Analisis AI Tarteel
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary-500 text-white uppercase tracking-wider ml-1">Gemini</span>
-            </h4>
-            <button @click="closeExplanationModal" class="text-slate-400 hover:text-white transition-colors bg-dark-800 hover:bg-dark-700 p-1.5 rounded-xl border border-dark-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+      <div v-if="selectedReportItem" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-md transition-opacity"
+          @click="selectedReportItem = null">
+        </div>
+        <div
+          class="relative bg-dark-900/95 border border-white/10 rounded-3xl p-6 sm:p-7 w-full max-w-lg shadow-2xl overflow-hidden font-sans">
           
-          <!-- Content -->
-          <div class="p-6 min-h-[150px] max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div v-if="selectedEvalId && explanations[selectedEvalId]?.loading" class="flex flex-col items-center justify-center py-8">
-              <div class="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mb-4"></div>
-              <p class="text-slate-400 text-sm font-medium">AI sedang menganalisis pelafalan Anda...</p>
+          <!-- Close button -->
+          <button @click="selectedReportItem = null"
+            class="absolute top-5 right-5 text-ink-3 hover:text-ink-0 transition-colors p-1.5 rounded-full cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <!-- Modal Header -->
+          <div class="flex items-center gap-3.5 mb-5 pb-4 border-b border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-dark-950 border border-white/10 flex items-center justify-center font-sans text-2xl font-bold text-primary-400 shrink-0">
+              {{ selectedReportItem.arabic_script }}
             </div>
-            <div v-else-if="selectedEvalId" class="text-slate-300 text-[15px] leading-relaxed whitespace-pre-wrap">
-              {{ explanations[selectedEvalId]?.text }}
+            <div>
+              <h3 class="font-display font-semibold text-lg text-ink-0 tracking-tight">Detail Laporan Koreksi</h3>
+              <p class="font-sans text-xs text-ink-2 mt-0.5">
+                Huruf {{ selectedReportItem.base_letter }} ({{ selectedReportItem.harakat }}) · {{ formatDate(selectedReportItem.created_at) }}
+              </p>
             </div>
           </div>
-          
-          <!-- Footer -->
-          <div class="px-6 py-4 border-t border-dark-800 bg-dark-950/50 flex justify-end">
-            <button @click="closeExplanationModal" class="px-6 py-2.5 bg-dark-950/50 hover:bg-dark-900 text-slate-300 hover:text-white border border-dark-800 rounded-xl text-sm font-bold transition-colors">
+
+          <!-- Modal Content -->
+          <div class="space-y-4">
+            <!-- User Report Note -->
+            <div class="bg-dark-950/60 border border-white/10 rounded-2xl p-4 space-y-1.5">
+              <span class="block font-mono text-[10px] uppercase tracking-wider text-ink-3 font-semibold">Catatan Keluhan Anda</span>
+              <p class="font-sans text-sm text-ink-1 leading-relaxed">
+                {{ selectedReportItem.user_comment || 'Tidak ada catatan keluhan.' }}
+              </p>
+            </div>
+
+            <!-- Verification Status & Notes -->
+            <div v-if="selectedReportItem.is_verified" class="bg-dark-950/60 border border-emerald-500/20 rounded-2xl p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-semibold">Hasil Tinjauan Ustadz / Admin</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span v-if="selectedReportItem.verified_label" class="px-2.5 py-0.5 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20 font-mono text-[11px] font-semibold">
+                    Makhraj: {{ selectedReportItem.verified_label }}
+                  </span>
+                  <span v-if="selectedReportItem.is_verified_correct !== null && selectedReportItem.is_verified_correct !== undefined"
+                    class="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold"
+                    :class="selectedReportItem.is_verified_correct ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'">
+                    {{ selectedReportItem.is_verified_correct ? 'Lafal Benar' : 'Lafal Salah' }}
+                  </span>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/5 space-y-1">
+                <span class="block font-mono text-[10px] uppercase tracking-wider text-ink-3">Koreksi / Catatan Tambahan:</span>
+                <p class="font-sans text-sm text-ink-0 leading-relaxed">
+                  {{ selectedReportItem.admin_notes || 'Pelafalan telah divalidasi oleh Ustadz/Admin tanpa catatan tambahan.' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Waiting review state -->
+            <div v-else class="bg-dark-950/60 border border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 text-ink-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="space-y-1">
+                <span class="block font-mono text-xs text-amber-400 font-semibold">Menunggu Tinjauan</span>
+                <p class="font-sans text-xs text-ink-2 leading-relaxed">
+                  Laporan Anda telah diterima dan berada dalam antrean pemeriksaan oleh Ustadz/Admin. Hasil koreksi dan verifikasi makhraj akan segera diperbarui di sini.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="flex justify-end pt-4 mt-5 border-t border-white/10">
+            <button @click="selectedReportItem = null" class="ts-btn ts-btn--ghost text-xs">
               Tutup
             </button>
           </div>
+
         </div>
       </div>
     </Teleport>
   </div>
 </template>
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-.font-arabic {
-  font-family: 'Amiri', serif;
-}
-
-/* Custom SVG Draw Line Animation */
-.draw-line {
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  animation: draw 1.5s ease-out forwards;
-}
-
-@keyframes draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation-name: fade-in;
-  animation-duration: 0.5s;
-  animation-fill-mode: forwards;
-}
-
-/* Custom Scrollbar for SVG container if overflows on small screens */
-.custom-scrollbar::-webkit-scrollbar {
-  height: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.5);
-  border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.8);
-}
-</style>
