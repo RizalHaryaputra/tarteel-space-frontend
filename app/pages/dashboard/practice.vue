@@ -324,28 +324,28 @@ const sendFeedback = async () => {
 </script>
 
 <template>
-  <div class="h-full flex flex-col max-w-6xl mx-auto px-2 pb-10 font-sans">
+  <div class="flex flex-col max-w-6xl mx-auto px-1 sm:px-2 pb-6 sm:pb-10 font-sans">
 
     <!-- Header Area -->
     <div
-      class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 shrink-0 gap-4 border-b border-white/10 pb-5">
+      class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 shrink-0 gap-4 border-b border-white/10 pb-5">
       <div>
-        <h1 class="font-display font-semibold text-3xl sm:text-4xl text-ink-0 tracking-tight">Ruang Latihan Pelafalan</h1>
+        <h1 class="font-display font-semibold text-2xl sm:text-4xl text-ink-0 tracking-tight">Ruang Latihan Pelafalan</h1>
         <p class="font-sans text-sm sm:text-base text-ink-1 mt-1 leading-relaxed">Pilih huruf target dan rekam suara Anda untuk evaluasi tajwid berbasis AI CNN.</p>
       </div>
       <button @click="showLetterPicker = true"
-        class="px-6 py-2.5 bg-dark-900/80 backdrop-blur-2xl border border-white/10 hover:border-primary-500/40 rounded-full flex items-center gap-3 text-ink-0 transition-all group shadow-xl cursor-pointer">
+        class="self-start sm:self-auto px-5 sm:px-6 py-2.5 bg-dark-900/80 backdrop-blur-2xl border border-white/10 hover:border-primary-500/40 rounded-full flex items-center gap-3 text-ink-0 transition-all group shadow-xl cursor-pointer">
         <span class="font-sans font-bold text-2xl text-primary-400 leading-none">{{ targetLetter?.arabic_script || '?' }}</span>
         <span class="font-mono text-xs uppercase tracking-wider text-ink-1 group-hover:text-ink-0 font-semibold">Pilih Huruf</span>
       </button>
     </div>
 
     <!-- Main Content Grid -->
-    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 w-full items-start">
 
       <!-- Left Column: Target Letter Card -->
       <div
-        class="lg:col-span-5 min-h-[480px] w-full bg-dark-900/80 backdrop-blur-2xl border border-white/10 hover:border-primary-500/30 transition-all rounded-3xl p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-xl group/card">
+        class="lg:col-span-5 lg:min-h-[480px] w-full bg-dark-900/80 backdrop-blur-2xl border border-white/10 hover:border-primary-500/30 transition-all rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-xl group/card">
         
         <div v-if="loadingLetters" class="flex flex-col items-center justify-center animate-pulse gap-4 h-full w-full py-20">
           <div class="w-20 h-20 bg-dark-850 rounded-full"></div>
@@ -359,12 +359,11 @@ const sendFeedback = async () => {
 
             <!-- Big Arabic Character -->
             <div
-              class="leading-none font-sans font-bold text-ink-0 mb-4 transition-all select-none"
-              style="font-size: 130px;">
+              class="leading-none font-sans font-bold text-ink-0 mb-3 sm:mb-4 transition-all select-none text-[96px] sm:text-[130px]">
               {{ targetLetter.arabic_script }}
             </div>
 
-            <div class="font-display font-semibold text-2xl text-primary-400 mb-8 tracking-tight">
+            <div class="font-display font-semibold text-xl sm:text-2xl text-primary-400 mb-6 sm:mb-8 tracking-tight">
               {{ targetLetter.base_letter }} <span class="text-ink-3">·</span> {{ targetLetter.harakat }}
             </div>
 
@@ -413,7 +412,7 @@ const sendFeedback = async () => {
       </div>
 
       <!-- Right Column: Action Area -->
-      <div class="lg:col-span-7 min-h-[480px] w-full flex flex-col items-center justify-center relative">
+      <div class="lg:col-span-7 lg:min-h-[480px] py-4 lg:py-0 w-full flex flex-col items-center justify-center relative">
 
         <!-- Processing State -->
         <div v-if="isProcessing" class="flex flex-col items-center justify-center animate-fade-in w-full py-16">
@@ -522,7 +521,7 @@ const sendFeedback = async () => {
           <p class="font-sans text-xs text-ink-3 mt-1">Ucapkan makhraj huruf dengan jelas selama 1-5 detik.</p>
 
           <!-- Audio Visualizer Canvas -->
-          <div class="w-full max-w-sm mt-6 h-20 bg-dark-950/60 rounded-2xl border border-white/10 shadow-inner flex items-center justify-center overflow-hidden transition-all duration-300" :class="isRecording ? 'opacity-100' : 'opacity-0 scale-95 pointer-events-none'">
+          <div class="w-full max-w-sm overflow-hidden transition-all duration-300 flex items-center justify-center" :class="isRecording ? 'mt-6 h-20 opacity-100 bg-dark-950/60 rounded-2xl border border-white/10 shadow-inner' : 'mt-0 h-0 opacity-0 scale-95 pointer-events-none'">
             <canvas ref="visualizerCanvas" class="w-full h-full"></canvas>
           </div>
         </div>

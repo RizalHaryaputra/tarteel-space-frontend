@@ -55,7 +55,7 @@ const isMobileDropdownOpen = ref(false)
 </script>
 
 <template>
-  <div class="min-h-screen bg-dark-950 text-ink-0 font-sans flex flex-col md:flex-row relative overflow-hidden selection:bg-primary-500 selection:text-dark-950 antialiased">
+  <div class="min-h-[100dvh] md:h-screen bg-dark-950 text-ink-0 font-sans flex flex-col md:flex-row relative overflow-x-hidden md:overflow-hidden selection:bg-primary-500 selection:text-dark-950 antialiased">
     <!-- Global Background Glow -->
     <div class="fixed top-0 left-0 w-full h-full bg-hero-glow pointer-events-none opacity-40 z-0"></div>
 
@@ -101,7 +101,7 @@ const isMobileDropdownOpen = ref(false)
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 relative z-10 w-full overflow-y-auto h-screen pb-20 md:pb-0 flex flex-col">
+    <main class="flex-1 relative z-10 w-full md:overflow-y-auto md:h-screen pb-24 md:pb-0 flex flex-col">
 
       <!-- Desktop Header -->
       <header
@@ -174,7 +174,7 @@ const isMobileDropdownOpen = ref(false)
         </div>
       </header>
 
-      <div class="w-full max-w-6xl mx-auto py-8 px-4 md:py-8 md:px-8 lg:px-10 flex-1">
+      <div class="w-full max-w-6xl mx-auto py-5 px-4 md:py-8 md:px-8 lg:px-10 flex-1">
         <!-- Header Mobile -->
         <header class="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-white/10">
           <NuxtLink to="/" class="flex items-center gap-2">
