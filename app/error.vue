@@ -11,6 +11,7 @@ const router = useRouter()
 // Reactive state
 const showDetails = ref(false)
 const copied = ref(false)
+const isDev = import.meta.dev
 
 // Ambil kode status
 const statusCode = computed(() => {
@@ -383,8 +384,11 @@ useHead({
           </button>
         </div>
 
-        <!-- Collapsible Technical Debug Information -->
-        <div class="w-full max-w-xl text-left border border-white/10 rounded-2xl bg-dark-900/80 backdrop-blur-md overflow-hidden">
+        <!-- Collapsible Technical Debug Information (Hanya muncul saat Development) -->
+        <div
+          v-if="isDev"
+          class="w-full max-w-xl text-left border border-white/10 rounded-2xl bg-dark-900/80 backdrop-blur-md overflow-hidden"
+        >
           <button
             @click="showDetails = !showDetails"
             class="w-full px-4 py-3 flex items-center justify-between text-xs font-mono text-ink-2 hover:text-ink-1 transition-colors cursor-pointer select-none"
