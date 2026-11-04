@@ -548,14 +548,28 @@ let ctx = null
 
 useHead({
   title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
-  meta: [
-    { name: 'description', content: 'Evaluasi akurasi pelafalan huruf hijaiyah berbasis website dengan teknologi Deep Learning CNN. Gratis, langsung dari browser.' }
-  ],
   link: [
+    { rel: 'canonical', href: 'https://tarteelspace.web.id/' },
     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
     { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
     { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap' },
   ]
+})
+
+useSeoMeta({
+  title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
+  description: 'Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.',
+  ogTitle: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
+  ogDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah secara real-time langsung dari browser dengan teknologi AI & Deep Learning.',
+  ogImage: 'https://tarteelspace.web.id/logo.png',
+  ogUrl: 'https://tarteelspace.web.id/',
+  ogType: 'website',
+  ogSiteName: 'Tarteel Space',
+  ogLocale: 'id_ID',
+  twitterCard: 'summary',
+  twitterTitle: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
+  twitterDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah dan kaidah tajwid secara real-time berbasis Deep Learning.',
+  twitterImage: 'https://tarteelspace.web.id/logo.png',
 })
 
 const scrollTo = (id) => {

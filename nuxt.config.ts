@@ -21,8 +21,18 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'id' },
+      title: 'Tarteel Space — Evaluasi Pelafalan Hijaiyah Berbasis AI',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#0b0d11' },
+        { name: 'description', content: 'Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.' },
+        { name: 'keywords', content: 'tarteel space, belajar tajwid, makhraj huruf, hijaiyah AI, evaluasi pelafalan quran, deep learning cnn, tartil quran' },
+      ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/logo.png' },
+        { rel: 'canonical', href: 'https://tarteelspace.web.id/' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
