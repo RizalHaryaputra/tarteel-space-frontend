@@ -110,7 +110,9 @@ const getAccuracyColor = (score: number) => {
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '-'
-  return new Date(dateString).toLocaleDateString('id-ID', {
+  const clean = dateString.includes('T') ? dateString : dateString.replace(' ', 'T')
+  return new Date(clean).toLocaleDateString('id-ID', {
+    timeZone: 'Asia/Jakarta',
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
