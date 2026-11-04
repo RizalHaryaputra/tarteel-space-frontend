@@ -1,2 +1,18 @@
-User-Agent: *
-Disallow:
+# Robots.txt untuk Tarteel Space (https://tarteelspace.web.id)
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+
+# Blokir perayap mesin pencari dari rute privat dan terautentikasi
+Disallow: /admin/
+Disallow: /admin
+Disallow: /dashboard/
+Disallow: /dashboard
+Disallow: /auth/
+Disallow: /reset-password
+Disallow: /_nuxt/
+
+# Peta Situs Resmi (XML Sitemap)
+Sitemap: https://tarteelspace.web.id/sitemap.xml

@@ -133,7 +133,10 @@ const polygonPoints = computed(() => {
 })
 
 const formatDate = (isoStr: string) => {
-  return new Date(isoStr).toLocaleDateString('id-ID', {
+  if (!isoStr) return '-'
+  const clean = isoStr.includes('T') ? isoStr : isoStr.replace(' ', 'T')
+  return new Date(clean).toLocaleDateString('id-ID', {
+    timeZone: 'Asia/Jakarta',
     weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
   })
 }
