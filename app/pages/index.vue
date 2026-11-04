@@ -20,12 +20,17 @@
               class="ts-nav__user-btn"
               :aria-expanded="isDropdownOpen"
               aria-haspopup="true"
+              :title="authStore.userName || 'Profil Pengguna'"
             >
-              <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-[26px] h-[26px] rounded-full object-cover shrink-0" alt="Avatar" />
-              <span v-else class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[11px] font-semibold bg-primary-950 text-primary-400 shrink-0">{{ authStore.initials || '?' }}</span>
-              <span class="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">{{ authStore.userName || 'Pengguna' }}</span>
+              <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-7 h-7 rounded-full object-cover shrink-0" alt="Avatar" />
+              <span v-else class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold bg-primary-950 text-primary-400 border border-primary-500/30 shrink-0">{{ authStore.initials || '?' }}</span>
             </button>
             <div v-if="isDropdownOpen" class="ts-dropdown" role="menu">
+              <!-- User Info Header -->
+              <div class="px-3.5 py-2.5 border-b border-white/10 mb-1">
+                <p class="font-sans text-xs font-semibold text-ink-0 truncate">{{ authStore.userName || 'Pengguna' }}</p>
+                <p class="font-mono text-[10px] text-primary-400 uppercase tracking-wider mt-0.5">{{ authStore.isAdmin ? 'Admin' : 'Pengguna' }}</p>
+              </div>
               <button
                 class="ts-dropdown__item"
                 role="menuitem"
@@ -55,7 +60,7 @@
           <button class="ts-nav__cta" @click="navigateTo('/register')">Mulai Gratis</button>
         </template>
         <template #fallback>
-          <div class="w-[90px] h-[34px] bg-dark-850 rounded-full animate-pulse"></div>
+          <div class="w-[34px] h-[34px] bg-dark-850 rounded-full animate-pulse"></div>
         </template>
       </ClientOnly>
     </nav>
@@ -882,34 +887,44 @@ onBeforeUnmount(() => {
 }
 .ts-nav__cta:active { transform: translateY(0); }
 
-/* User dropdown button */
+/* User dropdown button (Avatar-only) */
 .ts-nav__user-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px 5px 5px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   border-radius: 9999px;
   background: #1a202c;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: pointer;
   color: #f4f6fb;
-  font-size: 0.875rem;
-  transition: background 150ms ease;
+  transition: all 150ms ease;
 }
 
-.ts-nav__user-btn:hover { background: #242c3d; }
+.ts-nav__user-btn:hover {
+  background: #242c3d;
+  border-color: rgba(96, 165, 250, 0.4);
+  transform: scale(1.05);
+}
+
+.ts-nav__user-btn:active {
+  transform: scale(0.95);
+}
 
 .ts-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 180px;
+  min-width: 190px;
   background: #13171f;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 16px 40px -16px rgba(0, 10, 60, 0.6);
   overflow: hidden;
   z-index: 60;
+  padding: 4px;
 }
 
 .ts-dropdown__item {
