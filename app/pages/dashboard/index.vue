@@ -120,7 +120,7 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
-  <div class="h-full pb-10 space-y-6">
+  <div class="pb-10 space-y-6">
     
     <!-- Row 1: Greeting and Stats -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
