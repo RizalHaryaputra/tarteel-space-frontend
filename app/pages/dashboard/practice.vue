@@ -56,16 +56,72 @@ let recordingStartTime = 0
 const MAX_RECORDING_TIME_MS = 5000 // 5 detik
 
 onUnmounted(() => {
+  cleanupAudioResources()
   if (currentSessionId.value) {
     api.endSession(currentSessionId.value).catch(console.error)
   }
 })
 
-// Visualizer State
+// Visualizer & Cross-Platform Audio Recorder State
 const visualizerCanvas = ref<HTMLCanvasElement | null>(null)
 let audioContext: AudioContext | null = null
 let analyser: AnalyserNode | null = null
+let scriptProcessor: ScriptProcessorNode | null = null
+let activeStream: MediaStream | null = null
 let animationFrameId: number | null = null
+let pcmChunks: Float32Array[] = []
+let latestPcmFrame: Float32Array | null = null
+let recordedSampleRate = 44100
+
+const encodePcmToWavBlob = (chunks: Float32Array[], sampleRate: number): Blob => {
+  const totalLength = chunks.reduce((acc, cur) => acc + cur.length, 0)
+  const merged = new Float32Array(totalLength)
+  let offset = 0
+  for (const chunk of chunks) {
+    merged.set(chunk, offset)
+    offset += chunk.length
+  }
+
+  // Normalisasi amplitudo agar rekaman mikrofon HP terdengar jelas saat diputar ulang
+  let peak = 0
+  for (let i = 0; i < merged.length; i++) {
+    const abs = Math.abs(merged[i] || 0)
+    if (abs > peak) peak = abs
+  }
+  const gain = peak > 0.008 ? (0.85 / peak) : 1.0
+
+  const buffer = new ArrayBuffer(44 + merged.length * 2)
+  const view = new DataView(buffer)
+
+  const writeString = (byteOffset: number, str: string) => {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(byteOffset + i, str.charCodeAt(i))
+    }
+  }
+
+  writeString(0, 'RIFF')
+  view.setUint32(4, 36 + merged.length * 2, true)
+  writeString(8, 'WAVE')
+  writeString(12, 'fmt ')
+  view.setUint32(16, 16, true) // Subchunk1Size (16 untuk PCM)
+  view.setUint16(20, 1, true)  // AudioFormat (1 = PCM)
+  view.setUint16(22, 1, true)  // NumChannels (1 = Mono)
+  view.setUint32(24, sampleRate, true)
+  view.setUint32(28, sampleRate * 2, true) // ByteRate
+  view.setUint16(32, 2, true)  // BlockAlign
+  view.setUint16(34, 16, true) // BitsPerSample (16-bit)
+  writeString(36, 'data')
+  view.setUint32(40, merged.length * 2, true)
+
+  let pcmOffset = 44
+  for (let i = 0; i < merged.length; i++) {
+    const s = Math.max(-1, Math.min(1, (merged[i] || 0) * gain))
+    view.setInt16(pcmOffset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
+    pcmOffset += 2
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' })
+}
 
 const drawVisualizer = () => {
   if (!visualizerCanvas.value || !analyser) return
@@ -74,116 +130,213 @@ const drawVisualizer = () => {
   const canvasCtx = canvas.getContext('2d')
   if (!canvasCtx) return
 
-  canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1)
-  canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1)
-  canvasCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
-
-  analyser.fftSize = 2048
+  analyser.fftSize = 1024
   const bufferLength = analyser.frequencyBinCount
   const dataArray = new Uint8Array(bufferLength)
 
   const draw = () => {
-    if (!isRecording.value) return
+    if (!isRecording.value || !analyser) return
 
     animationFrameId = requestAnimationFrame(draw)
-    analyser!.getByteTimeDomainData(dataArray)
 
-    canvasCtx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
+    const dpr = window.devicePixelRatio || 1
+    const cssWidth = canvas.clientWidth || 300
+    const cssHeight = canvas.clientHeight || 80
+
+    if (canvas.width !== Math.floor(cssWidth * dpr) || canvas.height !== Math.floor(cssHeight * dpr)) {
+      canvas.width = Math.floor(cssWidth * dpr)
+      canvas.height = Math.floor(cssHeight * dpr)
+    }
+
+    canvasCtx.save()
+    canvasCtx.scale(dpr, dpr)
+    canvasCtx.clearRect(0, 0, cssWidth, cssHeight)
+
+    analyser.getByteTimeDomainData(dataArray)
+
+    // Cek apakah AnalyserNode memberikan variasi gelombang; jika flat di beberapa browser mobile, gunakan latestPcmFrame
+    let minVal = 255
+    let maxVal = 0
+    for (let i = 0; i < bufferLength; i++) {
+      const val = dataArray[i] ?? 128
+      if (val < minVal) minVal = val
+      if (val > maxVal) maxVal = val
+    }
+
+    const usePcmFallback = (maxVal - minVal <= 2) && latestPcmFrame && latestPcmFrame.length > 0
+    const sampleCount = usePcmFallback ? latestPcmFrame!.length : bufferLength
 
     canvasCtx.lineWidth = 2.5
     canvasCtx.strokeStyle = '#60a5fa'
     canvasCtx.lineCap = 'round'
     canvasCtx.lineJoin = 'round'
-
     canvasCtx.beginPath()
 
-    const sliceWidth = canvas.clientWidth * 1.0 / bufferLength
+    const sliceWidth = cssWidth / sampleCount
     let x = 0
+    const midY = cssHeight / 2
 
-    for (let i = 0; i < bufferLength; i++) {
-      const v = (dataArray[i] || 128) / 128.0
-      const y = v * canvas.clientHeight / 2
+    for (let i = 0; i < sampleCount; i++) {
+      let normalized = 0
+      if (usePcmFallback) {
+        normalized = (latestPcmFrame![i] || 0) * 3.0
+      } else {
+        normalized = (((dataArray[i] ?? 128) - 128) / 128.0) * 2.8
+      }
+      const clamped = Math.max(-0.92, Math.min(0.92, normalized))
+      const y = midY + clamped * midY
 
       if (i === 0) {
         canvasCtx.moveTo(x, y)
       } else {
         canvasCtx.lineTo(x, y)
       }
-
       x += sliceWidth
     }
 
-    canvasCtx.lineTo(canvas.clientWidth, canvas.clientHeight / 2)
+    canvasCtx.lineTo(cssWidth, midY)
     canvasCtx.stroke()
+    canvasCtx.restore()
   }
 
   draw()
 }
 
+const cleanupAudioResources = () => {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
+  if (scriptProcessor) {
+    try { scriptProcessor.disconnect() } catch {}
+    scriptProcessor.onaudioprocess = null
+    scriptProcessor = null
+  }
+  if (analyser) {
+    try { analyser.disconnect() } catch {}
+    analyser = null
+  }
+  if (audioContext) {
+    audioContext.close().catch(() => {})
+    audioContext = null
+  }
+  if (activeStream) {
+    activeStream.getTracks().forEach(track => track.stop())
+    activeStream = null
+  }
+}
+
 const toggleRecording = async () => {
   if (isRecording.value) {
-    mediaRecorder.value?.stop()
     isRecording.value = false
-    
-    if (audioContext) {
-      audioContext.close()
-      audioContext = null
+    const duration = Date.now() - recordingStartTime
+
+    if (mediaRecorder.value && mediaRecorder.value.state !== 'inactive') {
+      try { mediaRecorder.value.stop() } catch {}
     }
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId)
+
+    const recordedChunks = [...pcmChunks]
+    const sr = recordedSampleRate
+    cleanupAudioResources()
+
+    if (duration > MAX_RECORDING_TIME_MS) {
+      showCustomAlert(`Durasi rekaman terlalu lama (${(duration / 1000).toFixed(1)} detik). Maksimal 5 detik. Silakan coba lagi.`, 'Rekaman Terlalu Lama')
+      return
+    }
+
+    if (duration < 1000) {
+      showCustomAlert('Durasi rekaman terlalu singkat. Silakan tekan dan ucapkan makhraj huruf dengan jelas.', 'Rekaman Terlalu Singkat')
+      return
+    }
+
+    if (recordedChunks.length > 0) {
+      const wavBlob = encodePcmToWavBlob(recordedChunks, sr)
+      processAudio(wavBlob)
+    } else if (audioChunks.value.length > 0) {
+      const fallbackBlob = new Blob(audioChunks.value, { type: 'audio/webm' })
+      processAudio(fallbackBlob)
+    } else {
+      showCustomAlert('Tidak ada sinyal suara yang terekam. Silakan coba lagi.', 'Rekaman Kosong')
     }
   } else {
     showResult.value = false
 
+    // Jalankan startSession di background agar tidak menghilangkan user-gesture activation di iOS/Android
     if (!currentSessionId.value) {
-      try {
-        const session = await api.startSession()
-        currentSessionId.value = session.session_id
-      } catch (e) {
-        console.error("Gagal memulai sesi", e)
-      }
+      api.startSession()
+        .then(session => { currentSessionId.value = session.session_id })
+        .catch(e => console.error("Gagal memulai sesi", e))
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      mediaRecorder.value = new MediaRecorder(stream)
+      // Matikan noiseSuppression & echoCancellation bawaan HP agar suara pelafalan makhraj tidak di-mute oleh OS
+      let stream: MediaStream
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: true,
+            channelCount: 1
+          }
+        })
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      }
+
+      activeStream = stream
+      pcmChunks = []
+      latestPcmFrame = null
       audioChunks.value = []
 
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
       audioContext = new AudioContextClass()
-      analyser = audioContext.createAnalyser()
-      const source = audioContext.createMediaStreamSource(stream)
-      source.connect(analyser)
-      
-      setTimeout(() => drawVisualizer(), 50)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume()
+      }
+      recordedSampleRate = audioContext.sampleRate || 44100
 
-      mediaRecorder.value.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.value.push(e.data)
+      const source = audioContext.createMediaStreamSource(stream)
+      analyser = audioContext.createAnalyser()
+      analyser.fftSize = 1024
+      analyser.smoothingTimeConstant = 0.75
+
+      scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1)
+      const silentGain = audioContext.createGain()
+      silentGain.gain.value = 0
+
+      scriptProcessor.onaudioprocess = (e: AudioProcessingEvent) => {
+        if (!isRecording.value) return
+        const inputData = e.inputBuffer.getChannelData(0)
+        const copy = new Float32Array(inputData.length)
+        copy.set(inputData)
+        pcmChunks.push(copy)
+        latestPcmFrame = copy
       }
 
-      mediaRecorder.value.onstop = () => {
-        stream.getTracks().forEach(track => track.stop())
+      // Hubungkan graph ke destination melalui silentGain (gain=0) agar iOS Safari & Android Chrome aktif memompa frame audio
+      source.connect(analyser)
+      analyser.connect(scriptProcessor)
+      scriptProcessor.connect(silentGain)
+      silentGain.connect(audioContext.destination)
 
-        const duration = Date.now() - recordingStartTime
-        if (duration > MAX_RECORDING_TIME_MS) {
-          showCustomAlert(`Durasi rekaman terlalu lama (${(duration / 1000).toFixed(1)} detik). Maksimal 5 detik. Silakan coba lagi.`, 'Rekaman Terlalu Lama')
-          return
-        }
-
-        if (duration < 1000) {
-          showCustomAlert('Durasi rekaman terlalu singkat. Silakan tekan dan ucapkan makhraj huruf dengan jelas.', 'Rekaman Terlalu Singkat')
-          return
-        }
-
-        const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
-        processAudio(audioBlob)
+      // Siapkan MediaRecorder sebagai cadangan sekunder
+      if (typeof MediaRecorder !== 'undefined') {
+        try {
+          mediaRecorder.value = new MediaRecorder(stream)
+          mediaRecorder.value.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) audioChunks.value.push(e.data)
+          }
+          mediaRecorder.value.start(200)
+        } catch {}
       }
 
       recordingStartTime = Date.now()
-      mediaRecorder.value.start()
       isRecording.value = true
+      requestAnimationFrame(() => drawVisualizer())
     } catch (err) {
       console.error('Error accessing microphone:', err)
+      cleanupAudioResources()
       showCustomAlert('Gagal mengakses mikrofon. Pastikan browser Anda memiliki izin untuk menggunakan mikrofon.', 'Akses Ditolak')
     }
   }
