@@ -598,6 +598,18 @@ const sendFeedback = async () => {
             <p class="font-sans text-ink-0 font-medium text-sm sm:text-base leading-relaxed">{{ evaluationResult.feedback }}</p>
           </div>
 
+          <!-- AI Prediction Disclaimer Note -->
+          <div class="w-full mb-3 px-3.5 py-2.5 rounded-xl bg-dark-950/50 border border-white/5 flex items-start sm:items-center gap-2.5 text-left">
+            <div class="w-5 h-5 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 text-amber-400 mt-0.5 sm:mt-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+            </div>
+            <p class="font-sans text-[11px] sm:text-xs text-ink-2 leading-relaxed">
+              <span class="text-ink-1 font-medium">Catatan AI:</span> Model kecerdasan buatan dapat membuat kekeliruan dalam memprediksi akibat kualitas mikrofon atau kebisingan sekitar.
+            </p>
+          </div>
+
           <!-- Report Accuracy Button -->
           <button v-if="evalId" @click="showFeedbackModal = true"
             class="w-full mb-5 font-mono text-xs sm:text-sm text-ink-2 hover:text-ink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer font-medium">
