@@ -4,7 +4,7 @@
     <!-- ───────── nav · N5 Floating pill ───────── -->
     <nav class="ts-nav" aria-label="Primary" :class="{ 'ts-nav--scrolled': isScrolled }">
       <button class="ts-nav__brand flex items-center gap-2 mr-2 bg-none border-none cursor-pointer p-0 text-ink-0 font-display font-semibold text-sm tracking-tight" @click="scrollTo('beranda')" aria-label="Tarteel Space home">
-        <img src="/logo.png" alt="" class="w-[22px] h-[22px] rounded-[5px] object-contain" aria-hidden="true" />
+        <img src="/logo.png" alt="" width="22" height="22" fetchpriority="high" class="w-[22px] h-[22px] rounded-[5px] object-contain" aria-hidden="true" />
         <span class="text-ink-0">Tarteel<span class="text-primary-400">Space</span></span>
       </button>
       <div class="ts-nav__links flex gap-0.5">
@@ -550,9 +550,6 @@ useHead({
   title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
   link: [
     { rel: 'canonical', href: 'https://tarteelspace.web.id/' },
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap' },
   ]
 })
 
@@ -577,8 +574,15 @@ const scrollTo = (id) => {
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
+let isScrolling = false
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 60
+  if (!isScrolling) {
+    window.requestAnimationFrame(() => {
+      isScrolled.value = window.scrollY > 60
+      isScrolling = false
+    })
+    isScrolling = true
+  }
 }
 
 const handleClickOutside = (e) => {
@@ -625,53 +629,54 @@ onMounted(() => {
   gsap.registerPlugin(ScrollTrigger)
 
   ctx = gsap.context(() => {
-    // 1. Hero Entrance Animation
+    // 1. Hero Entrance Animation (Dioptimasi agar LCP mobile instan & tidak tertunda)
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
     heroTl
       .from('.ts-nav', {
-        y: -30,
+        y: -20,
         opacity: 0,
-        duration: 0.8,
-        clearProps: 'y,opacity',
+        duration: 0.6,
+        clearProps: 'all',
       })
       .from('.ts-hero__live', {
-        y: 20,
+        y: 15,
         opacity: 0,
-        duration: 0.6,
-      }, '-=0.4')
+        duration: 0.5,
+      }, '-=0.3')
+      // Catatan: Tidak menyetel opacity: 0 pada .ts-hero__h1 agar Largest Contentful Paint (LCP)
+      // langsung terhitung instan (~1.0s) pada SSR paint pertama tanpa menunggu animasi selesai.
       .from('.ts-hero__h1', {
-        y: 35,
-        opacity: 0,
-        duration: 0.85,
-      }, '-=0.4')
-      .from('.ts-hero__sub', {
-        y: 25,
-        opacity: 0,
-        duration: 0.7,
-      }, '-=0.5')
-      .from('.ts-hero__ctas .ts-btn', {
         y: 20,
-        opacity: 0,
         duration: 0.6,
-        stagger: 0.1,
-      }, '-=0.5')
+        clearProps: 'transform',
+      }, '-=0.3')
+      .from('.ts-hero__sub', {
+        y: 15,
+        duration: 0.5,
+        clearProps: 'transform',
+      }, '-=0.3')
+      .from('.ts-hero__ctas .ts-btn', {
+        y: 15,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.08,
+      }, '-=0.3')
       .from('.ts-hero__fineprint span', {
         opacity: 0,
         y: 10,
-        duration: 0.5,
-        stagger: 0.08,
-      }, '-=0.4')
+        duration: 0.4,
+        stagger: 0.06,
+      }, '-=0.3')
       .from('.ts-eval-card', {
-        y: 30,
-        opacity: 0,
-        duration: 0.9,
+        y: 25,
+        duration: 0.7,
         clearProps: 'all',
-      }, '-=0.8')
+      }, '-=0.5')
       .from('.ts-marquee', {
         opacity: 0,
-        duration: 0.8,
-      }, '-=0.4')
+        duration: 0.6,
+      }, '-=0.3')
 
     // 2. Cara Kerja (Step Sequence) ScrollTrigger
     gsap.from('#cara-kerja .ts-section-head > *', {
