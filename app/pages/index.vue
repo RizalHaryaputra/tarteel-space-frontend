@@ -21,6 +21,7 @@
               :aria-expanded="isDropdownOpen"
               aria-haspopup="true"
               :title="authStore.userName || 'Profil Pengguna'"
+              :aria-label="authStore.userName || 'Menu Profil Pengguna'"
             >
               <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-7 h-7 rounded-full object-cover shrink-0" alt="Avatar" />
               <span v-else class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold bg-primary-950 text-primary-400 border border-primary-500/30 shrink-0">{{ authStore.initials || '?' }}</span>
@@ -64,6 +65,9 @@
         </template>
       </ClientOnly>
     </nav>
+
+    <!-- ───────── main landmark ───────── -->
+    <main id="main-content">
 
     <!-- ───────── hero · Marquee Hero + split diptych ───────── -->
     <section class="ts-hero pt-24 sm:pt-[130px] pb-12 sm:pb-20 relative overflow-clip" id="beranda">
@@ -488,6 +492,7 @@
         </div>
       </div>
     </section>
+    </main>
 
     <!-- ───────── footer · Ft5 Statement ───────── -->
     <footer class="ts-footer pt-16 pb-12 border-t border-white/5">
@@ -497,7 +502,7 @@
         </p>
         <div class="ts-footer__row grid grid-cols-2 md:grid-cols-3 gap-8 border-t border-white/5 pt-8">
           <div class="ts-footer__col">
-            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Fitur</h5>
+            <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Fitur</p>
             <ul class="flex flex-col gap-2 list-none p-0 m-0">
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('cara-kerja')">Cara Kerja</button></li>
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('fitur')">Fitur Utama</button></li>
@@ -505,17 +510,17 @@
             </ul>
           </div>
           <div class="ts-footer__col">
-            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Akun</h5>
+            <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Akun</p>
             <ul class="flex flex-col gap-2 list-none p-0 m-0">
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="navigateTo('/login')">Masuk</button></li>
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="navigateTo('/register')">Daftar</button></li>
             </ul>
           </div>
           <div class="ts-footer__col">
-            <h5 class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Proyek</h5>
+            <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Proyek</p>
             <ul class="flex flex-col gap-2 list-none p-0 m-0">
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('tentang')">Tentang</button></li>
-              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-frontend" target="_blank" rel="noopener" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub</a></li>
+              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-frontend" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository Tarteel Space" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub</a></li>
             </ul>
           </div>
         </div>
