@@ -28,11 +28,7 @@ useHead({
   meta: [
     { name: 'description', content: 'Buat kata sandi baru untuk akun Tarteel Space Anda.' }
   ],
-  link: [
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap' },
-  ]
+
 })
 
 // Jika tidak ada token di URL, redirect ke forgot-password

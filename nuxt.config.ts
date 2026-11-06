@@ -33,12 +33,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/png', href: '/logo.png' },
         { rel: 'canonical', href: 'https://tarteelspace.web.id/' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap',
-        },
+        { rel: 'preload', href: '/fonts/geist-sans/Geist-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: '' },
       ],
       style: [
         {

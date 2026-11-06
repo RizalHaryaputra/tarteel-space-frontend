@@ -89,3 +89,20 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* ── Instrument Serif (Self-hosted for zero render-blocking & 100% PageSpeed) ── */
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif/InstrumentSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif/InstrumentSerif-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
