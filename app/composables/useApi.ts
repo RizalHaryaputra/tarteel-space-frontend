@@ -304,7 +304,7 @@ export const useApi = () => {
     const uploadModelFiles = (formData: FormData) => {
         // We use request directly to handle FormData without setting Content-Type (fetch handles boundary)
         const headers: Record<string, string> = {}
-        const token = localStorage.getItem('token')
+        const token = authStore.token || (import.meta.client ? localStorage.getItem('tarteel_token') : null)
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
         }

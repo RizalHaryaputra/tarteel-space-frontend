@@ -26,6 +26,11 @@ useHead({
   ]
 })
 
+// Pastikan auth ter-restore jika belum
+if (!authStore.isLoggedIn) {
+  authStore.restoreAuth()
+}
+
 // Jika sudah login, langsung ke dashboard atau halaman tujuan
 if (authStore.isLoggedIn) {
   let redirect = route.query.redirect as string || '/dashboard'

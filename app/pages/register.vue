@@ -29,6 +29,9 @@ useHead({
   ]
 })
 
+if (!authStore.isLoggedIn) {
+  authStore.restoreAuth()
+}
 if (authStore.isLoggedIn) navigateTo('/dashboard')
 
 const confirmPassClass = computed(() => {
