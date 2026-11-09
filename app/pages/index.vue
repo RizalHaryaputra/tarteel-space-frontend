@@ -76,7 +76,7 @@
         <!-- live badge -->
         <div class="ts-hero__live inline-flex items-center gap-2 py-1 sm:py-1.5 px-3 sm:px-3.5 border border-white/10 bg-dark-900 rounded-full font-mono text-[11px] sm:text-xs text-ink-1 relative z-10 max-w-full" role="status" aria-live="polite">
           <span class="ts-live-dot w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true"></span>
-          <span class="truncate sm:overflow-visible">DITENAGAI DEEP LEARNING · <strong class="font-semibold text-ink-0">CNN</strong> · REAL-TIME</span>
+          <span class="truncate sm:overflow-visible">DITENAGAI DEEP LEARNING · <strong class="font-semibold text-ink-0">CNN</strong> · MFCC</span>
         </div>
 
         <!-- split layout: headline left, art right -->
@@ -87,7 +87,7 @@
               Hijaiyah<em class="ts-italic font-serif italic text-primary-400 font-normal ml-1.5 sm:ml-2">dengan benar.</em>
             </h1>
             <p class="ts-hero__sub text-sm sm:text-base md:text-lg text-ink-1 max-w-[50ch] mb-6 sm:mb-8 leading-relaxed">
-              Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time
+              Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara langsung
               menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.
             </p>
             <div class="ts-hero__ctas flex gap-3 items-center flex-wrap">
@@ -154,14 +154,14 @@
         <div class="ts-marquee w-full overflow-hidden border-y border-white/5 py-3 sm:py-4 mt-12 sm:mt-20 relative z-10" aria-hidden="true">
           <div class="ts-marquee__track flex gap-12 font-mono text-sm text-ink-2 uppercase tracking-[0.18em] whitespace-nowrap animate-marquee">
             <span class="inline-flex items-center gap-3">REKAM · SUARA · ANDA</span>
-            <span class="inline-flex items-center gap-3">EVALUASI · REAL-TIME</span>
+            <span class="inline-flex items-center gap-3">EVALUASI · CEPAT</span>
             <span class="inline-flex items-center gap-3">PELAJARI · TAJWID · HIJAIYAH</span>
-            <span class="inline-flex items-center gap-3">BERBASIS · CNN · AI</span>
+            <span class="inline-flex items-center gap-3">BERBASIS · CNN · MFCC</span>
             <span class="inline-flex items-center gap-3">AKURASI · INSTAN</span>
             <span class="inline-flex items-center gap-3">REKAM · SUARA · ANDA</span>
-            <span class="inline-flex items-center gap-3">EVALUASI · REAL-TIME</span>
+            <span class="inline-flex items-center gap-3">EVALUASI · CEPAT</span>
             <span class="inline-flex items-center gap-3">PELAJARI · TAJWID · HIJAIYAH</span>
-            <span class="inline-flex items-center gap-3">BERBASIS · CNN · AI</span>
+            <span class="inline-flex items-center gap-3">BERBASIS · CNN · MFCC</span>
             <span class="inline-flex items-center gap-3">AKURASI · INSTAN</span>
           </div>
         </div>
@@ -176,38 +176,39 @@
           <div>
             <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ cara kerja</span>
             <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
-              Rekam, proses, terima — <em class="ts-italic font-serif italic text-primary-400 font-normal">langsung</em>.
+              Simak, lafalkan, evaluasi — <em class="ts-italic font-serif italic text-primary-400 font-normal">terarah</em>.
             </h2>
           </div>
           <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
-            Tiga langkah sederhana untuk mulai mengevaluasi akurasi pelafalan hijaiyah Anda.
-            Tidak perlu pengaturan rumit — cukup browser dan mikrofon.
+            Tiga langkah terstruktur untuk menyempurnakan pelafalan hijaiyah Anda — mulai dari menyimak contoh Syaikh hingga evaluasi AI dengan kontrol validasi.
           </p>
         </div>
 
         <div class="ts-steps flex flex-col">
           <div class="ts-step">
-            <div class="ts-step__art ts-step-art--mic" aria-hidden="true">
-              <div class="w-12 h-12 text-primary-400 relative z-10">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+            <div class="ts-step__art ts-step-art--audio flex flex-col items-center justify-center gap-2 relative" aria-hidden="true">
+              <div class="w-12 h-12 rounded-full bg-primary-500/15 border border-primary-500/30 text-primary-400 flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 ml-0.5">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                 </svg>
               </div>
-              <div class="ts-step__art-bars absolute bottom-4 left-1/2 -translate-x-1/2 flex items-end gap-1" aria-hidden="true">
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 8px; animation-delay: 0ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 14px; animation-delay: 80ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 20px; animation-delay: 160ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 28px; animation-delay: 240ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 20px; animation-delay: 320ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 14px; animation-delay: 400ms;"></i>
-                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 8px; animation-delay: 480ms;"></i>
+              <span class="font-mono text-[10px] uppercase tracking-wider text-primary-300 bg-primary-950/80 px-2.5 py-0.5 rounded-full border border-primary-500/30">Audio Syaikh</span>
+              <div class="ts-step__art-bars absolute bottom-3 left-1/2 -translate-x-1/2 flex items-end gap-1 opacity-70" aria-hidden="true">
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 6px; animation-delay: 0ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 12px; animation-delay: 80ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 16px; animation-delay: 160ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 22px; animation-delay: 240ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 16px; animation-delay: 320ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 12px; animation-delay: 400ms;"></i>
+                <i class="w-1 rounded-sm bg-primary-500 opacity-60 animate-bar" style="height: 6px; animation-delay: 480ms;"></i>
               </div>
             </div>
             <div class="ts-step__body flex flex-col gap-1.5">
               <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">1.0</div>
-              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Izinkan Mikrofon</h3>
-              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Berikan akses mikrofon pada peramban Anda. Tidak ada data suara yang disimpan di server — semua diproses lokal lalu dikirim sebagai fitur audio.</p>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Simak Contoh Syaikh</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Pilih target huruf hijaiyah dan dengarkan audio contoh pelafalan makhraj dari Syaikh / Ustadz agar Anda memiliki acuan bacaan yang fasih dan benar sebelum berlatih.</p>
             </div>
           </div>
 
@@ -223,20 +224,24 @@
             </div>
             <div class="ts-step__body flex flex-col gap-1.5">
               <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">2.0</div>
-              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Lafalkan Huruf</h3>
-              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Pilih huruf hijaiyah yang ingin dilatih, lalu lafalkan dengan jelas sesuai kaidah makhraj dan tajwid. Sistem akan merekam dan menganalisis audio Anda.</p>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Lafalkan & Rekam Suara</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Aktifkan mikrofon lalu lafalkan huruf hijaiyah sesuai makhraj dan harakat. Sistem merekam dan langsung mengekstrak spektrogram suara Anda untuk dianalisis.</p>
             </div>
           </div>
 
           <div class="ts-step">
-            <div class="ts-step__art ts-step-art--result flex flex-col gap-2" aria-hidden="true">
-              <div class="font-display text-5xl font-semibold tracking-tight text-primary-400 leading-none">88<small class="text-2xl font-normal">%</small></div>
-              <div class="font-mono text-xs tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-1 px-3 rounded-full">Sangat Baik</div>
+            <div class="ts-step__art ts-step-art--result flex flex-col items-center justify-center gap-2 relative p-4" aria-hidden="true">
+              <div class="flex items-baseline gap-2">
+                <div class="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-primary-400 leading-none">88<small class="text-xl sm:text-2xl font-normal">%</small></div>
+              </div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1">
+                <div class="font-mono text-[10px] tracking-wider uppercase text-emerald-400 bg-emerald-500/15 py-0.5 px-2.5 rounded-full border border-emerald-500/30">Sangat Baik</div>
+              </div>
             </div>
             <div class="ts-step__body flex flex-col gap-1.5">
               <div class="ts-step__num font-mono text-xs tracking-wider text-primary-400 opacity-70">3.0</div>
-              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Terima Evaluasi</h3>
-              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Model CNN memproses spektrogram audio dan memberikan persentase akurasi secara instan beserta umpan balik untuk perbaikan pelafalan Anda.</p>
+              <h3 class="ts-step__title font-display text-2xl font-semibold tracking-tight text-ink-0">Terima Evaluasi & Laporkan</h3>
+              <p class="ts-step__desc text-base text-ink-1 max-w-[55ch] leading-relaxed">Model CNN menyajikan skor akurasi pelafalan Anda. Jika merasa hasil prediksi AI keliru, Anda dapat mengirim laporan keluhan langsung untuk membantu menyempurnakan model.</p>
             </div>
           </div>
         </div>
@@ -250,12 +255,11 @@
           <div>
             <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ model AI</span>
             <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
-              Angka yang <em class="ts-italic font-serif italic text-primary-400 font-normal">tidak</em> perlu catatan kaki.
+              Performa model yang <em class="ts-italic font-serif italic text-primary-400 font-normal">terukur & terus diuji</em>.
             </h2>
           </div>
           <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
-            Dibangun dari penelitian Skripsi Teknologi Informasi dengan arsitektur CNN yang dilatih
-            khusus untuk mengenali pola pelafalan huruf hijaiyah beserta harakatnya.
+            Dikembangkan dalam penelitian Skripsi Program Studi Teknologi Informasi, memanfaatkan ekstraksi fitur MFCC dan arsitektur CNN yang dilatih khusus untuk mengenali karakteristik makhraj 84 kelas hijaiyah secara objektif.
           </p>
         </div>
 
@@ -263,7 +267,7 @@
           <div class="ts-stats__card ts-stats__card--1">
             <div class="ts-stats__num">{{ Math.round(statAccuracy) }}<small class="text-[0.45em] font-medium text-ink-1 ml-1">%</small></div>
             <div class="ts-stats__label font-mono uppercase tracking-wider text-xs text-ink-2 mt-4">akurasi model CNN</div>
-            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Diuji pada dataset pelafalan hijaiyah dengan validasi silang.</div>
+            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Diuji pada dataset pelafalan hijaiyah berbasis fitur MFCC.</div>
           </div>
           <div class="ts-stats__card ts-stats__card--2">
             <div class="ts-stats__num">{{ Math.round(statClasses) }}<small class="text-[0.45em] font-medium text-ink-1 ml-1">kelas</small></div>
@@ -273,7 +277,7 @@
           <div class="ts-stats__card ts-stats__card--3">
             <div class="ts-stats__num">&lt;1<small class="text-[0.45em] font-medium text-ink-1 ml-1">dtk</small></div>
             <div class="ts-stats__label font-mono uppercase tracking-wider text-xs text-ink-2 mt-4">waktu evaluasi</div>
-            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Dari rekaman suara hingga skor akurasi langsung dari browser.</div>
+            <div class="ts-stats__note text-sm text-ink-1 max-w-[28ch] leading-relaxed mt-2">Inferensi model hingga tampil di browser.</div>
           </div>
         </div>
       </div>
@@ -286,11 +290,11 @@
           <div>
             <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-2">◇ fitur utama</span>
             <h2 class="ts-section-head__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
-              Meter, pelajari, pantau — <em class="ts-italic font-serif italic text-primary-400 font-normal">lalu</em> ulangi.
+              Latih, evaluasi, pantau — <em class="ts-italic font-serif italic text-primary-400 font-normal">berkelanjutan</em>.
             </h2>
           </div>
           <p class="ts-section-head__desc text-base md:text-lg text-ink-1 max-w-[50ch] leading-relaxed">
-            Tiga fitur inti yang membuat Tarteel Space berbeda dari cara belajar hijaiyah konvensional.
+            Fitur pendukung pembelajaran mandiri untuk membantu Anda mengasah ketepatan pelafalan hijaiyah secara terstruktur, objektif, dan terukur.
           </p>
         </div>
 
@@ -310,8 +314,8 @@
               </svg>
               <div class="ts-feature-art__label">88.5% AKURAT</div>
             </div>
-            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Evaluasi Audio Real-time</h3>
-            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Algoritma Deep Learning memproses input suara dan memberikan persentase akurasi pelafalan secara instan berdasarkan kaidah tajwid yang benar.</p>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Evaluasi Pelafalan Berbasis MFCC & CNN</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Ekstraksi fitur koefisien MFCC dan model Deep Learning CNN memproses sinyal audio Anda untuk menyajikan estimasi akurasi pelafalan secara instan.</p>
             <span class="ts-feature__link">Mulai latihan →</span>
           </article>
 
@@ -332,8 +336,8 @@
                 </div>
               </div>
             </div>
-            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Mendukung Harakat Lengkap</h3>
-            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Klasifikasi mencakup fathah, kasrah, dan dhommah untuk setiap huruf hijaiyah — total 84 kelas yang dikenali oleh model CNN kami.</p>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Cakupan 84 Target Kelas Huruf Hijaiyah Berharakat</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Mencakup seluruh 28 huruf hijaiyah dalam tiga harakat utama (fathah, kasrah, dan dhommah) untuk bimbingan latihan makhraj yang komprehensif.</p>
             <span class="ts-feature__link">Lihat daftar huruf →</span>
           </article>
 
@@ -347,8 +351,8 @@
                 <div class="ts-progress-bar ts-progress-bar--today" style="--pct: 88%"><span>Jum</span><i></i></div>
               </div>
             </div>
-            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Laporan Kemajuan Harian</h3>
-            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Pantau perkembangan akurasi pelafalan Anda dari hari ke hari. Dasbor menampilkan grafik skor 7 hari terakhir dan huruf yang perlu perbaikan.</p>
+            <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Dasbor Riwayat & Pemantauan Latihan</h3>
+            <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Pantau perkembangan skor harian Anda. Dasbor mencatat riwayat latihan secara otomatis sehingga memudahkan evaluasi huruf-huruf yang masih perlu ditingkatkan.</p>
             <span class="ts-feature__link">Lihat dasbor →</span>
           </article>
         </div>
@@ -362,16 +366,13 @@
           <div class="ts-about__copy flex flex-col gap-4 items-start">
             <span class="ts-eyebrow font-mono text-xs tracking-[0.15em] uppercase text-primary-400 block mb-1">◇ tentang proyek</span>
             <h2 class="ts-about__title font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-ink-0">
-              Menyatukan tradisi dan <em class="ts-italic font-serif italic text-primary-400 font-normal">teknologi modern</em>.
+              Menyatukan pelatihan pelafalan dan <em class="ts-italic font-serif italic text-primary-400 font-normal">teknologi modern</em>.
             </h2>
             <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
-              Tarteel Space berawal dari penelitian Skripsi Teknologi Informasi. Misi utamanya adalah
-              mengembangkan alat bantu mandiri untuk pembelajaran pelafalan Al-Qur'an yang dapat
-              diakses oleh siapa saja, kapan saja, dan di mana saja.
+              Tarteel Space dikembangkan dalam penelitian Skripsi Program Studi Teknologi Informasi sebagai sarana bantu belajar pelafalan huruf hijaiyah. Proyek ini bertujuan menyediakan media latihan mandiri yang terukur, objektif, dan dapat diakses fleksibel langsung melalui peramban web.
             </p>
             <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
-              Dengan arsitektur Convolutional Neural Network (CNN), sistem kami memproses spektrogram
-              audio untuk mengenali pola pelafalan yang benar sesuai kaidah tajwid.
+              Dengan memadukan ekstraksi fitur audio Mel-Frequency Cepstral Coefficients (MFCC) dan arsitektur Convolutional Neural Network (CNN), sistem mengevaluasi kemiripan pelafalan pengguna terhadap audio referensi makhraj yang fasih — hadir sebagai pendamping latihan mandiri tanpa mengesampingkan pentingnya bimbingan talaqqi bersama guru/asatidz.
             </p>
             <div class="ts-about__actions flex gap-3 items-center flex-wrap mt-4">
               <button class="ts-btn ts-btn--primary" @click="navigateTo('/dashboard/practice')">
@@ -389,12 +390,12 @@
               <!-- Top header bar -->
               <div class="ts-spec-console__head flex justify-between items-start pb-2 border-b border-white/5">
                 <div class="ts-spec-console__title-wrap">
-                  <span class="font-mono text-[10px] tracking-wider uppercase text-primary-400 block">CNN · ARSITEKTUR</span>
-                  <div class="font-display text-base font-semibold text-ink-0 tracking-tight mt-0.5">Spektrogram Audio 2D</div>
+                  <span class="font-mono text-[10px] tracking-wider uppercase text-primary-400 block">PIPELINE · MFCC & CNN</span>
+                  <div class="font-display text-base font-semibold text-ink-0 tracking-tight mt-0.5">Spektrogram Fitur MFCC</div>
                 </div>
                 <div class="ts-spec-console__status font-mono text-[10px] text-ink-2 flex items-center gap-1.5 bg-dark-850 px-2.5 py-1 rounded-full border border-white/5">
                   <span class="ts-live-dot w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true"></span>
-                  <span>16 kHz · STFT Mel</span>
+                  <span>16 kHz · Fitur MFCC</span>
                 </div>
               </div>
 
@@ -436,12 +437,12 @@
                 <span class="text-ink-3 text-[10px]">→</span>
                 <div class="flex items-center gap-1.5 text-primary-400 font-medium">
                   <span>▦</span>
-                  <span>2. Mel-Spec</span>
+                  <span>2. Fitur MFCC</span>
                 </div>
                 <span class="text-ink-3 text-[10px]">→</span>
                 <div class="flex items-center gap-1.5">
                   <span>☵</span>
-                  <span>3. Conv2D</span>
+                  <span>3. Klasifikasi CNN</span>
                 </div>
               </div>
 
@@ -560,9 +561,9 @@ useHead({
 
 useSeoMeta({
   title: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
-  description: 'Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.',
+  description: 'Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara langsung menggunakan teknologi Deep Learning — tanpa batasan waktu atau tempat.',
   ogTitle: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
-  ogDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah secara real-time langsung dari browser dengan teknologi AI & Deep Learning.',
+  ogDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah secara langsung dari browser dengan teknologi AI & Deep Learning.',
   ogImage: 'https://tarteelspace.web.id/logo.png',
   ogUrl: 'https://tarteelspace.web.id/',
   ogType: 'website',
@@ -570,7 +571,7 @@ useSeoMeta({
   ogLocale: 'id_ID',
   twitterCard: 'summary',
   twitterTitle: 'Tarteel Space — Sempurnakan Pelafalan Al-Qur\'an dengan AI',
-  twitterDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah dan kaidah tajwid secara real-time berbasis Deep Learning.',
+  twitterDescription: 'Evaluasi akurasi pelafalan huruf hijaiyah dan kaidah tajwid secara langsung berbasis Deep Learning.',
   twitterImage: 'https://tarteelspace.web.id/logo.png',
 })
 
@@ -738,7 +739,7 @@ onMounted(() => {
       onStart: () => {
         const stats = { acc: 0, cls: 0 }
         gsap.to(stats, {
-          acc: 95,
+          acc: 85,
           cls: 84,
           duration: 1.8,
           ease: 'power2.out',
