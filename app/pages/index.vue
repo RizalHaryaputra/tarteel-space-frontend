@@ -369,7 +369,7 @@
               Menyatukan pelatihan pelafalan dan <em class="ts-italic font-serif italic text-primary-400 font-normal">teknologi modern</em>.
             </h2>
             <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
-              Tarteel Space dikembangkan dalam penelitian Skripsi Program Studi Teknologi Informasi sebagai sarana bantu belajar pelafalan huruf hijaiyah. Proyek ini bertujuan menyediakan media latihan mandiri yang terukur, objektif, dan dapat diakses fleksibel langsung melalui peramban web.
+              Tarteel Space diteliti dan dikembangkan oleh <a href="https://rizalharyaputra.my.id" target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:text-primary-300 font-semibold underline underline-offset-4 decoration-primary-500/40 hover:decoration-primary-400 transition-colors">Rizal Haryaputra</a> dalam rangka penelitian Skripsi Program Studi Teknologi Informasi, Universitas Negeri Yogyakarta (UNY). Proyek ini bertujuan menyediakan media latihan mandiri yang terukur, objektif, dan dapat diakses fleksibel langsung melalui peramban web.
             </p>
             <p class="ts-about__text text-base md:text-lg text-ink-1 max-w-[55ch] leading-relaxed">
               Dengan memadukan ekstraksi fitur audio Mel-Frequency Cepstral Coefficients (MFCC) dan arsitektur Convolutional Neural Network (CNN), sistem mengevaluasi kemiripan pelafalan pengguna terhadap audio referensi makhraj yang fasih — hadir sebagai pendamping latihan mandiri tanpa mengesampingkan pentingnya bimbingan talaqqi bersama guru/asatidz.
@@ -521,13 +521,14 @@
             <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">Proyek</p>
             <ul class="flex flex-col gap-2 list-none p-0 m-0">
               <li><button class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150" @click="scrollTo('tentang')">Tentang</button></li>
-              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-frontend" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository Tarteel Space" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub</a></li>
+              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-frontend" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository Tarteel Space Frontend" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub Frontend</a></li>
+              <li><a href="https://github.com/RizalHaryaputra/tarteel-space-api" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository Tarteel Space Backend" class="text-sm text-ink-1 hover:text-ink-0 transition-colors duration-150">GitHub Backend</a></li>
             </ul>
           </div>
         </div>
         <div class="ts-footer__legal mt-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 font-mono text-xs text-ink-2 border-t border-white/5 pt-4">
           <span class="font-display font-semibold tracking-tight text-base text-ink-0">Tarteel Space</span>
-          <span>© 2026 Tarteel Space Project · Proyek Skripsi Teknologi Informasi</span>
+          <span>© 2026 Tarteel Space · Diteliti & Dikembangkan oleh <a href="https://rizalharyaputra.my.id" target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:text-primary-300 transition-colors underline underline-offset-2">Rizal Haryaputra</a> (UNY)</span>
         </div>
       </div>
     </footer>
