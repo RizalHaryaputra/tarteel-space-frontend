@@ -253,7 +253,7 @@ const isMobileDropdownOpen = ref(false)
 
     <!-- Mobile Bottom Navigation (Hidden on Desktop) -->
     <nav
-      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/90 backdrop-blur-2xl border-t border-white/10 z-50 px-6 pt-2 pb-4 sm:pb-safe flex justify-around items-center">
+      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/90 backdrop-blur-2xl border-t border-white/10 z-50 px-6 pt-2 pb-safe flex justify-around items-center">
       <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path"
         class="flex flex-col items-center p-2.5 rounded-xl transition-all duration-200"
         :class="isActive(item.path) ? 'text-primary-400 bg-primary-500/10' : 'text-ink-2 hover:text-ink-0 hover:bg-dark-850'">
@@ -265,7 +265,7 @@ const isMobileDropdownOpen = ref(false)
 
 <style>
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .admin-page-enter-active,

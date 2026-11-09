@@ -200,7 +200,7 @@ const getInitials = (name: string) => {
 <template>
   <div class="h-full space-y-8 relative pb-20 max-w-4xl mx-auto font-sans">
     <!-- Toast Notifications -->
-    <div class="fixed bottom-8 right-8 z-50 space-y-3 pointer-events-none">
+    <div class="toast-notification-container">
       <div v-if="successToast"
         class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-5 py-3 rounded-2xl shadow-xl backdrop-blur-2xl flex items-center gap-3 animate-fade-in pointer-events-auto max-w-sm font-mono text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
