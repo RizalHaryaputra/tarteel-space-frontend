@@ -299,7 +299,7 @@
         </div>
 
         <div class="ts-features grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <article class="ts-feature">
+          <NuxtLink to="/dashboard/practice" class="ts-feature">
             <div class="ts-feature__art ts-feature-art--wave" aria-hidden="true">
               <svg viewBox="0 0 300 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full">
                 <defs>
@@ -317,9 +317,9 @@
             <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Evaluasi Pelafalan Berbasis MFCC & CNN</h3>
             <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Ekstraksi fitur koefisien MFCC dan model Deep Learning CNN memproses sinyal audio Anda untuk menyajikan estimasi akurasi pelafalan secara instan.</p>
             <span class="ts-feature__link">Mulai latihan →</span>
-          </article>
+          </NuxtLink>
 
-          <article class="ts-feature">
+          <NuxtLink to="/dashboard/practice" class="ts-feature">
             <div class="ts-feature__art ts-feature-art--harakat flex items-center justify-center" aria-hidden="true">
               <div class="ts-harakat-grid flex gap-3 items-center">
                 <div class="ts-harakat-cell ts-harakat-cell--active">
@@ -339,9 +339,9 @@
             <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Cakupan 84 Target Kelas Huruf Hijaiyah Berharakat</h3>
             <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Mencakup seluruh 28 huruf hijaiyah dalam tiga harakat utama (fathah, kasrah, dan dhommah) untuk bimbingan latihan makhraj yang komprehensif.</p>
             <span class="ts-feature__link">Lihat daftar huruf →</span>
-          </article>
+          </NuxtLink>
 
-          <article class="ts-feature">
+          <NuxtLink to="/dashboard" class="ts-feature">
             <div class="ts-feature__art ts-feature-art--progress flex items-end p-4" aria-hidden="true">
               <div class="ts-progress-bars flex items-end gap-1.5 w-full h-[100px]">
                 <div class="ts-progress-bar" style="--pct: 45%"><span>Sen</span><i></i></div>
@@ -354,7 +354,7 @@
             <h3 class="ts-feature__title font-display text-xl font-semibold tracking-tight text-ink-0">Dasbor Riwayat & Pemantauan Latihan</h3>
             <p class="ts-feature__desc text-sm text-ink-1 leading-relaxed">Pantau perkembangan skor harian Anda. Dasbor mencatat riwayat latihan secara otomatis sehingga memudahkan evaluasi huruf-huruf yang masih perlu ditingkatkan.</p>
             <span class="ts-feature__link">Lihat dasbor →</span>
-          </article>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -1221,6 +1221,8 @@ onBeforeUnmount(() => {
   gap: 1rem;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  cursor: pointer;
   transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1), border-color 450ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
