@@ -7,7 +7,7 @@
 ![Pinia](https://img.shields.io/badge/Pinia-FFE56C?style=for-the-badge&logo=pinia&logoColor=black)
 ![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)
 
-**Tarteel Space** adalah aplikasi web interaktif dan adaptif yang dirancang untuk membantu pengguna menyempurnakan pelafalan huruf hijaiyah dan kaidah tajwid Al-Qur'an secara mandiri. Aplikasi ini mengintegrasikan kecerdasan buatan berbasis *Deep Learning* (Convolutional Neural Network / CNN) serta LLM (Google Gemini) pada backend untuk menghadirkan evaluasi akurasi pelafalan secara *real-time*, visualisasi makhraj, dan penjelasan korektif yang terpersonalisasi.
+**Tarteel Space** adalah aplikasi web interaktif yang dirancang untuk membantu pengguna menyempurnakan pelafalan huruf hijaiyah dan kaidah tajwid Al-Qur'an secara mandiri. Aplikasi ini mengintegrasikan ekstraksi fitur audio **MFCC (Mel-Frequency Cepstral Coefficients)** dan model *Deep Learning* **Convolutional Neural Network (CNN)** pada backend untuk menghadirkan evaluasi akurasi pelafalan secara langsung, mencakup 84 target kelas huruf hijaiyah berharakat, serta didukung siklus pembelajaran aktif (*Active Learning*) untuk penyempurnaan model secara berkelanjutan.
 
 Repositori ini memuat kode sumber antarmuka (*frontend*) yang dibangun menggunakan arsitektur modern [Nuxt 4](https://nuxt.com/) (Vue 3 Composition API), dipadukan dengan [Tailwind CSS](https://tailwindcss.com/) dan animasi halus berbasis [GSAP](https://greensock.com/gsap/).
 
@@ -26,11 +26,11 @@ Repositori ini memuat kode sumber antarmuka (*frontend*) yang dibangun menggunak
   - **Real-Time Audio Visualizer**: Animasi spektrum/gelombang suara interaktif berbasis HTML5 Canvas selama proses perekaman.
   - **Audio Referensi Ustadz**: Pemutar contoh pelafalan tartil yang fasih sebagai tolok ukur latihan.
   - Pemilihan 84 kombinasi kelas huruf hijaiyah dan harakat (fathah, kasrah, dhammah) melalui modal *Letter Picker*.
-- **Evaluasi Cerdas (Dual AI Assessment)**:
+- **Evaluasi Pelafalan Berbasis Deep Learning (MFCC & CNN)**:
   - **Skor Akurasi & Predikat Tajwid**: Penilaian kuantitatif (0–100%) dan kualitatif (*Mumtaz*, *Jayyid Jiddan*, *Jayyid*, *Maqbul*).
-  - **Analisis Kemiripan CNN**: Peringkat 3 prediksi teratas model dengan visualisasi persentase probabilitas kelas.
-  - **Asistensi Tajwid AI (Gemini)**: Analisis mendalam penjelasan posisi makhraj, sifat huruf, penyebab ketidaktepatan, serta kiat perbaikan.
-  - **Feedback Koreksi Prediksi & Consent Dataset**: Pengguna dapat mengajukan koreksi pelafalan secara sukarela untuk membantu pengayaan dataset AI (*Active Learning*).
+  - **Analisis Prediksi CNN**: Menampilkan estimasi probabilitas kecocokan pelafalan terhadap target kelas huruf yang dipilih.
+  - **Visualisasi Spektrogram & Gelombang Audio**: Representasi visual sinyal audio suara pengguna yang diproses oleh algoritma ekstraksi fitur MFCC.
+  - **Pelaporan & Feedback Koreksi (Active Learning Consent)**: Pengguna dapat mengajukan laporan jika merasa hasil prediksi model keliru, disertai persetujuan kontribusi audio untuk pengayaan dataset *retraining*.
 - **Dasbor Kemajuan & Analisis Riwayat**:
   - Ringkasan pencapaian harian (*streak counter*), kartu statistik akurasi rata-rata, dan evaluasi terkini.
   - **Grafik Tren Skor Mingguan**: Grafik SVG area dan poliline interaktif tanpa ketergantungan library berat pihak ketiga.
@@ -174,16 +174,22 @@ npm run preview
 
 ---
 
-## 👥 Kredit & Penghargaan
+## 👥 Peneliti & Pengembang
 
-- **Pengembang Utama**: [Rizal Haryaputra](https://github.com/RizalHaryaputra)
-- **Konteks Proyek**: Proyek Skripsi / Tugas Akhir Program Studi Teknologi Informasi.
-- **Pustaka & Referensi Desain**:
-  - [Nuxt.js](https://nuxt.com/) & [Vue.js](https://vuejs.org/) untuk ekosistem aplikasi web reaktif.
-  - [Tailwind CSS](https://tailwindcss.com/) untuk sistem token desain utilitas.
-  - [Geist Font](https://vercel.com/font) oleh Vercel untuk tipografi modern dan presisi tinggi.
-  - [GreenSock (GSAP)](https://greensock.com/) untuk performa animasi antarmuka.
-  - Komunitas pengembang *Open Source* atas dukungan pustaka dan komponen terbuka.
+- **Peneliti & Pengembang Sistem**: [Rizal Haryaputra](https://rizalharyaputra.my.id) ([@RizalHaryaputra](https://github.com/RizalHaryaputra))
+- **Institusi**: Program Studi Teknologi Informasi, Departemen Pendidikan Teknik Elektronika dan Informatika, Fakultas Teknik, Universitas Negeri Yogyakarta (UNY).
+- **Konteks Proyek**: Penelitian Skripsi / Tugas Akhir Sarjana terkait Sistem Evaluasi Pelafalan Huruf Hijaiyah Berbasis Deep Learning (MFCC & CNN).
+- **Tautan Repositori & Web**:
+  - Web Publik: [tarteelspace.web.id](https://tarteelspace.web.id)
+  - Repositori Frontend: [tarteel-space-frontend](https://github.com/RizalHaryaputra/tarteel-space-frontend)
+  - Repositori Backend API: [tarteel-space-api](https://github.com/RizalHaryaputra/tarteel-space-api)
+
+### 📚 Pustaka & Referensi Desain
+- [Nuxt.js](https://nuxt.com/) & [Vue.js](https://vuejs.org/) untuk ekosistem aplikasi web reaktif.
+- [Tailwind CSS](https://tailwindcss.com/) untuk sistem token desain utilitas.
+- [Geist Font](https://vercel.com/font) oleh Vercel untuk tipografi modern dan presisi tinggi.
+- [GreenSock (GSAP)](https://greensock.com/) untuk performa animasi antarmuka.
+- Komunitas pengembang *Open Source* atas dukungan pustaka dan komponen terbuka.
 
 ---
 
