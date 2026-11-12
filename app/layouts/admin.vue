@@ -8,31 +8,37 @@ const authStore = useAuthStore()
 const menuItems = [
   {
     name: 'Overview',
+    shortName: 'Overview',
     path: '/admin',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>`
   },
   {
     name: 'Kelola Huruf',
+    shortName: 'Huruf',
     path: '/admin/letters',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`
   },
   {
     name: 'Pengguna',
+    shortName: 'User',
     path: '/admin/users',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`
   },
   {
     name: 'Dataset Pool',
+    shortName: 'Dataset',
     path: '/admin/dataset',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>`
   },
   {
     name: 'Feedback',
+    shortName: 'Feedback',
     path: '/admin/feedbacks',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>`
   },
   {
     name: 'Profil Admin',
+    shortName: 'Profil',
     path: '/admin/profile',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>`
   }
@@ -253,11 +259,12 @@ const isMobileDropdownOpen = ref(false)
 
     <!-- Mobile Bottom Navigation (Hidden on Desktop) -->
     <nav
-      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/90 backdrop-blur-2xl border-t border-white/10 z-50 px-6 pt-2 pb-safe flex justify-around items-center">
+      class="md:hidden fixed bottom-0 left-0 w-full bg-dark-900/90 backdrop-blur-2xl border-t border-white/10 z-50 px-1 pt-1.5 pb-safe flex justify-around items-center">
       <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path"
-        class="flex flex-col items-center p-2.5 rounded-xl transition-all duration-200"
+        class="flex flex-col items-center justify-center gap-1 min-w-[52px] py-1.5 px-1.5 rounded-xl transition-all duration-200"
         :class="isActive(item.path) ? 'text-primary-400 bg-primary-500/10' : 'text-ink-2 hover:text-ink-0 hover:bg-dark-850'">
         <div v-html="item.icon" class="w-5 h-5" />
+        <span class="font-sans text-[10px] font-medium leading-none tracking-tight">{{ item.shortName }}</span>
       </NuxtLink>
     </nav>
   </div>

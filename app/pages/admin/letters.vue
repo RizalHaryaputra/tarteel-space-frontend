@@ -417,7 +417,7 @@ const handleDeleteLetter = async () => {
 
       <div class="px-6 py-4 border-t border-white/5">
         <AppPagination v-if="filteredLetters.length > 0" :totalItems="filteredLetters.length"
-          :itemsPerPage="itemsPerPage" v-model="currentPage" />
+          v-model:itemsPerPage="itemsPerPage" v-model="currentPage" />
       </div>
     </div>
 

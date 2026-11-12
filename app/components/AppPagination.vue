@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   totalItems: number
   itemsPerPage: number
   modelValue: number
-}>()
+  pageSizeOptions?: number[]
+}>(), {
+  pageSizeOptions: () => [10, 50, 100]
+})
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: number): void
+  (e: 'update:itemsPerPage', value: number): void
 }>()
 
 const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPage) || 1)
@@ -24,6 +28,12 @@ const startItem = computed(() => {
 })
 
 const endItem = computed(() => Math.min(currentPage.value * props.itemsPerPage, props.totalItems))
+
+const selectPageSize = (size: number) => {
+  if (size === props.itemsPerPage) return
+  emit('update:itemsPerPage', size)
+  emit('update:modelValue', 1)
+}
 
 const previousPage = () => {
   if (currentPage.value > 1) {
@@ -57,14 +67,36 @@ const displayedPages = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
-    <div class="text-xs text-ink-2">
-      Menampilkan <span class="font-mono font-semibold text-ink-0">{{ startItem }}</span> - <span class="font-mono font-semibold text-ink-0">{{ endItem }}</span> dari <span class="font-mono font-semibold text-ink-0">{{ totalItems }}</span> data
+  <div class="flex flex-col md:flex-row items-center justify-between gap-4 font-sans">
+    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+      <div class="text-xs text-ink-2">
+        Menampilkan <span class="font-mono font-semibold text-ink-0">{{ startItem }}</span> - <span class="font-mono font-semibold text-ink-0">{{ endItem }}</span> dari <span class="font-mono font-semibold text-ink-0">{{ totalItems }}</span> data
+      </div>
+
+      <!-- Page Size Selector -->
+      <div class="inline-flex items-center gap-1.5">
+        <span class="text-xs text-ink-3">Baris:</span>
+        <div class="inline-flex items-center p-0.5 rounded-full bg-dark-950 border border-white/10">
+          <button
+            v-for="size in pageSizeOptions"
+            :key="size"
+            type="button"
+            @click="selectPageSize(size)"
+            class="px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold transition-all duration-200 cursor-pointer"
+            :class="itemsPerPage === size
+              ? 'bg-primary-500 text-dark-950 shadow-sm shadow-primary-500/25'
+              : 'text-ink-2 hover:text-ink-0'"
+          >
+            {{ size }}
+          </button>
+        </div>
+      </div>
     </div>
     
     <div class="flex items-center gap-2">
       <!-- Prev Button -->
       <button 
+        type="button"
         @click="previousPage" 
         :disabled="currentPage === 1"
         class="w-9 h-9 rounded-full border border-white/10 bg-dark-950 text-ink-2 hover:text-ink-0 hover:border-white/20 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center cursor-pointer shadow-sm"
@@ -79,6 +111,7 @@ const displayedPages = computed(() => {
       <button 
         v-for="page in displayedPages" 
         :key="page"
+        type="button"
         @click="currentPage = page"
         class="w-9 h-9 flex items-center justify-center rounded-full text-xs font-mono font-semibold transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
         :class="page === currentPage 
@@ -90,6 +123,7 @@ const displayedPages = computed(() => {
 
       <!-- Next Button -->
       <button 
+        type="button"
         @click="nextPage" 
         :disabled="currentPage === totalPages"
         class="w-9 h-9 rounded-full border border-white/10 bg-dark-950 text-ink-2 hover:text-ink-0 hover:border-white/20 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center cursor-pointer shadow-sm"

@@ -82,13 +82,17 @@ const encodePcmToWavBlob = (chunks: Float32Array[], sampleRate: number): Blob =>
     offset += chunk.length
   }
 
-  // Normalisasi amplitudo agar rekaman mikrofon HP terdengar jelas saat diputar ulang
+  // Normalisasi amplitudo hanya jika ada sinyal suara vokal nyata
   let peak = 0
   for (let i = 0; i < merged.length; i++) {
     const abs = Math.abs(merged[i] || 0)
     if (abs > peak) peak = abs
   }
-  const gain = peak > 0.008 ? (0.85 / peak) : 1.0
+  // Jangan menaikkan volume jika sinyal terlalu lemah (hanya desis / noise keheningan)
+  let gain = 1.0
+  if (peak >= 0.08 && peak < 0.85) {
+    gain = 0.85 / peak
+  }
 
   const buffer = new ArrayBuffer(44 + merged.length * 2)
   const view = new DataView(buffer)
@@ -250,6 +254,26 @@ const toggleRecording = async () => {
     }
 
     if (recordedChunks.length > 0) {
+      // Pengecekan Voice Activity Detection (VAD) awal di klien:
+      // Hitung peak dan RMS untuk mendeteksi apakah benar ada suara manusia atau hanya keheningan/desis
+      let maxPeak = 0
+      let sumSq = 0
+      let totalSamples = 0
+      for (const chunk of recordedChunks) {
+        for (let i = 0; i < chunk.length; i++) {
+          const val = Math.abs(chunk[i] || 0)
+          if (val > maxPeak) maxPeak = val
+          sumSq += val * val
+        }
+        totalSamples += chunk.length
+      }
+      const rms = totalSamples > 0 ? Math.sqrt(sumSq / totalSamples) : 0
+
+      if (maxPeak < 0.06 || rms < 0.008) {
+        showCustomAlert('Suara pelafalan tidak terdeteksi (hanya terdeteksi keheningan atau desis ruangan). Mohon dekatkan mikrofon dan ucapkan huruf dengan jelas.', 'Suara Tidak Terdeteksi')
+        return
+      }
+
       const wavBlob = encodePcmToWavBlob(recordedChunks, sr)
       processAudio(wavBlob)
     } else if (audioChunks.value.length > 0) {
@@ -269,13 +293,13 @@ const toggleRecording = async () => {
     }
 
     try {
-      // Matikan noiseSuppression & echoCancellation bawaan HP agar suara pelafalan makhraj tidak di-mute oleh OS
+      // Aktifkan noiseSuppression & echoCancellation agar desis ruangan, derau kipas, dan gema diredam dengan baik
       let stream: MediaStream
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            echoCancellation: false,
-            noiseSuppression: false,
+            echoCancellation: true,
+            noiseSuppression: true,
             autoGainControl: true,
             channelCount: 1
           }

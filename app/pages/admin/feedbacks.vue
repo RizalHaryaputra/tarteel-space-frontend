@@ -20,7 +20,7 @@ const lettersList = ref<any[]>([])
 
 // Pagination
 const currentPage = ref(1)
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(10)
 
 const paginatedFeedbacks = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
@@ -333,7 +333,7 @@ const formatDate = (dateStr: string) => {
         <AppPagination 
           v-if="feedbacks.length > 0"
           :totalItems="feedbacks.length" 
-          :itemsPerPage="itemsPerPage" 
+          v-model:itemsPerPage="itemsPerPage" 
           v-model="currentPage" 
         />
       </div>
