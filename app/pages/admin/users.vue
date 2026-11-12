@@ -266,7 +266,7 @@ const formatDate = (isoStr: string) => {
       </div>
 
       <div class="px-6 py-4 border-t border-white/5">
-        <AppPagination v-if="filteredUsers.length > 0" :totalItems="filteredUsers.length" :itemsPerPage="itemsPerPage"
+        <AppPagination v-if="filteredUsers.length > 0" :totalItems="filteredUsers.length" v-model:itemsPerPage="itemsPerPage"
           v-model="currentPage" />
       </div>
     </div>

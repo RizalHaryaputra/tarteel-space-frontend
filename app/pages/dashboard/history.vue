@@ -238,7 +238,7 @@ const formatDate = (isoStr: string) => {
         <AppPagination 
           v-if="historyList && historyList.length > 0"
           :totalItems="historyList.length" 
-          :itemsPerPage="itemsPerPage" 
+          v-model:itemsPerPage="itemsPerPage" 
           v-model="currentPage" 
         />
       </div>

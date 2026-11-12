@@ -474,7 +474,7 @@ const formatDate = (dateStr: string) => {
         <AppPagination 
           v-if="dataset.length > 0"
           :totalItems="dataset.length"
-          :itemsPerPage="itemsPerPage"
+          v-model:itemsPerPage="itemsPerPage"
           v-model="currentPage"
         />
       </div>
