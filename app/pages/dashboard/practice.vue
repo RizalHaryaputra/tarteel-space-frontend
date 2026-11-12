@@ -88,7 +88,11 @@ const encodePcmToWavBlob = (chunks: Float32Array[], sampleRate: number): Blob =>
     const abs = Math.abs(merged[i] || 0)
     if (abs > peak) peak = abs
   }
-  const gain = peak > 0.008 ? (0.85 / peak) : 1.0
+  // Jangan menaikkan volume jika sinyal terlalu lemah (hanya desis / noise keheningan)
+  let gain = 1.0
+  if (peak >= 0.08 && peak < 0.85) {
+    gain = 0.85 / peak
+  }
 
   const buffer = new ArrayBuffer(44 + merged.length * 2)
   const view = new DataView(buffer)
