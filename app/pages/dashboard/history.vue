@@ -96,14 +96,14 @@ const formatDate = (isoStr: string) => {
 
     <!-- Chart Section -->
     <div class="bg-dark-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-xl overflow-hidden relative group">
-      <div class="flex items-center justify-between mb-6 relative z-10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 relative z-10">
         <div>
           <h3 class="font-display font-semibold text-xl sm:text-2xl text-ink-0 tracking-tight">Grafik Skor Mingguan</h3>
           <p class="font-sans text-sm text-ink-1 mt-1 leading-relaxed">Rata-rata akurasi 7 hari terakhir</p>
         </div>
-        <div class="flex items-center gap-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
-          <span class="font-mono text-xs sm:text-sm text-ink-2 font-semibold">Akurasi (%)</span>
+        <div class="inline-flex items-center gap-2 shrink-0 self-start sm:self-auto px-3 py-1 rounded-full bg-dark-950/60 border border-white/10">
+          <div class="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+          <span class="font-mono text-xs text-ink-2 font-semibold whitespace-nowrap">Akurasi (%)</span>
         </div>
       </div>
 
