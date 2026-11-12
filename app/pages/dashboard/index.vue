@@ -43,65 +43,6 @@ const recommendations = computed(() => {
   return recs
 })
 
-// SVG Line Chart Logic
-const svgWidth = 1000
-const svgHeight = 200
-const maxScore = 100
-const minScore = 0
-
-const points = computed(() => {
-  const dataList = weeklyData.value
-  if (!Array.isArray(dataList) || dataList.length === 0) return []
-  
-  if (dataList.length === 1) {
-    const firstWeekly = dataList[0]
-    if (!firstWeekly) return []
-    const normalizedScore = Math.max(0, firstWeekly.rata_rata - minScore) / (maxScore - minScore)
-    const y = svgHeight - (normalizedScore * (svgHeight - 50)) - 30
-    const dateStr = new Date(firstWeekly.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
-    
-    return [
-      { x: 0, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true },
-      { x: svgWidth / 2, y, score: Math.round(firstWeekly.rata_rata), date: dateStr },
-      { x: svgWidth, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true }
-    ]
-  }
-
-  const paddingX = 40
-  const availableWidth = svgWidth - (paddingX * 2)
-
-  return dataList.map((item, index) => {
-    if (!item) return null
-    const x = paddingX + (index / (dataList.length - 1)) * availableWidth
-    const normalizedScore = Math.max(0, item.rata_rata - minScore) / (maxScore - minScore)
-    const y = svgHeight - (normalizedScore * (svgHeight - 50)) - 30
-    return { x, y, score: Math.round(item.rata_rata), date: new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
-  }).filter((p): p is { x: number; y: number; score: number; date: string; isFake?: boolean } => p !== null)
-})
-
-const polylinePoints = computed(() => {
-  if (points.value.length === 0) return ''
-  if (points.value.length === 1) {
-    const p = points.value[0]
-    return p ? `${p.x},${p.y}` : ''
-  }
-  return points.value.map(p => p ? `${p.x},${p.y}` : '').join(' ')
-})
-
-const polygonPoints = computed(() => {
-  if (points.value.length === 0) return ''
-  if (points.value.length === 1) {
-    const p = points.value[0]
-    return p ? `${p.x},${p.y} ${p.x},${svgHeight} ${p.x},${svgHeight}` : ''
-  }
-  
-  const firstP = points.value[0]
-  const lastP = points.value[points.value.length - 1]
-  if (!firstP || !lastP) return ''
-
-  return `${firstP.x},${svgHeight} ${points.value.map(p => p ? `${p.x},${p.y}` : '').join(' ')} ${lastP.x},${svgHeight}`
-})
-
 const getAccuracyColor = (score: number) => {
   if (score >= 80) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
   if (score >= 60) return 'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -207,48 +148,14 @@ const formatDate = (dateString: string) => {
           </div>
         </div>
 
-        <div class="w-full relative z-10 overflow-x-auto custom-scrollbar">
-          <div v-if="loadingWeekly" class="flex items-center justify-center py-12">
-            <div class="w-10 h-10 border-2 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
-          </div>
-          <div v-else-if="!weeklyData || weeklyData.length === 0" class="flex flex-col items-center justify-center py-12 text-center bg-dark-950/40 rounded-2xl border border-dashed border-white/10">
-             <p class="font-sans text-sm text-ink-2">Belum ada data latihan minggu ini.</p>
-          </div>
-          <div v-else class="min-w-[400px] h-[200px] relative mt-2">
-            <!-- Y-axis Guidelines -->
-            <div class="absolute inset-0 pointer-events-none">
-              <div class="absolute top-[20px] w-full border-t border-white/5 flex items-center justify-start">
-                <span class="absolute -top-2.5 -left-1 font-mono text-[10px] text-ink-3 bg-dark-900 px-1 font-semibold">100</span>
-              </div>
-              <div class="absolute top-[95px] w-full border-t border-white/5 flex items-center justify-start">
-                <span class="absolute -top-2.5 -left-1 font-mono text-[10px] text-ink-3 bg-dark-900 px-1 font-semibold">50</span>
-              </div>
-              <div class="absolute top-[170px] w-full border-t border-white/5 flex items-center justify-start">
-                <span class="absolute -top-2.5 -left-1 font-mono text-[10px] text-ink-3 bg-dark-900 px-1 font-semibold">0</span>
-              </div>
-            </div>
-
-            <svg :viewBox="`0 0 ${svgWidth} ${svgHeight}`" class="w-full h-full overflow-visible" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="area-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="rgba(37,99,235,0.25)" />
-                  <stop offset="100%" stop-color="rgba(37,99,235,0.0)" />
-                </linearGradient>
-              </defs>
-
-              <polygon :points="polygonPoints" fill="url(#area-gradient)" class="transition-all duration-700 ease-in-out" />
-              <polyline :points="polylinePoints" fill="none" stroke="rgba(59,130,246,0.85)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_8px_rgba(59,130,246,0.4)] transition-all duration-700 ease-in-out" />
-
-              <g v-for="(p, index) in points" :key="index" class="transition-all duration-700 ease-in-out group/point cursor-crosshair">
-                <template v-if="!p.isFake">
-                  <text :x="p.x" :y="195" fill="#6c7a9c" font-family="'Geist Mono', monospace" font-size="12" text-anchor="middle" class="select-none pointer-events-none font-semibold">{{ p.date }}</text>
-                  <text :x="p.x" :y="p.y - 12" fill="#f4f6fb" font-family="'Geist Mono', monospace" font-size="13" text-anchor="middle" font-weight="700" class="opacity-0 group-hover/point:opacity-100 transition-opacity select-none pointer-events-none">{{ p.score }}%</text>
-                  <circle :cx="p.x" :cy="p.y" r="5" fill="#0b0d11" stroke="#3b82f6" stroke-width="2.5" class="group-hover/point:r-7 group-hover/point:fill-[#3b82f6] transition-all duration-300" />
-                </template>
-              </g>
-            </svg>
-          </div>
-        </div>
+        <WeeklyScoreChart
+          :data="weeklyData"
+          :loading="loadingWeekly"
+          empty-title="Belum Ada Data Skor"
+          empty-description="Belum ada data latihan minggu ini."
+          :svg-width="720"
+          :svg-height="220"
+        />
       </div>
 
       <!-- 4. Recommendations Card (Spans 1 col) -->

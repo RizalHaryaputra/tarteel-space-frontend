@@ -73,65 +73,6 @@ onUnmounted(() => {
   }
 })
 
-// SVG Line Chart Logic
-const svgWidth = 1000
-const svgHeight = 280
-const maxScore = 100
-const minScore = 0
-
-const points = computed(() => {
-  const dataList = weeklyData.value
-  if (!Array.isArray(dataList) || dataList.length === 0) return []
-  
-  if (dataList.length === 1) {
-    const firstWeekly = dataList[0]
-    if (!firstWeekly) return []
-    const normalizedScore = Math.max(0, firstWeekly.rata_rata - minScore) / (maxScore - minScore)
-    const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
-    const dateStr = new Date(firstWeekly.tanggal).toLocaleDateString('id-ID', { weekday: 'short' })
-    
-    return [
-      { x: 0, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true },
-      { x: svgWidth / 2, y, score: Math.round(firstWeekly.rata_rata), date: dateStr },
-      { x: svgWidth, y, score: Math.round(firstWeekly.rata_rata), date: dateStr, isFake: true }
-    ]
-  }
-
-  const paddingX = 60
-  const availableWidth = svgWidth - (paddingX * 2)
-
-  return dataList.map((item, index) => {
-    if (!item) return null
-    const x = paddingX + (index / (dataList.length - 1)) * availableWidth
-    const normalizedScore = Math.max(0, item.rata_rata - minScore) / (maxScore - minScore)
-    const y = svgHeight - (normalizedScore * (svgHeight - 60)) - 30
-    return { x, y, score: Math.round(item.rata_rata), date: new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'short' }) }
-  }).filter((p): p is { x: number; y: number; score: number; date: string; isFake?: boolean } => p !== null)
-})
-
-const polylinePoints = computed(() => {
-  if (points.value.length === 0) return ''
-  if (points.value.length === 1) {
-    const p = points.value[0]
-    return p ? `${p.x},${p.y}` : ''
-  }
-  return points.value.map(p => p ? `${p.x},${p.y}` : '').join(' ')
-})
-
-const polygonPoints = computed(() => {
-  if (points.value.length === 0) return ''
-  if (points.value.length === 1) {
-    const p = points.value[0]
-    return p ? `${p.x},${p.y} ${p.x},${svgHeight} ${p.x},${svgHeight}` : ''
-  }
-  
-  const firstP = points.value[0]
-  const lastP = points.value[points.value.length - 1]
-  if (!firstP || !lastP) return ''
-  
-  return `${firstP.x},${svgHeight} ${polylinePoints.value} ${lastP.x},${svgHeight}`
-})
-
 const formatDate = (isoStr: string) => {
   if (!isoStr) return '-'
   const clean = isoStr.includes('T') ? isoStr : isoStr.replace(' ', 'T')
@@ -167,82 +108,13 @@ const formatDate = (isoStr: string) => {
       </div>
 
       <!-- Custom SVG Chart -->
-      <div class="w-full relative z-10 overflow-x-auto custom-scrollbar">
-        <!-- Error State -->
-        <div v-if="weeklyError" class="flex flex-col items-center justify-center py-16 text-center">
-          <p class="font-mono text-sm text-rose-400 mb-1 font-semibold">Gagal Memuat Data Grafik</p>
-          <p class="font-sans text-xs sm:text-sm text-ink-2 max-w-sm mx-auto">{{ weeklyError.message || 'Terjadi kesalahan saat menghubungi server.' }}</p>
-        </div>
-
-        <!-- Loading State -->
-        <div v-else-if="loadingWeekly" class="flex flex-col items-center justify-center py-16 text-center">
-          <div class="w-10 h-10 border-2 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mb-4 mx-auto"></div>
-          <p class="font-sans text-sm text-ink-2">Memuat grafik skor...</p>
-        </div>
-        
-        <!-- Empty State -->
-        <div v-else-if="!points.length" class="flex flex-col items-center justify-center py-16 text-center bg-dark-950/40 rounded-2xl border border-dashed border-white/10">
-          <p class="font-semibold text-sm text-ink-1 mb-1">Belum Ada Data Skor</p>
-          <p class="font-sans text-xs sm:text-sm text-ink-2 max-w-sm mx-auto">Selesaikan sesi latihan untuk mulai melihat grafik perkembangan skor Anda.</p>
-        </div>
-
-        <div v-else class="min-w-[600px]">
-          <svg :viewBox="`0 0 ${svgWidth} ${svgHeight + 40}`" class="w-full h-auto overflow-visible">
-            <defs>
-              <linearGradient id="gradient-area" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(37, 99, 235, 0.25)" />
-                <stop offset="100%" stop-color="rgba(37, 99, 235, 0.0)" />
-              </linearGradient>
-            </defs>
-
-            <!-- Grid Lines -->
-            <line x1="0" y1="30" :x2="svgWidth" y2="30" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4" />
-            <line x1="0" :y1="(svgHeight/2)+15" :x2="svgWidth" :y2="(svgHeight/2)+15" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4" />
-            <line x1="0" :y1="svgHeight" :x2="svgWidth" y2="svgHeight" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
-
-            <!-- Filled Area -->
-            <polygon 
-              :points="polygonPoints" 
-              fill="url(#gradient-area)"
-              class="transition-all duration-700 ease-in-out"
-            />
-
-            <!-- Line Path -->
-            <polyline 
-              :points="polylinePoints" 
-              fill="none" 
-              stroke="rgba(59,130,246,0.85)" 
-              stroke-width="3" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"
-              class="draw-line drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"
-            />
-
-            <!-- Data Points -->
-            <g v-for="(point, i) in points" :key="i" class="group/point cursor-crosshair">
-              <template v-if="!point.isFake">
-                <circle 
-                  :cx="point.x" 
-                  :cy="point.y" 
-                  r="5" 
-                  fill="#0b0d11" 
-                  stroke="#3b82f6" 
-                  stroke-width="2.5" 
-                  class="hover:r-7 transition-all duration-200"
-                />
-                
-                <text :x="point.x" :y="point.y - 12" fill="#f4f6fb" font-family="'Geist Mono', monospace" font-size="13" font-weight="700" text-anchor="middle" class="opacity-0 group-hover/point:opacity-100 transition-opacity select-none pointer-events-none">
-                  {{ point.score }}%
-                </text>
-                
-                <text :x="point.x" :y="svgHeight + 25" fill="#6c7a9c" font-family="'Geist Mono', monospace" font-size="12" text-anchor="middle" class="select-none pointer-events-none font-semibold">
-                  {{ point.date }}
-                </text>
-              </template>
-            </g>
-          </svg>
-        </div>
-      </div>
+      <WeeklyScoreChart
+        :data="weeklyData"
+        :loading="loadingWeekly"
+        :error="weeklyError"
+        :svg-width="1000"
+        :svg-height="280"
+      />
     </div>
 
     <!-- History Table -->
