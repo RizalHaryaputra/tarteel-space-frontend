@@ -1,3 +1,85 @@
+/* ── Tarteel Space Theme CSS Variables ── */
+:root {
+  color-scheme: dark;
+  --ts-dark-950: 11 13 17;       /* #0b0d11 */
+  --ts-dark-900: 19 23 31;       /* #13171f */
+  --ts-dark-850: 26 32 44;       /* #1a202c */
+  --ts-dark-800: 36 44 61;       /* #242c3d */
+
+  --ts-ink-0: 244 246 251;       /* #f4f6fb */
+  --ts-ink-1: 168 179 207;       /* #a8b3cf */
+  --ts-ink-2: 108 122 156;       /* #6c7a9c */
+  --ts-ink-3: 65 77 107;         /* #414d6b */
+
+  --ts-primary-400: 96 165 250;  /* #60a5fa */
+  --ts-primary-950: 12 26 48;    /* #0c1a30 */
+
+  --ts-border-rgb: 255 255 255;
+  --ts-btn-primary-text: #0b0d11;
+  --ts-chart-grid: rgba(255, 255, 255, 0.06);
+  --ts-chart-axis: rgba(255, 255, 255, 0.08);
+  --ts-chart-dot-bg: #0b0d11;
+  --ts-chart-label: #f4f6fb;
+  --ts-chart-date: #6c7a9c;
+  --ts-nav-bg: rgba(13, 16, 23, 0.72);
+  --ts-nav-bg-scrolled: rgba(13, 16, 23, 0.88);
+  --ts-nav-border: rgba(255, 255, 255, 0.12);
+  --ts-nav-border-scrolled: rgba(255, 255, 255, 0.16);
+  --ts-nav-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 16px 36px -8px rgba(0, 5, 20, 0.6), 0 0 20px -4px rgba(37, 99, 235, 0.15);
+  --ts-nav-shadow-scrolled: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 24px -4px rgba(37, 99, 235, 0.22);
+}
+
+html.light {
+  color-scheme: light;
+  --ts-dark-950: 248 250 252;    /* #f8fafc */
+  --ts-dark-900: 255 255 255;    /* #ffffff */
+  --ts-dark-850: 241 245 249;    /* #f1f5f9 */
+  --ts-dark-800: 226 232 240;    /* #e2e8f0 */
+
+  --ts-ink-0: 15 23 42;          /* #0f172a */
+  --ts-ink-1: 51 65 85;          /* #334155 */
+  --ts-ink-2: 100 116 139;       /* #64748b */
+  --ts-ink-3: 148 163 184;       /* #94a3b8 */
+
+  --ts-primary-400: 37 99 235;   /* #2563eb */
+  --ts-primary-950: 239 246 255; /* #eff6ff */
+
+  --ts-border-rgb: 15 23 42;
+  --ts-btn-primary-text: #ffffff;
+  --ts-chart-grid: rgba(15, 23, 42, 0.07);
+  --ts-chart-axis: rgba(15, 23, 42, 0.12);
+  --ts-chart-dot-bg: #ffffff;
+  --ts-chart-label: #0f172a;
+  --ts-chart-date: #64748b;
+  --ts-nav-bg: rgba(255, 255, 255, 0.85);
+  --ts-nav-bg-scrolled: rgba(255, 255, 255, 0.96);
+  --ts-nav-border: rgba(15, 23, 42, 0.10);
+  --ts-nav-border-scrolled: rgba(15, 23, 42, 0.14);
+  --ts-nav-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --ts-nav-shadow-scrolled: 0 16px 36px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+/* Light Mode Adaptive Overrides for Tailwind White-Alpha Borders & Surfaces */
+html.light .border-white\/5 { border-color: rgb(15 23 42 / 0.06) !important; }
+html.light .border-white\/10 { border-color: rgb(15 23 42 / 0.10) !important; }
+html.light .border-white\/15 { border-color: rgb(15 23 42 / 0.14) !important; }
+html.light .border-white\/20 { border-color: rgb(15 23 42 / 0.18) !important; }
+html.light .hover\:border-white\/20:hover { border-color: rgb(15 23 42 / 0.22) !important; }
+html.light .bg-white\/5 { background-color: rgb(15 23 42 / 0.04) !important; }
+html.light .bg-white\/10 { background-color: rgb(15 23 42 / 0.07) !important; }
+html.light .hover\:bg-white\/5:hover { background-color: rgb(15 23 42 / 0.05) !important; }
+html.light .hover\:bg-white\/10:hover { background-color: rgb(15 23 42 / 0.08) !important; }
+html.light .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: rgb(15 23 42 / 0.06) !important; }
+html.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]) { border-color: rgb(15 23 42 / 0.10) !important; }
+
+/* Light Mode Contrast Adjustments for Accent Status Colors */
+html.light .text-emerald-400 { color: #059669 !important; }
+html.light .text-rose-400 { color: #e11d48 !important; }
+html.light .text-amber-400 { color: #d97706 !important; }
+html.light .text-primary-300 { color: #1d4ed8 !important; }
+html.light .shadow-xl { box-shadow: 0 10px 25px -5px rgb(15 23 42 / 0.06), 0 4px 10px -4px rgb(15 23 42 / 0.04) !important; }
+html.light .shadow-2xl { box-shadow: 0 20px 35px -8px rgb(15 23 42 / 0.10), 0 8px 16px -6px rgb(15 23 42 / 0.05) !important; }
+
 /* ── Tarteel Space Global Styles & Button Design System ── */
 
 .ts-btn {
@@ -86,31 +168,31 @@
 /* Primary (Blue / Electric Blue Hover with double glow and ring) */
 .ts-btn--primary {
   background: #2563eb;
-  color: #0b0d11;
+  color: var(--ts-btn-primary-text);
   border-color: #2563eb;
   box-shadow: 0 8px 24px -10px rgba(37, 99, 235, 0.5);
 }
 
 .ts-btn--primary:hover:not(:disabled) {
-  background: #60a5fa;
-  border-color: #60a5fa;
+  background: #3b82f6;
+  border-color: #3b82f6;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px -10px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.4);
 }
 
 /* Ghost / Secondary */
 .ts-btn--ghost {
-  background: #0e121a;
-  color: #f4f6fb;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgb(var(--ts-dark-900));
+  color: rgb(var(--ts-ink-0));
+  border-color: rgb(var(--ts-border-rgb) / 0.12);
 }
 
 .ts-btn--ghost:hover:not(:disabled) {
-  background: #1a202c;
-  color: #ffffff;
-  border-color: rgba(37, 99, 235, 0.4);
+  background: rgb(var(--ts-dark-850));
+  color: rgb(var(--ts-ink-0));
+  border-color: rgba(37, 99, 235, 0.45);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px -10px rgba(0, 10, 60, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px -10px rgba(37, 99, 235, 0.25), 0 0 0 1px rgb(var(--ts-border-rgb) / 0.08);
 }
 
 /* Danger / Rose */
@@ -150,6 +232,11 @@
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+html.light .ts-btn--emerald {
+  color: #059669;
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
 .ts-btn--emerald:hover:not(:disabled) {
   background: rgba(16, 185, 129, 0.25);
   border-color: #34d399;
@@ -162,6 +249,11 @@
   background: rgba(244, 63, 94, 0.1);
   color: #fb7185;
   border-color: rgba(244, 63, 94, 0.2);
+}
+
+html.light .ts-btn--soft-danger {
+  color: #e11d48;
+  border-color: rgba(225, 29, 72, 0.25);
 }
 
 .ts-btn--soft-danger:hover:not(:disabled) {

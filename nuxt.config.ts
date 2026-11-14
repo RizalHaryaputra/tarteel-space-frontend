@@ -35,10 +35,16 @@ export default defineNuxtConfig({
         { rel: 'canonical', href: 'https://tarteelspace.web.id/' },
         { rel: 'preload', href: '/fonts/geist-sans/Geist-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: '' },
       ],
+      script: [
+        {
+          innerHTML: `(function(){try{if(localStorage.getItem('ts-theme')==='light'){document.documentElement.classList.add('light');var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#f8fafc')}}catch(e){}})()`
+        }
+      ],
       style: [
         {
           innerHTML: `
             html, body { background-color: #0b0d11; margin: 0; padding: 0; }
+            html.light, html.light body { background-color: #f8fafc; }
             html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
           `
         }

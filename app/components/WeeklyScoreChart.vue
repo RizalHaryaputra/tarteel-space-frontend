@@ -126,9 +126,9 @@ const polygonPoints = computed(() => {
         </defs>
 
         <!-- Grid Lines -->
-        <line x1="0" :y1="topPadding" :x2="svgWidth" :y2="topPadding" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4,4" />
-        <line x1="0" :y1="midY" :x2="svgWidth" :y2="midY" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4,4" />
-        <line x1="0" :y1="svgHeight" :x2="svgWidth" :y2="svgHeight" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+        <line x1="0" :y1="topPadding" :x2="svgWidth" :y2="topPadding" stroke="var(--ts-chart-grid)" stroke-width="1" stroke-dasharray="4,4" />
+        <line x1="0" :y1="midY" :x2="svgWidth" :y2="midY" stroke="var(--ts-chart-grid)" stroke-width="1" stroke-dasharray="4,4" />
+        <line x1="0" :y1="svgHeight" :x2="svgWidth" :y2="svgHeight" stroke="var(--ts-chart-axis)" stroke-width="1" />
 
         <!-- Filled Area -->
         <polygon
@@ -155,7 +155,7 @@ const polygonPoints = computed(() => {
               :cx="point.x"
               :cy="point.y"
               r="5"
-              fill="#0b0d11"
+              fill="var(--ts-chart-dot-bg)"
               stroke="#3b82f6"
               stroke-width="2.5"
               class="group-hover/point:r-7 group-hover/point:fill-[#3b82f6] transition-all duration-200"
@@ -164,7 +164,7 @@ const polygonPoints = computed(() => {
             <text
               :x="point.x"
               :y="point.y - 12"
-              fill="#f4f6fb"
+              fill="var(--ts-chart-label)"
               font-family="'Geist Mono', monospace"
               font-size="13"
               font-weight="700"
@@ -177,7 +177,7 @@ const polygonPoints = computed(() => {
             <text
               :x="point.x"
               :y="svgHeight + 22"
-              fill="#6c7a9c"
+              fill="var(--ts-chart-date)"
               font-family="'Geist Mono', monospace"
               font-size="12"
               text-anchor="middle"
