@@ -1,4 +1,11 @@
 <script setup>
+import { onMounted } from 'vue'
+
+const { initTheme } = useTheme()
+
+onMounted(() => {
+  initTheme()
+})
 </script>
 
 <template>
@@ -8,12 +15,13 @@
 </template>
 
 <style>
-/* Background gelap di root agar tidak ada white flash */
+/* Background adaptif di root agar tidak ada flash */
 html,
 body {
-  background-color: #0b0d11;
+  background-color: rgb(var(--ts-dark-950));
   margin: 0;
   padding: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ── Global Typography Baseline (matching landing page) ── */
@@ -29,7 +37,7 @@ body {
   font-size: 1rem; /* 16px standard base */
   font-weight: 400;
   line-height: 1.5;
-  color: #f4f6fb;
+  color: rgb(var(--ts-ink-0));
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 }
 
@@ -39,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.2;
-  color: #f4f6fb;
+  color: rgb(var(--ts-ink-0));
 }
 
 /* ── Font size scale matching landing page ── */
@@ -55,7 +63,7 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Modern Custom Scrollbar (Theme Aligned) ── */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.16) #0b0d11;
+  scrollbar-color: rgb(var(--ts-border-rgb) / 0.16) rgb(var(--ts-dark-950));
 }
 
 ::-webkit-scrollbar {
@@ -64,13 +72,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b0d11;
+  background: rgb(var(--ts-dark-950));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgb(var(--ts-border-rgb) / 0.16);
   border-radius: 9999px;
-  border: 2px solid #0b0d11;
+  border: 2px solid rgb(var(--ts-dark-950));
   transition: background 0.2s ease;
 }
 
@@ -83,6 +91,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-corner {
-  background: #0b0d11;
+  background: rgb(var(--ts-dark-950));
 }
 </style>

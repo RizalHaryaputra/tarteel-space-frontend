@@ -117,8 +117,12 @@ const isMobileDropdownOpen = ref(false)
           <span class="font-mono text-xs text-primary-400 bg-primary-500/10 border border-primary-500/20 px-3 py-0.5 rounded-full font-bold tracking-wider">ADMIN</span>
         </div>
 
-        <!-- User Profile Dropdown (Desktop) -->
-        <div class="relative">
+        <!-- Right Actions (Desktop) -->
+        <div class="flex items-center gap-3">
+          <ThemeToggle />
+
+          <!-- User Profile Dropdown (Desktop) -->
+          <div class="relative">
           <div @click="isDropdownOpen = !isDropdownOpen"
             class="flex items-center gap-3 px-4 py-2 rounded-full bg-dark-900/90 border border-white/10 hover:border-white/20 transition-colors cursor-pointer group">
             <div class="text-right">
@@ -177,6 +181,7 @@ const isMobileDropdownOpen = ref(false)
               <span>Keluar</span>
             </button>
           </div>
+          </div>
         </div>
       </header>
 
@@ -189,7 +194,10 @@ const isMobileDropdownOpen = ref(false)
             <span class="font-display font-semibold text-lg tracking-tight text-ink-0">Tarteel<span class="text-primary-400">Space</span></span>
           </NuxtLink>
 
-          <div class="relative">
+          <div class="flex items-center gap-2">
+            <ThemeToggle size="sm" />
+
+            <div class="relative">
             <div @click="isMobileDropdownOpen = !isMobileDropdownOpen"
               class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-900 border border-white/10 hover:border-white/20 transition-colors cursor-pointer">
               <div class="text-right hidden sm:block">
@@ -248,6 +256,7 @@ const isMobileDropdownOpen = ref(false)
                 </svg>
                 <span>Keluar</span>
               </button>
+            </div>
             </div>
           </div>
         </header>

@@ -13,19 +13,19 @@ export default <Config>{
     theme: {
         extend: {
             colors: {
-                // Background & Dark Paper Palette
+                // Background & Surface Palette (driven by CSS variables)
                 dark: {
-                    950: '#0b0d11', // Main page background (Paper-0)
-                    900: '#13171f', // Card background (Paper-1)
-                    850: '#1a202c', // Elevated card (Paper-2)
-                    800: '#242c3d', // Hairline borders & subtle elements (Paper-3)
+                    950: 'rgb(var(--ts-dark-950) / <alpha-value>)', // Main page background (Paper-0)
+                    900: 'rgb(var(--ts-dark-900) / <alpha-value>)', // Card background (Paper-1)
+                    850: 'rgb(var(--ts-dark-850) / <alpha-value>)', // Elevated card (Paper-2)
+                    800: 'rgb(var(--ts-dark-800) / <alpha-value>)', // Hairline borders & subtle elements (Paper-3)
                 },
                 // Ink / Text Palette
                 ink: {
-                    0: '#f4f6fb', // Primary heading & text
-                    1: '#a8b3cf', // Body text
-                    2: '#6c7a9c', // Secondary / metadata text
-                    3: '#414d6b', // Muted text & subtle borders
+                    0: 'rgb(var(--ts-ink-0) / <alpha-value>)', // Primary heading & text
+                    1: 'rgb(var(--ts-ink-1) / <alpha-value>)', // Body text
+                    2: 'rgb(var(--ts-ink-2) / <alpha-value>)', // Secondary / metadata text
+                    3: 'rgb(var(--ts-ink-3) / <alpha-value>)', // Muted text & subtle borders
                 },
                 // Accent Blue Palette
                 primary: {
@@ -34,13 +34,13 @@ export default <Config>{
                     100: '#dbeafe',
                     200: '#bfdbfe',
                     300: '#93c5fd',
-                    400: '#60a5fa', // Soft sky blue (text/glow)
+                    400: 'rgb(var(--ts-primary-400) / <alpha-value>)', // Soft sky blue (text/glow)
                     500: '#2563eb', // Primary blue (buttons/accents)
                     600: '#1d4ed8', // Hover blue
                     700: '#1e40af',
                     800: '#1e3a8a',
                     900: '#172554',
-                    950: '#0c1a30', // Blue tint for cards/badges
+                    950: 'rgb(var(--ts-primary-950) / <alpha-value>)', // Blue tint for cards/badges
                     azure: '#38bdf8', // Companion cyan/azure blue
                 }
             },

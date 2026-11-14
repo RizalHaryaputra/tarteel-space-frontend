@@ -171,7 +171,7 @@ const drawVisualizer = () => {
     const sampleCount = usePcmFallback ? latestPcmFrame!.length : bufferLength
 
     canvasCtx.lineWidth = 2.5
-    canvasCtx.strokeStyle = '#60a5fa'
+    canvasCtx.strokeStyle = document.documentElement.classList.contains('light') ? '#2563eb' : '#60a5fa'
     canvasCtx.lineCap = 'round'
     canvasCtx.lineJoin = 'round'
     canvasCtx.beginPath()

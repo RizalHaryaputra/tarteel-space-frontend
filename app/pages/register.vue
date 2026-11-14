@@ -383,8 +383,8 @@ const handleRegister = async () => {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(244, 246, 251, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(244, 246, 251, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--ts-ink-0) / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--ts-ink-0) / 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 75%);
@@ -407,14 +407,14 @@ const handleRegister = async () => {
   content: "";
   position: absolute;
   inset: -6px;
-  border: 1px dashed rgba(244, 246, 251, 0.07);
+  border: 1px dashed rgb(var(--ts-ink-0) / 0.08);
   border-radius: 30px;
   pointer-events: none;
 }
 
 /* Left Showcase Panel Dark Background */
 .ts-auth-left {
-  background: #0e121a;
+  background: rgb(var(--ts-dark-850));
   position: relative;
 }
 
@@ -423,8 +423,8 @@ const handleRegister = async () => {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(244, 246, 251, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(244, 246, 251, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--ts-ink-0) / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--ts-ink-0) / 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 80%);

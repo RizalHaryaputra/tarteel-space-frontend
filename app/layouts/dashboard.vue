@@ -103,8 +103,12 @@ const isMobileDropdownOpen = ref(false)
         class="hidden md:flex items-center justify-between h-20 px-8 sm:px-10 sticky top-0 bg-dark-950/80 backdrop-blur-2xl border-b border-white/10 z-30 shrink-0">
         <h1 class="font-display font-semibold text-2xl sm:text-3xl text-ink-0 tracking-tight">{{ pageTitle }}</h1>
 
-        <!-- User Profile Dropdown (Desktop) -->
-        <div class="relative">
+        <!-- Right Actions (Desktop) -->
+        <div class="flex items-center gap-3">
+          <ThemeToggle />
+
+          <!-- User Profile Dropdown (Desktop) -->
+          <div class="relative">
           <div @click="isDropdownOpen = !isDropdownOpen"
             class="flex items-center gap-3 px-4 py-2 rounded-full bg-dark-900/90 border border-white/10 hover:border-white/20 transition-colors cursor-pointer group">
             <div class="text-right">
@@ -164,6 +168,7 @@ const isMobileDropdownOpen = ref(false)
               <span>Keluar</span>
             </button>
           </div>
+          </div>
         </div>
       </header>
 
@@ -176,7 +181,10 @@ const isMobileDropdownOpen = ref(false)
             <span class="font-display font-semibold text-lg tracking-tight text-ink-0">Tarteel<span class="text-primary-400">Space</span></span>
           </NuxtLink>
 
-          <div class="relative">
+          <div class="flex items-center gap-2">
+            <ThemeToggle size="sm" />
+
+            <div class="relative">
             <div @click="isMobileDropdownOpen = !isMobileDropdownOpen"
               class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-900 border border-white/10 hover:border-white/20 transition-colors cursor-pointer">
               <div class="text-right hidden sm:block">
@@ -238,6 +246,7 @@ const isMobileDropdownOpen = ref(false)
                 </svg>
                 <span>Keluar</span>
               </button>
+            </div>
             </div>
           </div>
         </header>
