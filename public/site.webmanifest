@@ -1,0 +1,23 @@
+{
+  "name": "Tarteel Space",
+  "short_name": "Tarteel Space",
+  "description": "Tarteel Space mengevaluasi akurasi pelafalan huruf hijaiyah Anda secara real-time menggunakan teknologi Deep Learning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d11",
+  "theme_color": "#0b0d11",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
